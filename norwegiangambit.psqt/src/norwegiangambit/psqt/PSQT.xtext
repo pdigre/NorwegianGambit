@@ -1,0 +1,31 @@
+grammar norwegiangambit.psqt.PSQT with org.eclipse.xtext.common.Terminals
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+generate pSQT "http://www.norwegiangambit.com/PSQT"
+
+PSQT_Model:
+	FDescription (tables+=Table)*;
+	
+enum PieceType : PAWN='Pawn' | KNIGHT='Knight' | BISHOP='Bishop' | ROOK='Rook' | QUEEN='Queen' | KING='King';
+//enum RowNumber : R1='1'|R2='2'|R3='3'|R4='4'|R5='5'|R6='6'|R7='7'|R8='8';
+
+FDescription: PSQT name=ID BASE base=INT MIDLIMIT mgl=INT ENDLIMIT egl=INT;
+
+Table: TDescription THeader r+=Row r+=Row r+=Row r+=Row r+=Row r+=Row r+=Row r+=Row;
+TDescription: PIECE name=PieceType MIDGAME mg=INT ENDGAME eg=INT;
+THeader: 'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H';
+Row: name=RowLabel midrow=MRow endrow=MRow;
+
+RowLabel returns ecore::EString: INT;
+MRow: c1=INT c2=INT c3=INT c4=INT c5=INT c6=INT c7=INT c8=INT;
+
+terminal INT returns ecore::EInt: '-'? ('0'..'9')+;
+terminal PSQT: 'PSQT:';
+terminal BASE: 'Base:';
+terminal PIECE: 'Piece:';
+terminal MIDLIMIT: 'MidLimit:';
+terminal ENDLIMIT: 'EndLimit:';
+terminal MIDGAME: 'MidGame:';
+terminal ENDGAME: 'EndGame:';
+

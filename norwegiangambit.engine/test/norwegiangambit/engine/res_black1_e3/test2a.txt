@@ -1,0 +1,213 @@
+***********************************************
+START:r1bqk2r/pppp1ppp/2B5/2b1P3/4n3/5N2/PPP2PPP/RNBQK2R b KQkq - 0 6
+8 r.bqk..r
+7 pppp.ppp
+6 ..B.....
+5 ..b.P...
+4 ....n...
+3 .....N..
+2 PPP..PPP
+1 RNBQK..R
+  ABCDEFGH
+
+
+**** PASS 0 ****
+-345:b b7 b5
+-120:b Bxc5 Bxf2
+-110:b Nxe4 Nxf2
+-50:b Ke8 O-O
+-30:b Qd8 Qf6
+-30:b Ke8 Kf8
+-25:b Qd8 Qg5
+-25:b Qd8 Qe7
+-20:b a7 a6
+-20:b h7 h6
+-20:b Bc5 Be3
+-20:b Bc5 Bd4
+-20:b Qd8 Qh4
+-20:b Bc5 Bb6
+-20:b Bc5 Bd6
+-20:b Ra8 Rb8
+-20:b Rh8 Rf8
+-20:b Rh8 Rg8
+-20:b Ke8 Ke7
+-15:b a7 a5
+-15:b h7 h5
+-15:b Bc5 Bb4
+-15:b Ne4 Nd6
+-10:b f7 f5
+-10:b g7 g5
+-10:b Ne4 Nc3
+-10:b Ne4 Nf6
+-10:b Bc5 Be7
+-5:b b7 b6
+-5:b g7 g6
+0:b f7 f6
+0:b Ne4 Nd2
+0:b Bc5 Ba3
+0:b Ne4 Ng3
+0:b Ne4 Ng5
+0:b Bc5 Bf8
+300:b xd7 xc6
+330:b xb7 xc6
+
+**** PASS 1 ****
+-345:b b7 b5
+-120:b Bxc5 Bxf2
+-110:b Nxe4 Nxf2
+-50:b Ke8 O-O
+-30:b Qd8 Qf6
+-30:b Ke8 Kf8
+-25:b Qd8 Qg5
+-25:b Qd8 Qe7
+-20:b a7 a6
+-20:b h7 h6
+-20:b Bc5 Be3
+-20:b Bc5 Bd4
+-20:b Qd8 Qh4
+-20:b Bc5 Bb6
+-20:b Bc5 Bd6
+-20:b Ra8 Rb8
+-20:b Rh8 Rf8
+-20:b Rh8 Rg8
+-20:b Ke8 Ke7
+-15:b a7 a5
+-15:b h7 h5
+-15:b Bc5 Bb4
+-15:b Ne4 Nd6
+-10:b f7 f5
+-10:b g7 g5
+-10:b Ne4 Nc3
+-10:b Ne4 Nf6
+-10:b Bc5 Be7
+-5:b b7 b6
+-5:b g7 g6
+0:b f7 f6
+0:b Ne4 Nd2
+0:b Bc5 Ba3
+0:b Ne4 Ng3
+0:b Ne4 Ng5
+0:b Bc5 Bf8
+300:b xd7 xc6
+330:b xb7 xc6
+
+**** PASS 2 ****
+-260:b b7 b5
+-110:b Bxc5 Bxf2
+35:b Bc5 Bb4
+220:b Nxe4 Nxf2
+280:b Ke8 O-O
+300:b Ke8 Kf8
+305:b Qd8 Qe7
+310:b a7 a6
+310:b h7 h6
+310:b Bc5 Bb6
+310:b Ra8 Rb8
+310:b Rh8 Rf8
+310:b Rh8 Rg8
+310:b Ke8 Ke7
+315:b a7 a5
+315:b h7 h5
+320:b f7 f5
+320:b g7 g5
+320:b Ne4 Nf6
+320:b Bc5 Be7
+325:b b7 b6
+325:b g7 g6
+330:b f7 f6
+330:b Bc5 Ba3
+330:b Ne4 Ng3
+330:b Bc5 Bd4
+330:b Ne4 Nd6
+330:b Bc5 Bd6
+330:b Bc5 Bf8
+335:b Ne4 Ng5
+340:b Bc5 Be3
+365:b Ne4 Nd2
+370:b Ne4 Nc3
+420:b xb7 xc6
+835:b Qd8 Qh4
+870:b Qd8 Qf6
+890:b Qd8 Qg5
+1195:b xd7 xc6
+
+**** PASS 3 ****
+-550:b Nxe4 Nxf2
+-450:b b7 b5
+-245:b Bxc5 Bxf2
+-140:b Bc5 Bb4
+-65:b Ke8 O-O
+-45:b Ke8 Kf8
+-40:b Qd8 Qe7
+-35:b a7 a6
+-35:b h7 h6
+-35:b Bc5 Bb6
+-35:b Ra8 Rb8
+-35:b Rh8 Rf8
+-35:b Rh8 Rg8
+-35:b Ke8 Ke7
+-30:b a7 a5
+-30:b h7 h5
+-25:b f7 f5
+-25:b g7 g5
+-25:b Bc5 Be7
+-20:b b7 b6
+-20:b g7 g6
+-20:b Bc5 Bd4
+-15:b f7 f6
+-15:b Bc5 Bf8
+-5:b Ne4 Ng5
+175:b Ne4 Ng3
+185:b Ne4 Nf6
+195:b Bc5 Ba3
+195:b Ne4 Nd6
+200:b Bc5 Bd6
+205:b Bc5 Be3
+230:b Ne4 Nd2
+235:b xb7 xc6
+235:b Ne4 Nc3
+300:b xd7 xc6
+575:b Qd8 Qg5
+700:b Qd8 Qh4
+760:b Qd8 Qf6
+
+**** PASS 4 ****
+-260:b b7 b5
+-80:b Nxe4 Nxf2
+-20:b Bxc5 Bxf2
+70:b Ke8 O-O
+80:b a7 a6
+90:b Ke8 Kf8
+95:b Qd8 Qe7
+100:b Bc5 Bb6
+100:b Ra8 Rb8
+100:b Rh8 Rf8
+100:b Rh8 Rg8
+100:b Ke8 Ke7
+105:b a7 a5
+105:b h7 h5
+110:b f7 f5
+115:b g7 g6
+115:b Bc5 Be7
+120:b f7 f6
+120:b h7 h6
+120:b Bc5 Bf8
+140:b g7 g5
+180:b Bc5 Bb4
+235:b b7 b6
+270:b Bc5 Bd4
+340:b xb7 xc6
+365:b Ne4 Ng3
+370:b Ne4 Nf6
+380:b Ne4 Nd6
+390:b Ne4 Ng5
+420:b Bc5 Ba3
+430:b Bc5 Be3
+445:b Ne4 Nd2
+460:b Ne4 Nc3
+460:b Bc5 Bd6
+725:b xd7 xc6
+745:b Qd8 Qh4
+780:b Qd8 Qf6
+800:b Qd8 Qg5
+MANUAL:r1bqk2r/p1pp1ppp/2B5/1pb1P3/4n3/5N2/PPP2PPP/RNBQK2R w KQkq b6 0 7

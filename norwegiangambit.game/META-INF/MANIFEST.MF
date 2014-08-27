@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Game
+Bundle-SymbolicName: norwegiangambit.game
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: norwegiangambit.game.Activator
+Require-Bundle: org.junit,
+ org.eclipse.ui,
+ org.eclipse.core.runtime,
+ norwegiangambit.engine;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Export-Package: norwegiangambit.engine,
+ norwegiangambit.game,
+ norwegiangambit.profile

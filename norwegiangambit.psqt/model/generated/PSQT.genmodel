@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/norwegiangambit.psqt/src-gen" editDirectory="/norwegiangambit.psqt.edit/src"
+    editorDirectory="/norwegiangambit.psqt.editor/src" modelPluginID="norwegiangambit.psqt"
+    forceOverwrite="true" modelName="PSQT" updateClasspath="false" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    complianceLevel="5.0" copyrightFields="false" editPluginID="norwegiangambit.psqt.edit"
+    editorPluginID="norwegiangambit.psqt.editor" runtimeVersion="2.10">
+  <genPackages prefix="PSQT" basePackage="norwegiangambit.psqt" disposableProviderFactory="true"
+      fileExtensions="psqt" ecorePackage="PSQT.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="PSQT.ecore#//PieceType">
+      <genEnumLiterals ecoreEnumLiteral="PSQT.ecore#//PieceType/PAWN"/>
+      <genEnumLiterals ecoreEnumLiteral="PSQT.ecore#//PieceType/KNIGHT"/>
+      <genEnumLiterals ecoreEnumLiteral="PSQT.ecore#//PieceType/BISHOP"/>
+      <genEnumLiterals ecoreEnumLiteral="PSQT.ecore#//PieceType/ROOK"/>
+      <genEnumLiterals ecoreEnumLiteral="PSQT.ecore#//PieceType/QUEEN"/>
+      <genEnumLiterals ecoreEnumLiteral="PSQT.ecore#//PieceType/KING"/>
+    </genEnums>
+    <genClasses ecoreClass="PSQT.ecore#//PSQT_Model"/>
+    <genClasses ecoreClass="PSQT.ecore#//FDescription">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PSQT.ecore#//FDescription/tables"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//FDescription/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//FDescription/base"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//FDescription/mgl"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//FDescription/egl"/>
+    </genClasses>
+    <genClasses ecoreClass="PSQT.ecore#//Table"/>
+    <genClasses ecoreClass="PSQT.ecore#//TDescription">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PSQT.ecore#//TDescription/r"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//TDescription/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//TDescription/mg"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//TDescription/eg"/>
+    </genClasses>
+    <genClasses ecoreClass="PSQT.ecore#//Row">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//Row/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PSQT.ecore#//Row/midrow"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PSQT.ecore#//Row/endrow"/>
+    </genClasses>
+    <genClasses ecoreClass="PSQT.ecore#//MRow">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//MRow/c1"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//MRow/c2"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//MRow/c3"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//MRow/c4"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//MRow/c5"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//MRow/c6"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//MRow/c7"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PSQT.ecore#//MRow/c8"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
