@@ -1,0 +1,151 @@
+8 .k.r....
+7 .pp....p
+6 ..n.....
+5 P......R
+4 ..R.p.r.
+3 ..P..p..
+2 .PP..B.P
+1 ....K...
+  ABCDEFGH
+
+
+**** PASS 0 ****
+-155:b Nxc6 Nxa5
+-100:b Rg4 Rg2
+-100:b Nc6 Nd4
+-100:b Nc6 Ne5
+-95:b e4 e3
+-95:b Rd8 Rd2
+-90:b h7 h6
+-90:b Rg4 Rg1
+-90:b Rg4 Rg3
+-90:b Rg4 Rf4
+-90:b Rg4 Rg5
+-90:b Rg4 Rg6
+-90:b Rg4 Rg7
+-90:b Rd8 Re8
+-90:b Rg4 Rg8
+-85:b Rd8 Rd1
+-85:b Rd8 Rd3
+-85:b Nc6 Nb4
+-85:b Rd8 Rd4
+-85:b Rg4 Rh4
+-85:b Rd8 Rd5
+-85:b Rd8 Rd6
+-85:b Rd8 Rd7
+-85:b Nc6 Ne7
+-85:b Rd8 Rc8
+-85:b Rd8 Rf8
+-85:b Rd8 Rg8
+-85:b Rd8 Rh8
+-80:b b7 b5
+-80:b Kb8 Ka8
+-75:b b7 b6
+-70:b Kb8 Kc8
+-40:b Nc6 Na7
+
+**** PASS 1 ****
+-500:b Rd8 Rd1
+-490:b Rg4 Rg1
+15:b e4 e3
+15:b Nxc6 Nxa5
+15:b b7 b5
+15:b b7 b6
+15:b h7 h6
+15:b Rd8 Rd2
+15:b Rg4 Rg2
+15:b Rd8 Rd3
+15:b Rg4 Rg3
+15:b Nc6 Nb4
+15:b Nc6 Nd4
+15:b Rd8 Rd4
+15:b Rg4 Rf4
+15:b Rg4 Rh4
+15:b Rd8 Rd5
+15:b Nc6 Ne5
+15:b Rg4 Rg5
+15:b Rd8 Rd6
+15:b Rg4 Rg6
+15:b Nc6 Na7
+15:b Rd8 Rd7
+15:b Nc6 Ne7
+15:b Rg4 Rg7
+15:b Kb8 Ka8
+15:b Kb8 Kc8
+15:b Rd8 Rc8
+15:b Rd8 Re8
+15:b Rd8 Rf8
+15:b Rg4 Rg8
+15:b Rd8 Rg8
+15:b Rd8 Rh8
+
+**** PASS 2 ****
+-490:b Rd8 Rd1
+-490:b Rg4 Rg1
+-140:b e4 e3
+10:b b7 b6
+10:b Nc6 Nd4
+10:b Rd8 Rd4
+10:b Nc6 Na7
+10:b Kb8 Ka8
+10:b Kb8 Kc8
+25:b Nxc6 Nxa5
+25:b b7 b5
+25:b h7 h6
+25:b Rd8 Rd2
+25:b Rg4 Rg2
+25:b Rd8 Rd3
+25:b Rg4 Rg3
+25:b Nc6 Nb4
+25:b Rg4 Rf4
+25:b Rg4 Rh4
+25:b Rd8 Rd5
+25:b Nc6 Ne5
+25:b Rg4 Rg5
+25:b Rd8 Rd6
+25:b Rg4 Rg6
+25:b Rd8 Rd7
+25:b Nc6 Ne7
+25:b Rg4 Rg7
+25:b Rd8 Rc8
+25:b Rd8 Re8
+25:b Rd8 Rf8
+25:b Rg4 Rg8
+25:b Rd8 Rg8
+25:b Rd8 Rh8
+
+**** PASS 3 ****
+-495:b Rd8 Rd2
+-490:b e4 e3
+-490:b Rg4 Rg1
+-485:b Rd8 Rd1
+-110:b Rd8 Rd4
+-5:b Nxc6 Nxa5
+0:b b7 b6
+0:b Nc6 Na7
+0:b Kb8 Ka8
+0:b Kb8 Kc8
+10:b Rg4 Rg2
+10:b Nc6 Nd4
+25:b b7 b5
+25:b h7 h6
+25:b Rd8 Rd3
+25:b Rg4 Rg3
+25:b Nc6 Nb4
+25:b Rd8 Rd5
+25:b Nc6 Ne5
+25:b Rg4 Rg5
+25:b Rd8 Rd6
+25:b Rg4 Rg6
+25:b Rd8 Rd7
+25:b Nc6 Ne7
+25:b Rg4 Rg7
+25:b Rg4 Rg8
+30:b Rg4 Rf4
+30:b Rg4 Rh4
+30:b Rd8 Rc8
+30:b Rd8 Re8
+30:b Rd8 Rf8
+30:b Rd8 Rg8
+30:b Rd8 Rh8
+>BLACK_ROOK from d8 to d2, Rd8 Rd2

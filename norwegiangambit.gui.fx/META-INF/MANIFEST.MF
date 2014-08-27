@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Fx Gui
+Bundle-SymbolicName: norwegiangambit.gui.fx;singleton:=true
+Bundle-Version: 0.9.0.qualifier
+Bundle-Activator: norwegiangambit.gui.fx.Activator
+Bundle-Vendor: Norwegian Gambit
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ norwegiangambit.engine,
+ norwegiangambit.game,
+ org.eclipse.fx.javafx,
+ org.eclipse.fx.osgi.util,
+ org.eclipse.fx.core,
+ org.eclipse.fx.core.guice,
+ org.eclipse.fx.ide.ui,
+ org.eclipse.fx.ide.fxgraph,
+ org.eclipse.fx.ide.fxgraph.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8,
+ OSGi/Minimum-1.0
+Bundle-ActivationPolicy: lazy

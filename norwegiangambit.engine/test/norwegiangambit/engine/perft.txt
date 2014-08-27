@@ -1,0 +1,62 @@
+1. Starting position
+FEN=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+     Depth     Moves  Captures Enpassant  Castling Promotion     Check      Mate
+         1        20         0         0         0         0         0         0
+         2       400         0         0         0         0         0         0
+         3      8902        34         0         0         0        12         0
+         4    197281      1576         0         0         0       469         8
+         5   4865609     82719       258         0         0     27351       347
+         6 119060324   2812008      5248         0         0    809099     10828
+
+2. kiwipete  r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -
+DIVIDE=Ke1 Kd1=81926 Ke1 Kf1=79785 Ke1 O-O=81733 Ke1 O-O=89077 Ra1 Rb1=85360 Ra1 Rc1=85274 Ra1 Rd1=81623 Rh1 Rg1=86932 Rh1 Rf1=83535 a2 a3=96635 a2 a4=93171 b2 b3=83072 Bd2 Be3=92453 Bd2 Bf4=86912 Bd2 Bg5=90127 Bd2 Bh6=84383 Bd2 Bc1=85043 Be2 Bd3=87211 Be2 Bc4=86958 Be2 Bb5=81835 Bxe2 Bxa6=71277 Be2 Bd1=76740 Be2 Bf1=90832 g2 g3=79392 g2 g4=77562 xg2 xh3=84772 Nc3 Na4=93692 Nc3 Nb5=83675 Nc3 Nb1=86853 Nc3 Nd1=86864 Qf3 Qf4=92663 Qf3 Qf5=107433 Qxf3 Qxf6=79988 Qf3 Qe3=94722 Qf3 Qd3=85774 Qf3 Qg3=96718 Qxf3 Qxh3=100927 Qf3 Qg4=94249 Qf3 Qh5=97344 d5 d6=81583 xd5 xe6=99751 Ne5 Nc6=85953 Nxe5 Nxd7=96082 Nxe5 Nxg6=85935 Nxe5 Nxf7=90949 Ne5 Nc4=79674 Ne5 Nd3=79277 Ne5 Ng4=81834 
+FEN=r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1
+     Depth     Moves  Captures Enpassant  Castling Promotion     Check      Mate
+         1        48         8         0         2         0         0         0
+         2      2039       351         1        91         0         3         0
+         3     97862     17102        45      3162         0       993         1
+         4   4085603    757163      1929    128013     15172     25523        43
+         5 193690690  35043416     73365   4993637      8392   3309887     30171
+
+3.  
+FEN=8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
+     Depth     Moves  Captures Enpassant  Castling Promotion     Check      Mate
+         1        14         1         0         0         0         2         0
+         2       191        14         0         0         0        10         0
+         3      2812       209         2         0         0       267         0
+         4     43238      3348       123         0         0      1680        17
+         5    674624     52051      1165         0         0     52950         0
+         6  11030083    940350     33325         0      7552    452473      2733
+         7 178633661  14519036    294874         0    140024  12797406        87
+
+4a.
+FEN=r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1
+     Depth     Moves  Captures Enpassant  Castling Promotion     Check      Mate
+         1         6         0         0         0         0         0         0
+         2       264        87         0         6        48        10         0
+         3      9467      1021         4         0       120        38        22
+         4    422333    131393         0      7795     60032     15492         5
+         5  15833292   2046173      6512         0    329464    200568     50562
+         6 706045033 210369132       212  10882006  81102984  26973664     81076
+
+4b.
+FEN=r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1
+     Depth     Moves  Captures Enpassant  Castling Promotion     Check      Mate
+         1         6         0         0         0         0         0         0
+         2       264        87         0         6        48        10         0
+         3      9467      1021         4         0       120        38        22
+         4    422333    131393         0      7795     60032     15492         5
+         5  15833292   2046173      6512         0    329464    200568     50562
+         6 706045033 210369132       212  10882006  81102984  26973664     81076
+
+e.
+FEN=n1n5/PPPk4/8/8/8/8/4Kppp/5N1N b - - 0 1
+     Depth     Moves  Captures Enpassant  Castling Promotion     Check      Mate
+         1        24        11         0         0        12         3         0
+         2       496       203         0         0       252        59         0
+         3      9483      2921         0         0      3224       992         0
+         4    182838     50647         0         0     65620     20154         0
+         5   3605103    754747         0         0    955220    399962       134
+         
+         
+       

@@ -1,0 +1,106 @@
+Transposition efficiency:
+=========================
+
+Conclusion:
+================
+Double lookup cuts collisions 8 times
+level of 6 - 123M moves - 2min thinking time
+	24 bit size 16M seems good tradeoff with 3% collision
+	Max 91,5% hit rate
+	must replace and shift at first and 2nd level collisions
+	Running parallell (2 * speed) drops hits from 89 to 85 % 
+
+
+Test 1: d5 zobrist 24bit end
+Size:16777216
+Hits:4090614 = 80.6475360257024%
+Miss:876903 = 17.28837438182789%
+Coll:104695 = 2.0640895924697156%
+Err:0 = 0.0%
+Hitrate:4.664842063489348%
+
+Test 2: d5 zobrist 24bit end shift 8
+Size:16777216
+Hits:4081089 = 80.45974813355593%
+Miss:875127 = 17.253360072489084%
+Coll:115996 = 2.2868917939549847%
+Err:0 = 0.0%
+Hitrate:4.6634248514787%
+
+Test 3: d5 zobrist 24bit end shift 24
+Size:16777216
+Hits:4091400 = 80.66303222341652%
+Miss:876559 = 17.28159233091992%
+Coll:104253 = 2.055375445663549%
+Err:0 = 0.0%
+Hitrate:4.667569439136441%
+
+Test 4: d6 zobrist 24bit
+Size:16777216
+Hits:89279993 = 71.92312013991238%
+Miss:7722540 = 6.221205373585536%
+Coll:27130003 = 21.85567448650207%
+Err:0 = 0.0%
+Hitrate:11.560962196375804%
+
+Test 5: d5 zobrist 24bit end with replace
+Size:16777216
+Hits:4147308 = 81.76527321807527%
+Miss: 876903 = 17.28837438182789%
+Coll:  48001 = 0.9463524000968414%
+Err:0 = 0.0%
+Hitrate:4.7294945963236525%
+
+***************************************************************************************
+Test 6: d5 zobrist 24bit end Double Key shift 1 
+Size:16777216
+Hits:4166313 = 82.13996181547617%
+Miss:898176 = 17.707777198587124%
+Coll:7723 = 0.1522609859367077%
+Err:0 = 0.0%
+Hitrate:4.638637638948269%
+***************************************************************************************
+
+***************************************************************************************
+Test 7: d6 zobrist 24bit end Double Key shift 1 - 55secs
+Size:16777216
+Hits:110785662 = 89.2478842130479%
+Miss:9559022 = 7.700657948372214%
+Coll:3787852 = 3.051457838579887%
+Err:0 = 0.0%
+Hitrate:11.589644003330047%
+
+same running lightly parallel - 27sec
+Size:16777216
+Hits:81661834 = 85.3259415379757%
+Miss:7676528 = 8.020968269493354%
+Coll:6367390 = 6.653090192530957%
+Err:0 = 0.0%
+Hitrate:10.637860501518395%
+
+same running highly parallel - 27sec
+Size:16777216
+Hits:79628041 = 84.68554382202909%
+Miss:5377027 = 5.718543994329003%
+Coll:9022835 = 9.595912183641913%
+Err:0 = 0.0%
+Hitrate:14.808934565513619%
+***************************************************************************************
+
+Test 8: d6 zobrist 20bit end Double Key shift 1 - 136secs
+Size:1048576
+Hits:89064227 = 71.74930108573629%
+Miss:1048576 = 0.8447229338809287%
+Coll:34019733 = 27.405975980382774%
+Err:0 = 0.0%
+Hitrate:84.93826580047607%
+
+Test 9: d6 zobrist 26bit end Double Key shift 1 - 125secs
+Size:67108864
+Hits:113142849 = 91.1468118237752%
+Miss:10505268 = 8.46294479958099%
+Coll:484419 = 0.3902433766438156%
+Err:0 = 0.0%
+Hitrate:10.770105912576433%
+
+

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="Norwegian Gambit" url="http://www.norwegiangambit.com/updatesite">
+      Norwegian Gambit Chess Programmers Tools
+   </description>
+   <feature url="features/norwegiangambit.feature_0.9.0.201408311202.jar" id="norwegiangambit.feature" version="0.9.0.201408311202"/>
+</site>

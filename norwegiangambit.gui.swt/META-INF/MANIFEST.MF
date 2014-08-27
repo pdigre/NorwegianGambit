@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SWT Gui
+Bundle-SymbolicName: norwegiangambit.gui.swt;singleton:=true
+Bundle-Version: 0.9.0.qualifier
+Bundle-Activator: norwegiangambit.gui.swt.Activator
+Bundle-Vendor: NorwegianGambit
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ norwegiangambit.engine,
+ norwegiangambit.game
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy

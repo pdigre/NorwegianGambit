@@ -1,0 +1,213 @@
+***********************************************
+START:r1bqk2r/pppp1ppp/2B5/2b1P3/4n3/5N2/PPP2PPP/RNBQK2R b KQkq - 0 6
+8 r.bqk..r
+7 pppp.ppp
+6 ..B.....
+5 ..b.P...
+4 ....n...
+3 .....N..
+2 PPP..PPP
+1 RNBQK..R
+  ABCDEFGH
+
+
+**** PASS 0 ****
+-35:b xd7 xc6
+-5:b xb7 xc6
+210:b Bxc5 Bxf2
+220:b Nxe4 Nxf2
+280:b Ke8 O-O
+300:b Qd8 Qf6
+300:b Ke8 Kf8
+305:b Qd8 Qg5
+305:b Qd8 Qe7
+310:b a7 a6
+310:b h7 h6
+310:b Bc5 Be3
+310:b Bc5 Bd4
+310:b Qd8 Qh4
+310:b Bc5 Bb6
+310:b Bc5 Bd6
+310:b Ra8 Rb8
+310:b Rh8 Rf8
+310:b Rh8 Rg8
+310:b Ke8 Ke7
+315:b a7 a5
+315:b h7 h5
+315:b Bc5 Bb4
+315:b Ne4 Nd6
+320:b b7 b5
+320:b f7 f5
+320:b g7 g5
+320:b Ne4 Nc3
+320:b Ne4 Nf6
+320:b Bc5 Be7
+325:b b7 b6
+325:b g7 g6
+330:b f7 f6
+330:b Ne4 Nd2
+330:b Bc5 Ba3
+330:b Ne4 Ng3
+330:b Ne4 Ng5
+330:b Bc5 Bf8
+
+**** PASS 1 ****
+-35:b xd7 xc6
+-5:b xb7 xc6
+210:b Bxc5 Bxf2
+220:b Nxe4 Nxf2
+280:b Ke8 O-O
+300:b Qd8 Qf6
+300:b Ke8 Kf8
+305:b Qd8 Qg5
+305:b Qd8 Qe7
+310:b a7 a6
+310:b h7 h6
+310:b Bc5 Be3
+310:b Bc5 Bd4
+310:b Qd8 Qh4
+310:b Bc5 Bb6
+310:b Bc5 Bd6
+310:b Ra8 Rb8
+310:b Rh8 Rf8
+310:b Rh8 Rg8
+310:b Ke8 Ke7
+315:b a7 a5
+315:b h7 h5
+315:b Bc5 Bb4
+315:b Ne4 Nd6
+320:b b7 b5
+320:b f7 f5
+320:b g7 g5
+320:b Ne4 Nc3
+320:b Ne4 Nf6
+320:b Bc5 Be7
+325:b b7 b6
+325:b g7 g6
+330:b f7 f6
+330:b Ne4 Nd2
+330:b Bc5 Ba3
+330:b Ne4 Ng3
+330:b Ne4 Ng5
+330:b Bc5 Bf8
+
+**** PASS 2 ****
+80:b xb7 xc6
+220:b Bxc5 Bxf2
+325:b Nxe4 Nxf2
+365:b Bc5 Bb4
+625:b Ke8 O-O
+640:b Ne4 Ng3
+645:b Ne4 Nf6
+645:b Ke8 Kf8
+650:b Qd8 Qe7
+655:b a7 a6
+655:b h7 h6
+655:b Bc5 Bb6
+655:b Ra8 Rb8
+655:b Rh8 Rf8
+655:b Rh8 Rg8
+655:b Ke8 Ke7
+660:b a7 a5
+660:b h7 h5
+660:b Bc5 Bd4
+660:b Ne4 Nd6
+660:b Bc5 Bd6
+665:b f7 f5
+665:b g7 g5
+665:b Ne4 Ng5
+665:b Bc5 Be7
+670:b g7 g6
+670:b Bc5 Be3
+675:b f7 f6
+675:b Bc5 Ba3
+675:b Bc5 Bf8
+695:b Ne4 Nd2
+700:b Ne4 Nc3
+795:b b7 b5
+800:b b7 b6
+860:b xd7 xc6
+1165:b Qd8 Qh4
+1200:b Qd8 Qf6
+1220:b Qd8 Qg5
+
+**** PASS 3 ****
+-125:b Bxc5 Bxf2
+-75:b xb7 xc6
+-45:b Nxe4 Nxf2
+-35:b xd7 xc6
+20:b Bc5 Bb4
+295:b Ne4 Ng3
+300:b f7 f5
+300:b Ne4 Nf6
+310:b Ne4 Nd6
+320:b Ne4 Ng5
+350:b Ne4 Nd2
+355:b Ne4 Nc3
+355:b Bc5 Be3
+520:b f7 f6
+520:b Qd8 Qe7
+525:b Ke8 O-O
+530:b Bc5 Bd4
+530:b Bc5 Bd6
+545:b Ke8 Kf8
+555:b a7 a6
+555:b h7 h6
+555:b Bc5 Ba3
+555:b Bc5 Bb6
+555:b Ra8 Rb8
+555:b Rh8 Rf8
+555:b Rh8 Rg8
+555:b Ke8 Ke7
+560:b a7 a5
+560:b h7 h5
+565:b g7 g5
+570:b g7 g6
+625:b Bc5 Be7
+635:b Bc5 Bf8
+695:b b7 b5
+700:b b7 b6
+820:b Qd8 Qh4
+855:b Qd8 Qf6
+875:b Qd8 Qg5
+
+**** PASS 4 ****
+-10:b Bxc5 Bxf2
+25:b xd7 xc6
+80:b xb7 xc6
+290:b Nxe4 Nxf2
+325:b Bc5 Bb4
+390:b f7 f5
+435:b Ne4 Nd2
+435:b Ne4 Ng3
+440:b Ne4 Nd6
+470:b Ne4 Nc3
+470:b Ne4 Nf6
+650:b f7 f6
+670:b Bc5 Be3
+680:b Ke8 O-O
+700:b Ke8 Kf8
+705:b Qd8 Qe7
+710:b a7 a6
+710:b h7 h6
+710:b Bc5 Ba3
+710:b Bc5 Bd6
+710:b Bc5 Be7
+710:b Bc5 Bf8
+710:b Ra8 Rb8
+710:b Rh8 Rf8
+710:b Rh8 Rg8
+710:b Ke8 Ke7
+715:b a7 a5
+715:b h7 h5
+720:b b7 b5
+720:b g7 g5
+720:b Ne4 Ng5
+725:b b7 b6
+725:b g7 g6
+725:b Bc5 Bb6
+755:b Bc5 Bd4
+900:b Qd8 Qh4
+995:b Qd8 Qf6
+1110:b Qd8 Qg5
+>BLACK_BISHOP from c5 to f2 beats WHITE_PAWN, Bxc5 Bxf2
