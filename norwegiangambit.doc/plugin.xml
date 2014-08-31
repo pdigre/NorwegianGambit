@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+    <extension point="org.eclipse.help.toc">
+        <toc
+              category="Norwegian Gambit Chess Tools"
+              file="toc.xml"
+              primary="true"/>
+    </extension>
+</plugin>

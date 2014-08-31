@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Game
+Bundle-Name: Game Common
 Bundle-SymbolicName: norwegiangambit.game
 Bundle-Version: 0.9.0.qualifier
 Bundle-Activator: norwegiangambit.game.Activator
@@ -13,3 +13,4 @@ Bundle-ActivationPolicy: lazy
 Export-Package: norwegiangambit.engine,
  norwegiangambit.game,
  norwegiangambit.profile
+Bundle-Vendor: Norwegian Gambit

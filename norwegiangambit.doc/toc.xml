@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    
+<toc label="Norwegian Gambit Tools" topic="html/main.html">
+   <topic href="html/main.html" label="Chess UI">
+   </topic>
+   <topic href="html/main.html" label="PSQT Editor">
+   </topic>
+   <topic href="html/main.html" label="FEN hover">
+   </topic>
+   <topic href="html/main.html" label="PERFT">
+   </topic>
+   <topic href="html/main.html" label="Engine">
+   </topic>
+</toc>

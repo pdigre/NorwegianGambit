@@ -10,11 +10,33 @@
    </description>
 
    <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+      /*******************************************************************************
+* Copyright (c) 2014 Norwegian Gambit.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License
+v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*    Per Digre - initial API and implementation and/or
+initial documentation
+*******************************************************************************/
    </copyright>
 
    <license url="http://www.example.com/license">
-      [Enter License Description here.]
+      /*******************************************************************************
+* Copyright (c) 2014 Norwegian Gambit.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License
+v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*    Per Digre - initial API and implementation and/or
+initial documentation
+*******************************************************************************/
    </license>
 
    <url>
@@ -77,5 +99,11 @@
          install-size="0"
          version="0.9.0.qualifier"
          unpack="false"/>
+
+   <plugin
+         id="norwegiangambit.doc"
+         download-size="0"
+         install-size="0"
+         version="0.9.0.qualifier"/>
 
 </feature>
