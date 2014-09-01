@@ -1,7 +1,7 @@
 package norwegiangambit.engine.base;
 
 import norwegiangambit.engine.base.IConst.BITS;
-import norwegiangambit.engine.fen.FEN;
+import norwegiangambit.util.FEN;
 
 public class MOVEDATA {
 	
@@ -85,5 +85,9 @@ public class MOVEDATA {
 			sb.append(FEN.type2fen(BITS.getCaptured(bitmap)));
 		}
 		return FEN.board2string(b_bit1,b_bit2,b_bit3,b_black)+" "+sb.toString();
+	}
+
+	public String id() {
+		return FEN.move2literal(bitmap);
 	}
 }

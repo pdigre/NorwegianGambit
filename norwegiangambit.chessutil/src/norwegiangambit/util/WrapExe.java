@@ -1,4 +1,4 @@
-package no.pdigre.chessutil;
+package norwegiangambit.util;
 
 import static org.junit.Assert.assertTrue;
 
@@ -11,14 +11,30 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-public class WrapExe {
-	final String exepath;
+public class WrapExe{
+	
+	
+	String exepath;
 	volatile private OutputStreamWriter writer;
 	private Process process;
 	private Thread thread;
 
 	volatile boolean exit=false;
 	volatile ArrayList<String> response=new ArrayList<>();
+
+	private static WrapExe instance;
+	
+	public static IDivide getInstance(){
+		if(instance==null){
+			instance=new WrapExe();
+			instance.start();
+		}
+		return (IDivide) instance;
+	}
+
+	public WrapExe() {
+		super();
+	}
 
 	public WrapExe(String exepath) {
 		super();
@@ -45,13 +61,13 @@ public class WrapExe {
 						BufferedReader br = new BufferedReader(new InputStreamReader(is));
 						String line;
 						while ((line = br.readLine()) != null) {
-							System.out.println(">"+line);
+//							System.out.println(">"+line);
 							response(line);
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					System.out.println("Program terminated!");
+//					System.out.println("Program terminated!");
 				}
 			});
 			thread.start();
@@ -72,7 +88,7 @@ public class WrapExe {
 		try {
 			while(writer==null)
 				Thread.sleep(100);
-			System.out.println("<"+line);
+//			System.out.println("<"+line);
 			writer.write(line+"\n");
 			writer.flush();
 		} catch (Exception e) {

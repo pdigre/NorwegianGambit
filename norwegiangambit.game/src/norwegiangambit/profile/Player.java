@@ -7,7 +7,7 @@ import java.util.TimerTask;
 import norwegiangambit.engine.base.IConst;
 import norwegiangambit.engine.base.ZobristKey;
 import norwegiangambit.engine.evaluate.IEvaluator;
-import norwegiangambit.engine.fen.FEN;
+import norwegiangambit.engine.fen.FEN_POS;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.engine.fen.PositionScore;
 import norwegiangambit.engine.fen.PositionWithLog;
@@ -70,7 +70,7 @@ public abstract class Player implements IPlayer {
     }
 
     protected void printFEN() {
-        System.out.println(FEN.getFen(getPosition()));
+        System.out.println(FEN_POS.getFen(getPosition()));
     }
 
     protected Position getPosition() {
@@ -81,7 +81,7 @@ public abstract class Player implements IPlayer {
         if (debug) {
             System.out.println("\n**** " + txt + " ****");
             for (Position m : moves)
-                System.out.println(m.getQuality() + " "+m.getScore() + ":" + (m.whiteNext() ? "b " : "w ") + FEN.notation(m));
+                System.out.println(m.getQuality() + " "+m.getScore() + ":" + (m.whiteNext() ? "b " : "w ") + FEN_POS.notation(m));
         }
     }
 
@@ -94,7 +94,7 @@ public abstract class Player implements IPlayer {
 
     public static void initRun(Position pos) {
         if (debug)
-            System.out.println(FEN.board2string(pos));
+            System.out.println(norwegiangambit.util.FEN.board2string(pos.bb_bit1, pos.bb_bit2, pos.bb_bit3, pos.bb_black));
     }
 
     @Override
@@ -116,7 +116,7 @@ public abstract class Player implements IPlayer {
     public void printTestHeader() {
     	Position pos = getPosition();
         System.out.println("**********************************************");
-        System.out.println("START:" + FEN.getFen(pos));
+        System.out.println("START:" + FEN_POS.getFen(pos));
         initRun(pos);
     }
 

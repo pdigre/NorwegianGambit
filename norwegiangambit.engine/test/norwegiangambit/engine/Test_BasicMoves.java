@@ -1,15 +1,14 @@
 package norwegiangambit.engine;
 
 import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
+import norwegiangambit.engine.base.IConst.BITS;
 import norwegiangambit.engine.base.NodeGen;
 import norwegiangambit.engine.base.NodeUtil;
-import norwegiangambit.engine.base.IConst.BITS;
-import norwegiangambit.engine.fen.FEN;
-import norwegiangambit.engine.fen.PieceType;
 import norwegiangambit.engine.fen.StartGame;
+import norwegiangambit.util.FEN;
+import norwegiangambit.util.PieceType;
+
+import org.junit.Test;
 
 @SuppressWarnings("static-method")
 public class Test_BasicMoves {

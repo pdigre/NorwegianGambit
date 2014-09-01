@@ -7,32 +7,21 @@ import java.util.concurrent.RecursiveTask;
 
 import norwegiangambit.engine.base.MOVEDATA;
 import norwegiangambit.engine.base.Movegen;
-import norwegiangambit.engine.fen.FEN;
+import norwegiangambit.util.FEN;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.engine.fen.StartGame;
-import norwegiangambit.engine.util.PerftResults;
+import norwegiangambit.util.IDivide;
 
-public class RunPerftFast implements IPerft{
+public class RunPerftFast implements IDivide{
 	int levels;
 	long count;
 	private Position pos;
 	public NodeGen root;
 	
 
-	public static void test(int test,int levels, String fen) {
-		PerftResults.assertPERFT(test,fen,levels,perft(levels, fen));
-	}
-
-	public static long perft(int levels, String fen) {
-		RunPerftFast inst = new RunPerftFast();
-		inst.start(levels, new StartGame(fen));
-		return inst.perft();
-	}
-
-
 	@Override
-	public Map<String, Integer> divide(Position pos, int depth) {
-		start(depth, pos);
+	public Map<String, Integer> divide(String fen, int depth) {
+		start(depth, new StartGame(fen));
 		return divide();
 	}
 

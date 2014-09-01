@@ -3,7 +3,7 @@ package norwegiangambit.gui.fx;
 import java.util.EnumMap;
 
 import javafx.scene.image.Image;
-import norwegiangambit.engine.fen.PieceType;
+import norwegiangambit.util.PieceType;
 
 
 public class FxGraphics {

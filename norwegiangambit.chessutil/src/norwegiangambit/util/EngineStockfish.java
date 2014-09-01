@@ -1,26 +1,13 @@
-package no.pdigre.chessutil;
+package norwegiangambit.util;
 
 import java.util.HashMap;
 
-public class EngineStockfish extends WrapExe implements IPerft{
+public class EngineStockfish extends WrapExe implements IDivide{
 
-	public EngineStockfish() {
-		super("C:/fishtest/worker/testing/stockfish.exe");
+	public EngineStockfish(String exepath) {
+		super(exepath);
 	}
 
-	@Override
-	public int perft(String fen,int depth){
-		command("position "+fen);
-		command("perft "+depth);
-		String[] lines = command("isready", "readyok").split("\n");
-		String prefix = "Nodes searched  : ";
-		for (String line : lines) {
-			if(line.startsWith(prefix))
-				return Integer.parseInt(line.substring(prefix.length()).trim());
-		}
-		return 0;
-	}
-	
 	@Override
 	public HashMap<String, Integer> divide(String fen,int depth){
 		HashMap<String, Integer> map=new HashMap<>();

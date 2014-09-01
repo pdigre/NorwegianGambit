@@ -1,4 +1,4 @@
-package no.pdigre.chessutil;
+package norwegiangambit.util;
 
 import java.util.HashMap;
 
@@ -11,7 +11,7 @@ public class TestUCI {
 
 	@Test
 	public void testStockFish() {
-		WrapExe engine = new EngineStockfish();
+		WrapExe engine = new EngineStockfish("C:/fishtest/worker/testing/stockfish.exe");
 //		engine.command("uci", "uciok");
 		engine.command("isready", "readyok");
 //		engine.command("copyprotection", "copyprotection ok");
@@ -26,8 +26,8 @@ public class TestUCI {
 
 	@Test
 	public void testStockFish2() {
-		EngineStockfish engine = new EngineStockfish();
-		int perft= engine.perft(STARTPOS,6);
+		EngineStockfish engine = new EngineStockfish("C:/fishtest/worker/testing/stockfish.exe");
+		int perft= perft(engine.divide(STARTPOS,6));
 		HashMap<String, Integer> divide= engine.divide(STARTPOS,6);
 		engine.command("quit");
 		engine.loop();
@@ -35,8 +35,8 @@ public class TestUCI {
 
 	@Test
 	public void testStockRoce2() {
-		EngineRoce engine = new EngineRoce();
-		int perft= engine.perft(STARTPOS,5);
+		EngineRoce engine = new EngineRoce("C:/git/chess/roce39/roce39.exe");
+		int perft= perft(engine.divide(STARTPOS,5));
 		HashMap<String, Integer> divide= engine.divide(STARTPOS,5);
 		engine.command("quit");
 		engine.loop();
@@ -56,10 +56,19 @@ public class TestUCI {
 
 	@Test
 	public void testQperft() {
-		EngineQperft engine = new EngineQperft();
-		int perft= engine.perft(STARTPOS,6);
-		HashMap<String, Integer> divide= engine.divide(STARTPOS,6);
+		EngineQperft engine = new EngineQperft("C:/git/TheChessProject/TheChessProject/resources/perft.exe");
+//		int perft= perft(engine.divide(STARTPOS,6));
+//		HashMap<String, Integer> divide= engine.divide(STARTPOS,6);
 		System.out.println("hi");
 	}
 
+	private int perft(HashMap<String, Integer> divide) {
+		int total=0;
+		for (Integer count : divide.values())
+			total+=count;
+		
+		return total;
+	}
+
+	
 }

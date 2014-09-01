@@ -1,6 +1,5 @@
-package norwegiangambit.engine.fen;
+package norwegiangambit.util;
 
-import norwegiangambit.engine.base.IConst;
 
 
 public enum PieceType {

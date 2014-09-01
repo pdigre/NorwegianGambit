@@ -2,7 +2,7 @@ package norwegiangambit.gui.swt;
 
 import java.util.EnumMap;
 
-import norwegiangambit.engine.fen.PieceType;
+import norwegiangambit.util.PieceType;
 
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;

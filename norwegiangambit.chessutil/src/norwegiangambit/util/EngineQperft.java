@@ -1,4 +1,4 @@
-package no.pdigre.chessutil;
+package norwegiangambit.util;
 
 import static org.junit.Assert.assertTrue;
 
@@ -16,24 +16,11 @@ import java.util.List;
  * Available from http://home.hccnet.nl/h.g.muller/dwnldpage.html
  *
  */
-public class EngineQperft implements IPerft {
+public class EngineQperft implements IDivide {
 	String exepath = "C:/git/TheChessProject/TheChessProject/resources/perft.exe";
 
-	@Override
-	public int perft(String fen, int depth) {
-		ArrayList<String> cmd=new ArrayList<String>();
-		cmd.add(exepath);
-		cmd.add(String.valueOf(depth));
-		cmd.add("\""+fen+"\"");
-		int perft=0;
-		ArrayList<String> lines = runExec(cmd);
-		for (String line : lines) {
-			if(line.matches("perft\\(.*\\)")) {
-				String trim = line.split("=")[1].split("\\(")[0].trim();
-				perft=Integer.parseInt(trim);
-			}
-		}
-		return perft;
+	public EngineQperft(String string) {
+		this.exepath=string;
 	}
 
 	@Override
@@ -71,13 +58,13 @@ public class EngineQperft implements IPerft {
 						new InputStreamReader(is));
 				String line;
 				while ((line = br.readLine()) != null) {
-					System.out.println(">" + line);
+//					System.out.println(">" + line);
 					lines.add(line);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			System.out.println("Program terminated!");
+//			System.out.println("Program terminated!");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

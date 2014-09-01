@@ -1,7 +1,7 @@
 package norwegiangambit.engine.iterate;
 
 import norwegiangambit.engine.base.NodeGen;
-import norwegiangambit.engine.fen.FEN;
+import norwegiangambit.engine.fen.FEN_POS;
 import norwegiangambit.engine.fen.Position;
 
 public class MiniMax implements IIterator {
@@ -16,7 +16,7 @@ public class MiniMax implements IIterator {
 
     @Override
     public String toString() {
-        return FEN.board2fen(pos) + "\n" + FEN.printMove(pos);
+        return FEN_POS.board2fen(pos) + "\n" + FEN_POS.printMove(pos);
     }
 
 	@Override

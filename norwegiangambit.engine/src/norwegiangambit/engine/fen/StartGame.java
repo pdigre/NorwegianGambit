@@ -2,16 +2,21 @@ package norwegiangambit.engine.fen;
 
 import norwegiangambit.engine.evaluate.IEvaluator;
 
+
 public class StartGame extends PositionWithLog {
 
-	private final int fullMoves;
+	private int fullMoves;
 
 	public StartGame(String fen) {
 		super();
-		String[] split = fen.split(" ");
-		setBoard(FEN.fen2board(split[0]));
-		fullMoves = Integer.parseInt(split[5]);
-		bitmap = getBitmap(FEN.text2pos(split[3]),"w".equalsIgnoreCase(split[1]),Integer.parseInt(split[4]),getCastlingState(split[2]));
+		try {
+			String[] split = fen.split(" ");
+			setBoard(norwegiangambit.util.FEN.fen2board(split[0]));
+			fullMoves = split.length>5?Integer.parseInt(split[5]):1;
+			bitmap = getBitmap(norwegiangambit.util.FEN.text2pos(split[3]),"w".equalsIgnoreCase(split[1]),Integer.parseInt(split[4]),getCastlingState(split[2]));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -40,7 +45,7 @@ public class StartGame extends PositionWithLog {
 
     @Override
     public String toString() {
-        return FEN.printMove(this)+"\n"+FEN.board2string(this);
+        return FEN_POS.printMove(this)+"\n"+norwegiangambit.util.FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black);
     }
 
 	@Override

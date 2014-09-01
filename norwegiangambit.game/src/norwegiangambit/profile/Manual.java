@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import norwegiangambit.engine.base.IConst;
 import norwegiangambit.engine.base.NodeUtil;
-import norwegiangambit.engine.fen.FEN;
+import norwegiangambit.engine.fen.FEN_POS;
 import norwegiangambit.profile.Marking.MarkingType;
 
 public class Manual extends Player {
@@ -13,7 +13,7 @@ public class Manual extends Player {
 
     @Override
     public void run() { 
-    	System.out.println("MANUAL:"+FEN.getFen(getPosition()));
+    	System.out.println("MANUAL:"+FEN_POS.getFen(getPosition()));
 		game.updateBoard();
     }
 

@@ -3,6 +3,7 @@ package norwegiangambit.engine.fen;
 import norwegiangambit.engine.base.IConst;
 import norwegiangambit.engine.base.KingSafe;
 import norwegiangambit.engine.base.MOVEDATA;
+import norwegiangambit.util.PieceType;
 
 public class Position implements IConst, Comparable<Position> {
 
@@ -136,7 +137,7 @@ public class Position implements IConst, Comparable<Position> {
 	}
 
 	public String toString() {
-		return  FEN.board2string(this) + "\n " + FEN.printMove(this) + "\n";
+		return  norwegiangambit.util.FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black) + "\n " + FEN_POS.printMove(this) + "\n";
 	}
 
 	public long getZobristKey() {
@@ -160,7 +161,7 @@ public class Position implements IConst, Comparable<Position> {
 		String fenboard = split[0];
 		boolean white = "w".equalsIgnoreCase(split[1]);
 		String castling = split[2];
-		int enpassant = FEN.text2pos(split[3]);
+		int enpassant = norwegiangambit.util.FEN.text2pos(split[3]);
 		int halfMoves = Integer.parseInt(split[4]);
 //		int fullMoves = Integer.parseInt(split[5]);
 

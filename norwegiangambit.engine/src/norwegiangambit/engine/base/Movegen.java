@@ -2,7 +2,7 @@ package norwegiangambit.engine.base;
 
 import java.util.Arrays;
 
-import norwegiangambit.engine.fen.FEN;
+import norwegiangambit.util.FEN;
 import norwegiangambit.engine.fen.Position;
 
 public class Movegen implements IConst{

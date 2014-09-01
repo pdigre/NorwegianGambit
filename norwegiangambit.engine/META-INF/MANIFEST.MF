@@ -7,7 +7,8 @@ Bundle-Activator: norwegiangambit.engine.Activator
 Bundle-Vendor: Norwegian Gambit
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.junit
+ org.junit,
+ norwegiangambit.chessutil
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: norwegiangambit.engine,

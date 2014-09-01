@@ -15,7 +15,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.fx.core.guice,
  org.eclipse.fx.ide.ui,
  org.eclipse.fx.ide.fxgraph,
- org.eclipse.fx.ide.fxgraph.ui
+ org.eclipse.fx.ide.fxgraph.ui,
+ norwegiangambit.chessutil
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8,
  OSGi/Minimum-1.0
 Bundle-ActivationPolicy: lazy

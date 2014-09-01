@@ -1,4 +1,4 @@
-package norwegiangambit.engine.util;
+package norwegiangambit.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

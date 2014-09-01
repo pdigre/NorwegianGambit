@@ -1,7 +1,6 @@
 package norwegiangambit.engine;
 
 import norwegiangambit.engine.base.IConst.BITS;
-import norwegiangambit.engine.fen.FEN;
 import norwegiangambit.profile.GameData;
 import norwegiangambit.profile.Player;
 
@@ -29,7 +28,7 @@ public class RunProfiles {
 			public void makeMove(long bitmap) {
 //				System.out.println(">"+FEN.printMove(pos.move(bitmap)));
 				int to = BITS.getTo(bitmap);
-				results.append(FEN.pos2string(to));
+				results.append(norwegiangambit.util.FEN.pos2string(to));
 			}
 			
 			@Override

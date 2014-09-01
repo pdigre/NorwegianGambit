@@ -3,12 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Chessutil
 Bundle-SymbolicName: norwegiangambit.chessutil;singleton:=true
 Bundle-Version: 0.9.0.qualifier
-Bundle-Activator: no.pdigre.chessutil.Activator
+Bundle-Activator: norwegiangambit.util.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: no.pdigre.chessutil
+Export-Package: norwegiangambit.util
 Bundle-Vendor: Norwegian Gambit

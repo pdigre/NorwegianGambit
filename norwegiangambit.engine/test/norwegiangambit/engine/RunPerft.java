@@ -100,8 +100,8 @@ public class RunPerft implements IPerft{
 	}
 
 	@Override
-	public Map<String, Integer> divide(Position pos, int depth) {
-		start(depth, pos);
+	public Map<String, Integer> divide(String fen, int depth) {
+		start(depth, new StartGame(fen));
 		return divide();
 	}
 

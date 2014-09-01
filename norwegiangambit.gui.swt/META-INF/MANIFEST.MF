@@ -8,6 +8,7 @@ Bundle-Vendor: Norwegian Gambit
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  norwegiangambit.engine,
- norwegiangambit.game
+ norwegiangambit.game,
+ norwegiangambit.chessutil
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

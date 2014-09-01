@@ -1,7 +1,7 @@
 package norwegiangambit.profile;
 
 import norwegiangambit.engine.evaluate.IEvaluator;
-import norwegiangambit.engine.fen.FEN;
+import norwegiangambit.engine.fen.FEN_POS;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.engine.fen.PositionScore;
 import norwegiangambit.engine.iterate.AlphaBeta;
@@ -80,7 +80,7 @@ public class Hard extends Player {
                         if (move.children == null)
                             move.children = new IterateScores(parent, IEvaluator.FULL);
                         IterateScores moves = move.children;
-                        recursive(move, moves, iterator, remainder, prefix + FEN.notation(move) + ", ");
+                        recursive(move, moves, iterator, remainder, prefix + FEN_POS.notation(move) + ", ");
                         moves.improveScore(move, move.score);
                         if (n-- < 1)
                             break;
@@ -102,7 +102,7 @@ public class Hard extends Player {
                         if (move.children == null)
                             move.children = new IterateScores(parent, IEvaluator.FULL);
                         IterateScores moves = move.children;
-                        recursive(move, moves, iterator, remainder, prefix + FEN.notation(move) + ", ");
+                        recursive(move, moves, iterator, remainder, prefix + FEN_POS.notation(move) + ", ");
                         moves.improveScore(move, move.score);
                     }
                 }
