@@ -1,7 +1,8 @@
 package norwegiangambit.engine.base;
 
-import norwegiangambit.engine.base.IConst.BITS;
+import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
+import norwegiangambit.util.IConst;
 
 public class MOVEDATA {
 	
@@ -10,8 +11,7 @@ public class MOVEDATA {
 	}
 	
 	public static MOVEDATA capture(long bitmap,int victim){
-		int to = BITS.getTo(bitmap);
-		long purge = purge(bitmap, PSQT.pVal(to, victim));
+		long purge = purge(bitmap, PSQT.pVal(BITS.getTo(bitmap), victim));
 		return new MOVEDATA(purge | ((victim & 7) << IConst._CAPTURE));
 	}
 	
@@ -90,4 +90,10 @@ public class MOVEDATA {
 	public String id() {
 		return FEN.move2literal(bitmap);
 	}
+	
+	public static MOVEDATA cpromote(int from,int to, int promote, int pawn, int victim) {
+		long promo = PSQT.assemblePromote(pawn, promote, from, to, IConst.CASTLING_STATE | IConst.SPECIAL);
+		return capture(promo, victim);
+	}
+
 }

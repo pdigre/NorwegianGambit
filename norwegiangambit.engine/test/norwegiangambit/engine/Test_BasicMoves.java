@@ -1,10 +1,10 @@
 package norwegiangambit.engine;
 
 import static org.junit.Assert.assertEquals;
-import norwegiangambit.engine.base.IConst.BITS;
 import norwegiangambit.engine.base.NodeGen;
 import norwegiangambit.engine.base.NodeUtil;
 import norwegiangambit.engine.fen.StartGame;
+import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.PieceType;
 

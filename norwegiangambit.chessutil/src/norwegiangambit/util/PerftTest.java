@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 public class PerftTest {
@@ -15,11 +14,11 @@ public class PerftTest {
 	static IDivide testing;
 	static IDivide locator;
 	
-	public static void setTestEngine(IDivide engine){
+	public static void setTesting(IDivide engine){
 		testing=engine;
 	}
 
-	public static void setLocatorEngine(IDivide engine){
+	public static void setValidator(IDivide engine){
 		locator=engine;
 	}
 
@@ -42,10 +41,7 @@ public class PerftTest {
 		try {
 			Map<String, Integer> actual = testing.divide(fen,levels);
 			Map<String, Integer> expected = locator.divide(fen, levels);
-			Set<String> pkactual = new HashSet<String>();
-			Set<String> kactual = new HashSet<String>(pkactual);
-			for (String key : actual.keySet())
-				kactual.add(key.substring(0,4));
+			Set<String> kactual = new HashSet<String>(actual.keySet());
 			Set<String> kexpected = new HashSet<String>(expected.keySet());
 			if(!kactual.equals(kexpected)){
 				kactual.removeAll(kexpected);
@@ -59,13 +55,10 @@ public class PerftTest {
 				for (int i = 0; i < keys.length; i++) {
 					String move=keys[i];
 					int e = expected.get(move);
-					int a = 0;
-					for (Entry<String, Integer> pk : actual.entrySet()) {
-						if(pk.getKey().startsWith(move))
-							a+=pk.getValue();
-					}
+					int a = actual.get(move);
 					if(a!=e){
 						String fen2=FEN.make(fen,move);
+						System.out.println(move+" > "+fen2);
 						String text = FEN.addHorizontal(FEN.board2string(fen2)+"\n"+("  << "+move+"      ").substring(0, 10), append);
 						findError(fen2, levels-1,text);
 						return; 

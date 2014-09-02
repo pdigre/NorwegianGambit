@@ -2,8 +2,10 @@ package norwegiangambit.engine.base;
 
 import java.util.Arrays;
 
-import norwegiangambit.util.FEN;
 import norwegiangambit.engine.fen.Position;
+import norwegiangambit.util.BITS;
+import norwegiangambit.util.FEN;
+import norwegiangambit.util.IConst;
 
 public class Movegen implements IConst{
 	protected Position pos;
@@ -128,16 +130,47 @@ public class Movegen implements IConst{
 						slide(mm,b,attacker,between);
 					}
 				} else if((pinner&bb_bit1&~bb_bit2&~bb_bit3)!=0){  // PAWN CAPTURE
+					int ctype = ctype(attacker);
 					if(isWhite){
-						if(pinner<<7==attacker && (attacker&IConst.RIGHTLANE)==0)
-							moves[iAll++] = MWP.WP[from].CL[ctype(attacker)];
-						if(pinner<<9==attacker && (attacker&IConst.LEFTLANE)==0)
-							moves[iAll++] = MWP.WP[from].CR[ctype(attacker)];
+						MWP mwp = MWP.WP[from];
+						if(pinner<<7==attacker && (attacker&IConst.RIGHTLANE)==0L){
+							if(from>47){
+								moves[iAll++] = mwp.PL[ctype];
+								moves[iAll++] = mwp.PL[ctype+5];
+								moves[iAll++] = mwp.PL[ctype+10];
+								moves[iAll++] = mwp.PL[ctype+15];
+							} else
+								moves[iAll++] = mwp.CL[ctype];
+						}
+						if(pinner<<9==attacker && (attacker&IConst.LEFTLANE)==0L){
+							if(from>47){
+								moves[iAll++] = mwp.PR[ctype];
+								moves[iAll++] = mwp.PR[ctype+5];
+								moves[iAll++] = mwp.PR[ctype+10];
+								moves[iAll++] = mwp.PR[ctype+15];
+							} else
+								moves[iAll++] = mwp.CR[ctype];
+						}
 					} else {
-						if(pinner>>9==attacker && (attacker&IConst.RIGHTLANE)==0)
-							moves[iAll++] = MBP.BP[from].CL[ctype(attacker)];
-						if(pinner>>7==attacker && (attacker&IConst.LEFTLANE)==0)
-							moves[iAll++] = MBP.BP[from].CR[ctype(attacker)];
+						MBP mbp = MBP.BP[from];
+						if(pinner>>9==attacker && (attacker&IConst.RIGHTLANE)==0L){
+							if(from<16){
+								moves[iAll++] = mbp.PL[ctype];
+								moves[iAll++] = mbp.PL[ctype+5];
+								moves[iAll++] = mbp.PL[ctype+10];
+								moves[iAll++] = mbp.PL[ctype+15];
+							} else
+								moves[iAll++] = mbp.CL[ctype];
+						}
+						if(pinner>>7==attacker && (attacker&IConst.LEFTLANE)==0L){
+							if(from<16){
+								moves[iAll++] = mbp.PR[ctype];
+								moves[iAll++] = mbp.PR[ctype+5];
+								moves[iAll++] = mbp.PR[ctype+10];
+								moves[iAll++] = mbp.PR[ctype+15];
+							} else
+								moves[iAll++] = mbp.CR[ctype];
+						}
 					}
 				}
 			}

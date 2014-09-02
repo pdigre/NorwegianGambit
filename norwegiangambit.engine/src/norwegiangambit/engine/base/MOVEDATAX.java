@@ -1,6 +1,7 @@
 package norwegiangambit.engine.base;
 
-import norwegiangambit.engine.base.IConst.BITS;
+import norwegiangambit.util.BITS;
+import norwegiangambit.util.IConst;
 
 /**
  * When castling is broken
@@ -8,8 +9,7 @@ import norwegiangambit.engine.base.IConst.BITS;
 public class MOVEDATAX extends MOVEDATA {
 
 	public static MOVEDATAX capture(long bitmap,int victim){
-		int to = BITS.getTo(bitmap);
-		long purge = purge(bitmap, PSQT.pVal(to, victim));
+		long purge = purge(bitmap, PSQT.pVal(BITS.getTo(bitmap), victim));
 		return create((purge | ((victim & 7) << IConst._CAPTURE))^findCastling(bitmap));
 	}
 
@@ -38,6 +38,11 @@ public class MOVEDATAX extends MOVEDATA {
 		else if(from==IConst.BK_STARTPOS)
 			castling^=IConst.CANCASTLE_BLACK;
 		return castling;
+	}
+
+	public static MOVEDATA cpromote(int from,int to, int promote, int pawn, int victim) {
+		long promo = PSQT.assemblePromote(pawn, promote, from, to, IConst.CASTLING_STATE | IConst.SPECIAL);
+		return capture(promo, victim);
 	}
 
 }

@@ -2,11 +2,11 @@ package norwegiangambit.engine.util;
 
 import java.util.concurrent.RecursiveTask;
 
-import norwegiangambit.engine.base.IConst;
 import norwegiangambit.engine.base.KingSafe;
 import norwegiangambit.engine.base.NodeGen;
-import norwegiangambit.engine.base.IConst.BITS;
 import norwegiangambit.engine.fen.Position;
+import norwegiangambit.util.BITS;
+import norwegiangambit.util.IConst;
 
 public class CountFull extends RecursiveTask<Counter[]> {
 

@@ -4,6 +4,7 @@ import static norwegiangambit.engine.base.BASE.DOWN;
 import static norwegiangambit.engine.base.BASE.LEFT;
 import static norwegiangambit.engine.base.BASE.RIGHT;
 import static norwegiangambit.engine.base.BASE.UP;
+import norwegiangambit.util.IConst;
 
 
 public class MWQ extends MSlider{

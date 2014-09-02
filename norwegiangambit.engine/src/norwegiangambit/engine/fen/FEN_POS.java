@@ -1,8 +1,9 @@
 package norwegiangambit.engine.fen;
 
-import norwegiangambit.engine.base.IConst;
 import norwegiangambit.engine.base.KingSafe;
+import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
+import norwegiangambit.util.IConst;
 import norwegiangambit.util.PieceType;
 
 public class FEN_POS implements IConst {

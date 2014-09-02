@@ -12,8 +12,8 @@ public class Test_PERFT_114s extends PerftTest{
 	@BeforeClass
 	public static void prepare() {
 		new BASE();
-		setTestEngine(new RunPerftFast());
-		setLocatorEngine(new EngineRoce("C:/git/chess/roce39/roce39.exe"));
+		setTesting(new RunPerftFast());
+		setValidator(new EngineRoce("C:/git/chess/roce39/roce39.exe"));
 	}
 
 	@Test

@@ -11,7 +11,7 @@ public class EngineStockfish extends WrapExe implements IDivide{
 	@Override
 	public HashMap<String, Integer> divide(String fen,int depth){
 		HashMap<String, Integer> map=new HashMap<>();
-		command("position "+fen);
+		command("position fen "+fen);
 		command("divide "+depth);
 		String[] lines = command("isready", "readyok").split("\n");
 		String prefix = "Position:";

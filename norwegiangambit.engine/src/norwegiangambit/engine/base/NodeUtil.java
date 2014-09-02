@@ -1,6 +1,7 @@
 package norwegiangambit.engine.base;
 
-import norwegiangambit.engine.base.IConst.BITS;
+import norwegiangambit.util.BITS;
+
 
 
 public class NodeUtil {

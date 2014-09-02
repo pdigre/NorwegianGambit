@@ -3,8 +3,6 @@ package norwegiangambit.gui.swt;
 import norwegiangambit.engine.fen.StartingGames;
 import norwegiangambit.profile.IPlayer.Players;
 
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.layout.GridLayout;

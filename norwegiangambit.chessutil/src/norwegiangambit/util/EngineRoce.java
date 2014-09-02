@@ -11,6 +11,8 @@ public class EngineRoce extends WrapExe implements IDivide{
 	@Override
 	public HashMap<String, Integer> divide(String fen,int depth){
 		HashMap<String, Integer> map=new HashMap<>();
+		if(process==null)
+			return map;
 		command("setboard "+fen);
 		String prefix = "Moves:";
 		String[] lines = command("divide "+depth, prefix).split("\n");

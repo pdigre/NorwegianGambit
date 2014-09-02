@@ -1,8 +1,9 @@
 package norwegiangambit.engine.fen;
 
-import norwegiangambit.engine.base.IConst;
 import norwegiangambit.engine.base.KingSafe;
 import norwegiangambit.engine.base.MOVEDATA;
+import norwegiangambit.util.BITS;
+import norwegiangambit.util.IConst;
 import norwegiangambit.util.PieceType;
 
 public class Position implements IConst, Comparable<Position> {

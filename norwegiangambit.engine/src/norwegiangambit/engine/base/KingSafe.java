@@ -1,7 +1,9 @@
 package norwegiangambit.engine.base;
 
-import norwegiangambit.util.FEN;
+import norwegiangambit.engine.fen.FEN_POS;
 import norwegiangambit.engine.fen.Position;
+import norwegiangambit.util.FEN;
+import norwegiangambit.util.IConst;
 
 public class KingSafe implements IConst {
 
@@ -16,6 +18,7 @@ public class KingSafe implements IConst {
 	final private long bb_bit1;
 	final private long bb_bit2;
 	final private long bb_bit3;
+	public Position pos;
 
 	public KingSafe(long bb_black, long bb_bit1, long bb_bit2, long bb_bit3) {
 		this.bb_bit1 = bb_bit1;
@@ -26,11 +29,15 @@ public class KingSafe implements IConst {
 	}
 
 	public static KingSafe pos(Position pos) {
-		return new KingSafe(pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		KingSafe ks = new KingSafe(pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		ks.pos=pos;
+		return ks;
 	}
 
 	public static KingSafe pos(Position pos,MOVEDATA md) {
-		return new KingSafe(pos.get64black()^md.b_black, pos.get64bit1()^md.b_bit1, pos.get64bit2()^md.b_bit2, pos.get64bit3()^md.b_bit3);
+		KingSafe ks = new KingSafe(pos.get64black()^md.b_black, pos.get64bit1()^md.b_bit1, pos.get64bit2()^md.b_bit2, pos.get64bit3()^md.b_bit3);
+		ks.pos=pos;
+		return ks;
 	}
 
 	final public boolean isSafeWhite() {
@@ -72,6 +79,11 @@ public class KingSafe implements IConst {
 	}
 
 	public void errorKing() {
+		Position p = pos;
+		while(p!=null){
+			System.out.println(FEN.move2literal(p.bitmap)+" > "+FEN_POS.board2fen(p));
+			p=p.parent;
+		}
 		System.out.println("ERROR KINGPOS:"+toString());
 	}
 

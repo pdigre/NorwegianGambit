@@ -1,9 +1,9 @@
 package norwegiangambit.engine.evaluate;
 
-import norwegiangambit.engine.base.IConst;
 import norwegiangambit.engine.base.PSQT;
-import norwegiangambit.engine.base.IConst.BITS;
 import norwegiangambit.engine.fen.Position;
+import norwegiangambit.util.BITS;
+import norwegiangambit.util.IConst;
 
 public class TacticEval implements IEvaluator {
 

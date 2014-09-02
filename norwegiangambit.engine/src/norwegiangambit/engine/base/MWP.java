@@ -1,11 +1,14 @@
 package norwegiangambit.engine.base;
 
+import norwegiangambit.util.IConst;
+
 public class MWP extends MBase{
 
 	final MOVEDATA[] CL,CR;	// Capture
 	final MOVEDATA EL,ER;  // Enpassant
 	final MOVEDATA M1,M2;   // Forward
 	final MOVEDATA[] P1,PL,PR;   // Promotion
+	static MOVEDATA[] PQ,PK;  // Promotion & Capture rook
 	static long[] REV=new long[64];
 	final static MWP[] WP;
 	static {
@@ -33,6 +36,8 @@ public class MWP extends MBase{
 				REV[to] |= (1L << from);
 				if(from>47){
 					PL=cpromotes(to);
+					if(to==BR_QUEEN_STARTPOS)
+						PQ=cpromotesx(to);
 				} else {
 					CL=captures(to);
 					if(from > 31 && from < 40)
@@ -45,6 +50,8 @@ public class MWP extends MBase{
 				REV[to] |= (1L << from);
 				if(from>47){
 					PR=cpromotes(to);
+					if(to==BR_KING_STARTPOS)
+						PK=cpromotesx(to);
 				} else {
 				    CR=captures(to);
 					if(from > 31 && from < 40)
@@ -64,18 +71,18 @@ public class MWP extends MBase{
 	}
 
 	private MOVEDATA move(int to) {
-		return MOVEDATA.create(BITS.assemble(IConst.WP, from, to, CASTLING_STATE));
+		return MOVEDATA.create(PSQT.assemble(IConst.WP, from, to, CASTLING_STATE));
 	}
 
 	private MOVEDATA enpassant(int to) {
-		long bitmap = BITS.assemble(IConst.WP, from, to, CASTLING_STATE | IConst.SPECIAL);
+		long bitmap = PSQT.assemble(IConst.WP, from, to, CASTLING_STATE | IConst.SPECIAL);
 		return MOVEDATA.create(purge(bitmap,PSQT.pVal(to - 8, IConst.BP)) | (IConst.WP << IConst._CAPTURE));
 	}
 
 	private MOVEDATA[] captures(int to) {
 		MOVEDATA[] captures=new MOVEDATA[5];
 		for (int i = 0; i < 5; i++) {
-			long bitmap = BITS.assemble(IConst.WP, from, to, CASTLING_STATE);
+			long bitmap = PSQT.assemble(IConst.WP, from, to, CASTLING_STATE);
 			captures[i]=MOVEDATA.capture(bitmap, WCAPTURES[i]);
 		}
 		return captures;
@@ -84,7 +91,7 @@ public class MWP extends MBase{
 	private MOVEDATA[] promotes(int to) {
 		MOVEDATA[] promotes=new MOVEDATA[4];
 		for (int p = 0; p < 4; p++)
-			promotes[p]=MOVEDATA.create(BITS.assemblePromote(IConst.WP, WPROMOTES[p], from, to, CASTLING_STATE | SPECIAL));
+			promotes[p]=MOVEDATA.create(PSQT.assemblePromote(IConst.WP, WPROMOTES[p], from, to, CASTLING_STATE | SPECIAL));
 		return promotes;
 	}
 
@@ -92,9 +99,16 @@ public class MWP extends MBase{
 		MOVEDATA[] promotes=new MOVEDATA[20];
 		for (int p = 0; p < 4; p++)
 			for (int i = 0; i < 5; i++) {
-				long bitmap = BITS.assemblePromote(IConst.WP, WPROMOTES[p], from, to, CASTLING_STATE | SPECIAL);
-				promotes[p*5+i]=MOVEDATA.capture(bitmap, WCAPTURES[i]);
+				promotes[p*5+i]=MOVEDATA.cpromote(from,to, WPROMOTES[p], IConst.WP, WCAPTURES[i]);
 			}
+		return promotes;
+	}
+
+	private MOVEDATA[] cpromotesx(int to) {
+		MOVEDATA[] promotes=new MOVEDATA[4];
+		for (int p = 0; p < 4; p++){
+			promotes[p]=MOVEDATAX.cpromote(from,to, WPROMOTES[p], IConst.WP, IConst.BR); 
+		}
 		return promotes;
 	}
 
@@ -140,10 +154,17 @@ public class MWP extends MBase{
 					if(from<48){
 						add(mp[from].CL[ctype]);
 					} else {
-						add(mp[from].PL[ctype]);
-						add(mp[from].PL[ctype+5]);
-						add(mp[from].PL[ctype+10]);
-						add(mp[from].PL[ctype+15]);
+						if(from+7==BR_QUEEN_STARTPOS){
+							add(MWP.PQ[0]);
+							add(MWP.PQ[1]);
+							add(MWP.PQ[2]);
+							add(MWP.PQ[3]);
+						} else {
+							add(mp[from].PL[ctype]);
+							add(mp[from].PL[ctype+5]);
+							add(mp[from].PL[ctype+10]);
+							add(mp[from].PL[ctype+15]);
+						}
 					}
 				}
 			}
@@ -162,10 +183,17 @@ public class MWP extends MBase{
 					if(from<48){
 						add(mp[from].CR[ctype]);
 					} else {
-						add(mp[from].PR[ctype]);
-						add(mp[from].PR[ctype+5]);
-						add(mp[from].PR[ctype+10]);
-						add(mp[from].PR[ctype+15]);
+						if(from+9==BR_KING_STARTPOS){
+							add(MWP.PK[0]);
+							add(MWP.PK[1]);
+							add(MWP.PK[2]);
+							add(MWP.PK[3]);
+						} else {
+							add(mp[from].PR[ctype]);
+							add(mp[from].PR[ctype+5]);
+							add(mp[from].PR[ctype+10]);
+							add(mp[from].PR[ctype+15]);
+						}
 					}
 				}
 			}

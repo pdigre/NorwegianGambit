@@ -1,20 +1,22 @@
 package norwegiangambit.engine.base;
 
+import norwegiangambit.engine.fen.Position;
+import norwegiangambit.util.IConst;
+
 public class MBP  extends MBase{
 
 	final MOVEDATA[] CL,CR;	// Capture
 	final MOVEDATA EL,ER;  // Enpassant
 	final MOVEDATA M1,M2;   // Forward
 	final MOVEDATA[] P1,PL,PR;   // Promotion
+	static MOVEDATA[] PQ,PK;  // Promotion & Capture rook
 	final static long[] REV=new long[64];
-
 	final static MBP[] BP;
 	static {
 		BP=new MBP[64];
 		for (int from = 0; from < 64; from++)
 			BP[from] = new MBP(from);
 	}
-
 
 	public MBP(int from) {
 		super(from);
@@ -35,6 +37,8 @@ public class MBP  extends MBase{
 				REV[to] |= (1L << from);
 				if(from<16){
 					PL=cpromotes(to);
+					if(to==WR_QUEEN_STARTPOS)
+						PQ=cpromotesx(to);
 				} else {
 					CL=captures(to);
 					if(from > 15 && from < 32)
@@ -47,6 +51,8 @@ public class MBP  extends MBase{
 				REV[to] |= (1L << from);
 				if(from<16){
 					PR=cpromotes(to);
+					if(to==WR_KING_STARTPOS)
+						PK=cpromotesx(to);
 				} else {
 				    CR=captures(to);
 					if(from > 15 && from < 32)
@@ -66,17 +72,18 @@ public class MBP  extends MBase{
 	}
 
 	private MOVEDATA move(int to) {
-		return MOVEDATA.create(BITS.assemble(IConst.BP, from, to, CASTLING_STATE));
+		return MOVEDATA.create(PSQT.assemble(IConst.BP, from, to, CASTLING_STATE));
 	}
 
 	private MOVEDATA enpassant(int to) {
-		return MOVEDATA.create(purge(BITS.assemble(IConst.BP, from, to, CASTLING_STATE),PSQT.pVal(to + 8, IConst.WP)) | (IConst.WP << IConst._CAPTURE) | IConst.SPECIAL);
+		long bitmap = PSQT.assemble(IConst.BP, from, to, CASTLING_STATE | IConst.SPECIAL);
+		return MOVEDATA.create(purge(bitmap,PSQT.pVal(to - 8, IConst.WP)) | (IConst.WP << IConst._CAPTURE));
 	}
 
 	private MOVEDATA[] captures(int to) {
 		MOVEDATA[] captures=new MOVEDATA[5];
 		for (int i = 0; i < 5; i++) {
-			long bitmap = BITS.assemble(IConst.BP, from, to, CASTLING_STATE);
+			long bitmap = PSQT.assemble(IConst.BP, from, to, CASTLING_STATE);
 			captures[i]=MOVEDATA.capture(bitmap, BCAPTURES[i]);
 		}
 		return captures;
@@ -85,17 +92,23 @@ public class MBP  extends MBase{
 	private MOVEDATA[] promotes(int to) {
 		MOVEDATA[] promotes=new MOVEDATA[4];
 		for (int p = 0; p < 4; p++)
-			promotes[p]=MOVEDATA.create(BITS.assemblePromote(IConst.BP, BPROMOTES[p], from, to, CASTLING_STATE | SPECIAL));
+			promotes[p]=MOVEDATA.create(PSQT.assemblePromote(IConst.BP, BPROMOTES[p], from, to, CASTLING_STATE | SPECIAL));
 		return promotes;
 	}
 
 	private MOVEDATA[] cpromotes(int to) {
 		MOVEDATA[] promotes=new MOVEDATA[20];
 		for (int p = 0; p < 4; p++)
-			for (int i = 0; i < 5; i++) {
-				long bitmap = BITS.assemblePromote(IConst.BP, BPROMOTES[p], from, to, CASTLING_STATE | SPECIAL);
-				promotes[p*5+i]=MOVEDATA.capture(bitmap, BCAPTURES[i]);
-			}
+			for (int i = 0; i < 5; i++)
+				promotes[p]=MOVEDATA.cpromote(from,to, BPROMOTES[p], IConst.BP, BCAPTURES[i]);
+		return promotes;
+	}
+
+	private MOVEDATA[] cpromotesx(int to) {
+		MOVEDATA[] promotes=new MOVEDATA[4];
+		for (int p = 0; p < 4; p++){
+			promotes[p]=MOVEDATAX.cpromote(from,to, BPROMOTES[p], IConst.BP, IConst.WR);
+		}
 		return promotes;
 	}
 
@@ -107,13 +120,16 @@ public class MBP  extends MBase{
 
 			@Override
 			public void add(int from) {
+				MBP mbp = mp[from];
 				if(from<16){
-					add(mp[from].P1[0]);
-					add(mp[from].P1[1]);
-					add(mp[from].P1[2]);
-					add(mp[from].P1[3]);
+					if(mbp.P1==null)
+						System.out.println("hi");
+					add(mbp.P1[0]);
+					add(mbp.P1[1]);
+					add(mbp.P1[2]);
+					add(mbp.P1[3]);
 				} else {
-					add(mp[from].M1);
+					add(mbp.M1);
 				}
 			}
 		};
@@ -142,10 +158,18 @@ public class MBP  extends MBase{
 					if(from>15){
 						add(mp[from].CL[ctype]);
 					} else {
-						add(mp[from].PL[ctype]);
-						add(mp[from].PL[ctype+5]);
-						add(mp[from].PL[ctype+10]);
-						add(mp[from].PL[ctype+15]);
+						if(from-9==WR_QUEEN_STARTPOS){
+							Position next = gen.pos.move(MBP.PQ[0]);
+							add(MBP.PQ[0]);
+							add(MBP.PQ[1]);
+							add(MBP.PQ[2]);
+							add(MBP.PQ[3]);
+						} else {
+							add(mp[from].PL[ctype]);
+							add(mp[from].PL[ctype+5]);
+							add(mp[from].PL[ctype+10]);
+							add(mp[from].PL[ctype+15]);
+						}
 					}
 				}
 			}
@@ -164,10 +188,19 @@ public class MBP  extends MBase{
 					if(from>15){
 						add(mp[from].CR[ctype]);
 					} else {
-						add(mp[from].PR[ctype]);
-						add(mp[from].PR[ctype+5]);
-						add(mp[from].PR[ctype+10]);
-						add(mp[from].PR[ctype+15]);
+						if(from-7==WR_KING_STARTPOS){
+							MOVEDATA t = MBP.PK[0];
+							Position next = gen.pos.move(t);
+							add(t);
+							add(MBP.PK[1]);
+							add(MBP.PK[2]);
+							add(MBP.PK[3]);
+						} else {
+							add(mp[from].PR[ctype]);
+							add(mp[from].PR[ctype+5]);
+							add(mp[from].PR[ctype+10]);
+							add(mp[from].PR[ctype+15]);
+						}
 					}
 				}
 			}

@@ -8,6 +8,9 @@ import static norwegiangambit.engine.base.BASE.UP;
 import java.util.ArrayList;
 import java.util.List;
 
+import norwegiangambit.util.BITS;
+import norwegiangambit.util.IConst;
+
 public class MBK extends MBase {
 
 	final MOVEDATA[][] M;
@@ -23,8 +26,8 @@ public class MBK extends MBase {
 		X=castlingKing(M,IConst.CANCASTLE_BLACK);
 		XQ=castlingKing(M,IConst.CANCASTLE_BLACKQUEEN);
 		XK=castlingKing(M,IConst.CANCASTLE_BLACKKING);
-		CQ=MOVEDATAX.create(BITS.assemble(IConst.BK, IConst.BK_STARTPOS, IConst.BK_STARTPOS - 2, IConst.CANCASTLE_WHITE | IConst.SPECIAL));
-		CK=MOVEDATAX.create(BITS.assemble(IConst.BK, IConst.BK_STARTPOS, IConst.BK_STARTPOS + 2, IConst.CANCASTLE_WHITE | IConst.SPECIAL));
+		CQ=MOVEDATAX.create(PSQT.assemble(IConst.BK, IConst.BK_STARTPOS, IConst.BK_STARTPOS - 2, IConst.CANCASTLE_WHITE | IConst.SPECIAL));
+		CK=MOVEDATAX.create(PSQT.assemble(IConst.BK, IConst.BK_STARTPOS, IConst.BK_STARTPOS + 2, IConst.CANCASTLE_WHITE | IConst.SPECIAL));
 	}
 
 	public MBK(int from) {
@@ -46,7 +49,7 @@ public class MBK extends MBase {
 		if (BASE.inside(to, from)){
 			MOVEDATA[] m=new MOVEDATA[6];
 			list.add(m);
-			long bitmap = BITS.assemble(IConst.BK, from, to, CANCASTLE_WHITE | HALFMOVES);
+			long bitmap = PSQT.assemble(IConst.BK, from, to, CANCASTLE_WHITE | HALFMOVES);
 			m[5]=MOVEDATA.create(bitmap);
 			for (int i = 0; i < 5; i++){
 				int c = BCAPTURES[i];
@@ -70,11 +73,11 @@ public class MBK extends MBase {
 			} else {
 				if ((enemy & bto) != 0L) {
 					int c = gen.ctype(bto);
-//					if(c==3 && bto==1L<<IConst.WR_KING_STARTPOS)
-//						gen.add(K);
-//					else if(c==3 && bto==1L<<IConst.WR_QUEEN_STARTPOS)
-//						gen.add(Q);
-//					else 
+					if(c==3 && bto==1L<<IConst.WR_KING_STARTPOS)
+						add(gen,K);
+					else if(c==3 && bto==1L<<IConst.WR_QUEEN_STARTPOS)
+						add(gen,Q);
+					else 
 						add(gen,m[c]);
 				}
 			}
@@ -98,12 +101,14 @@ public class MBK extends MBase {
 		long castling = gen.castling & IConst.CANCASTLE_BLACK;
 		if ((IConst.CBQ & gen.bb_piece) == 0
 				&& (castling & IConst.CANCASTLE_BLACKQUEEN) != 0
-				&& KingSafe.pos(gen.pos).isSafeBlack(IConst.BK_STARTPOS - 1)) {
+				&& KingSafe.pos(gen.pos).isSafeBlack(IConst.BK_STARTPOS - 1)
+				&& KingSafe.pos(gen.pos).isSafeBlack(IConst.BK_STARTPOS - 2)) {
 			add(gen,CQ);
 		}
 		if ((IConst.CBK & gen.bb_piece) == 0
 				&& (castling & IConst.CANCASTLE_BLACKKING) != 0
-				&& KingSafe.pos(gen.pos).isSafeBlack(IConst.BK_STARTPOS + 1)) {
+				&& KingSafe.pos(gen.pos).isSafeBlack(IConst.BK_STARTPOS + 1)
+				&& KingSafe.pos(gen.pos).isSafeBlack(IConst.BK_STARTPOS + 2)) {
 			add(gen,CK);
 		}
 	}

@@ -3,6 +3,8 @@ package norwegiangambit.engine.base;
 import java.util.Arrays;
 
 import norwegiangambit.engine.fen.Position;
+import norwegiangambit.util.BITS;
+import norwegiangambit.util.IConst;
 
 /**
  * Use Polyglot Zobrist hashkey format as in

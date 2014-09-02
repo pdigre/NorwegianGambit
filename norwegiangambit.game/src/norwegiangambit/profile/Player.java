@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import norwegiangambit.engine.base.IConst;
 import norwegiangambit.engine.base.ZobristKey;
 import norwegiangambit.engine.evaluate.IEvaluator;
 import norwegiangambit.engine.fen.FEN_POS;
@@ -15,6 +14,7 @@ import norwegiangambit.engine.iterate.IIterator;
 import norwegiangambit.engine.polyglot.BookMove;
 import norwegiangambit.engine.polyglot.Polyglot;
 import norwegiangambit.engine.util.IterateScores;
+import norwegiangambit.util.BITS;
 
 public abstract class Player implements IPlayer {
 
@@ -51,7 +51,7 @@ public abstract class Player implements IPlayer {
             int f1 = Polyglot.getFrom(bitmap);
             int t1 = Polyglot.getTo(bitmap);
             for (Position p : array) {
-                if (IConst.BITS.getFrom(p.getBitmap()) == f1 && IConst.BITS.getTo(p.getBitmap()) == t1){
+                if (BITS.getFrom(p.getBitmap()) == f1 && BITS.getTo(p.getBitmap()) == t1){
                     moves.remove(p);
                     ((PositionScore)p).score=white?best+book.weight:best-book.weight;
                     moves.add(p);

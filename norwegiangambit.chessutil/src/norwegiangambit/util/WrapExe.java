@@ -1,7 +1,5 @@
 package norwegiangambit.util;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +14,7 @@ public class WrapExe{
 	
 	String exepath;
 	volatile private OutputStreamWriter writer;
-	private Process process;
+	protected Process process;
 	private Thread thread;
 
 	volatile boolean exit=false;
@@ -45,7 +43,6 @@ public class WrapExe{
 	private void start() {
 		try {
 			File file = new File(exepath);
-			assertTrue(file.exists());
 			ProcessBuilder pb = new ProcessBuilder(exepath);
 			pb.redirectErrorStream(true);
 			pb.directory(file.getParentFile());

@@ -1,6 +1,7 @@
 package norwegiangambit.engine.base;
 
 import norwegiangambit.engine.fen.Position;
+import norwegiangambit.util.IConst;
 
 public class NodeGen implements IConst {
 

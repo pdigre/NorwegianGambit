@@ -1,5 +1,7 @@
 package norwegiangambit.engine.base;
 
+import norwegiangambit.util.IConst;
+
 public class BASE implements IConst{
 	final public static int LEFT = -1;
 	final public static int RIGHT = 1;

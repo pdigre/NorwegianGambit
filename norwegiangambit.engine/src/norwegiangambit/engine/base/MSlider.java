@@ -4,6 +4,8 @@ import static norwegiangambit.engine.base.BASE.inside;
 
 import java.util.ArrayList;
 
+import norwegiangambit.util.IConst;
+
 public abstract class MSlider extends MBase {
 
 	public MSlider(int from) {
@@ -14,7 +16,7 @@ public abstract class MSlider extends MBase {
 		ArrayList<MOVEDATA> list = new ArrayList<MOVEDATA>();
 		int to = from + offset;
 		while (inside(to, to - offset)) {
-			long bitmap = BITS.assemble(type, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
+			long bitmap = PSQT.assemble(type, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
 			for (int i = 0; i < 5; i++) {
 				int c = (type & 8) > 0?WCAPTURES[i]:BCAPTURES[i];
 				list.add(MOVEDATA.capture(bitmap, c));
