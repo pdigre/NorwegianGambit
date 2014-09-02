@@ -1,11 +1,22 @@
 package norwegiangambit.engine.base;
 
+import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 
 public class MOVEDATA {
 	
+	
+	public static void main(String[] args) {
+		new BASE();
+		StartGame pos = new StartGame("n1R5/PP1k4/1n6/8/8/8/4Kppp/5N1N b - - 2 3");
+		System.out.println(pos);
+		MOVEDATA md = MOVEDATAX.cpromote(14,7, IConst.BB, IConst.BP, IConst.WN);
+		pos.make(md);
+		System.out.println(pos);
+	}
+
 	public static MOVEDATA create(long bitmap){
 		return new MOVEDATA(bitmap);
 	}

@@ -154,7 +154,7 @@ public class MWP extends MBase{
 					if(from<48){
 						add(mp[from].CL[ctype]);
 					} else {
-						if(from+7==BR_QUEEN_STARTPOS){
+						if(from+7==BR_QUEEN_STARTPOS && (gen.castling & CANCASTLE_BLACKQUEEN)!=0){
 							add(MWP.PQ[0]);
 							add(MWP.PQ[1]);
 							add(MWP.PQ[2]);
@@ -183,7 +183,7 @@ public class MWP extends MBase{
 					if(from<48){
 						add(mp[from].CR[ctype]);
 					} else {
-						if(from+9==BR_KING_STARTPOS){
+						if(from+9==BR_KING_STARTPOS && (gen.castling & CANCASTLE_BLACKKING)!=0){
 							add(MWP.PK[0]);
 							add(MWP.PK[1]);
 							add(MWP.PK[2]);

@@ -100,7 +100,7 @@ public class MBP  extends MBase{
 		MOVEDATA[] promotes=new MOVEDATA[20];
 		for (int p = 0; p < 4; p++)
 			for (int i = 0; i < 5; i++)
-				promotes[p]=MOVEDATA.cpromote(from,to, BPROMOTES[p], IConst.BP, BCAPTURES[i]);
+				promotes[p*5+i]=MOVEDATA.cpromote(from,to, BPROMOTES[p], IConst.BP, BCAPTURES[i]);
 		return promotes;
 	}
 
@@ -123,7 +123,7 @@ public class MBP  extends MBase{
 				MBP mbp = mp[from];
 				if(from<16){
 					if(mbp.P1==null)
-						System.out.println("hi");
+						System.out.println(gen.pos.toString());
 					add(mbp.P1[0]);
 					add(mbp.P1[1]);
 					add(mbp.P1[2]);
@@ -158,7 +158,7 @@ public class MBP  extends MBase{
 					if(from>15){
 						add(mp[from].CL[ctype]);
 					} else {
-						if(from-9==WR_QUEEN_STARTPOS){
+						if(from-9==WR_QUEEN_STARTPOS && (gen.castling & CANCASTLE_WHITEQUEEN)!=0){
 							Position next = gen.pos.move(MBP.PQ[0]);
 							add(MBP.PQ[0]);
 							add(MBP.PQ[1]);
@@ -188,7 +188,7 @@ public class MBP  extends MBase{
 					if(from>15){
 						add(mp[from].CR[ctype]);
 					} else {
-						if(from-7==WR_KING_STARTPOS){
+						if(from-7==WR_KING_STARTPOS && (gen.castling & CANCASTLE_WHITEKING)!=0){
 							MOVEDATA t = MBP.PK[0];
 							Position next = gen.pos.move(t);
 							add(t);
@@ -196,10 +196,11 @@ public class MBP  extends MBase{
 							add(MBP.PK[2]);
 							add(MBP.PK[3]);
 						} else {
-							add(mp[from].PR[ctype]);
-							add(mp[from].PR[ctype+5]);
-							add(mp[from].PR[ctype+10]);
-							add(mp[from].PR[ctype+15]);
+							MBP mbp = mp[from];
+							add(mbp.PR[ctype]);
+							add(mbp.PR[ctype+5]);
+							add(mbp.PR[ctype+10]);
+							add(mbp.PR[ctype+15]);
 						}
 					}
 				}

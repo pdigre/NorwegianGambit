@@ -3,6 +3,7 @@ package norwegiangambit.engine.fen;
 import norwegiangambit.engine.base.KingSafe;
 import norwegiangambit.engine.base.MOVEDATA;
 import norwegiangambit.util.BITS;
+import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 import norwegiangambit.util.PieceType;
 
@@ -138,7 +139,8 @@ public class Position implements IConst, Comparable<Position> {
 	}
 
 	public String toString() {
-		return  norwegiangambit.util.FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black) + "\n " + FEN_POS.printMove(this) + "\n";
+		String string = norwegiangambit.util.FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black) + "\n " +(" << "+FEN.move2literal(bitmap)+"              ").substring(0,10) + "\n";
+		return  parent==null?string:FEN.addHorizontal(string, parent.toString());
 	}
 
 	public long getZobristKey() {
