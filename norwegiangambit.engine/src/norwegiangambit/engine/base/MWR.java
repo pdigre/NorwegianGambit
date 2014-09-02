@@ -1,8 +1,13 @@
 package norwegiangambit.engine.base;
 
+import static norwegiangambit.engine.base.BASE.DOWN;
+import static norwegiangambit.engine.base.BASE.LEFT;
+import static norwegiangambit.engine.base.BASE.RIGHT;
+import static norwegiangambit.engine.base.BASE.UP;
+import static norwegiangambit.engine.base.BASE.inside;
 import java.util.ArrayList;
 
-import static norwegiangambit.engine.base.BASE.*;
+import norwegiangambit.util.IConst;
 
 
 public class MWR extends MSlider{
@@ -41,7 +46,7 @@ public class MWR extends MSlider{
 		ArrayList<MOVEDATA> list = new ArrayList<MOVEDATA>();
 		int to=from+offset;
 		while(inside(to, to-offset)){
-			long bitmap = BITS.assemble(IConst.WR, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
+			long bitmap = PSQT.assemble(IConst.WR, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
 			if(from==IConst.WR_QUEEN_STARTPOS)
 				bitmap^= IConst.CANCASTLE_WHITEQUEEN;
 			else if(from==IConst.WR_KING_STARTPOS)

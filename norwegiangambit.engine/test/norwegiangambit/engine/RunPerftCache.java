@@ -6,6 +6,7 @@ import norwegiangambit.engine.base.Movegen;
 import norwegiangambit.engine.base.MovegenCache;
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.util.Counter;
+import norwegiangambit.util.BITS;
 
 public class RunPerftCache {
 	int levels;

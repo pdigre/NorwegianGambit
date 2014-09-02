@@ -1,5 +1,7 @@
 package norwegiangambit.engine.base;
 
+import norwegiangambit.util.IConst;
+
 
 public class PSQT {
 	final static int[][][] PSQT = new int[][][]{ //
@@ -135,5 +137,15 @@ public class PSQT {
         }
         return 0;
     }
+
+	final public static long assemble(int piece, int from, int to, long extra) {
+		int score = pVal(to, piece) - pVal(from, piece);
+		return (piece << IConst._PIECE) | (from << IConst._FROM) | (to << IConst._TO) | extra | ((score | 0L) << 32);
+	}
+
+	final public static long assemblePromote(int pawn, int promote, int from, int to, long extra) {
+		int score = pVal(to, promote) - pVal(from, pawn);
+		return (promote << IConst._PIECE) | (from << IConst._FROM) | (to << IConst._TO) | extra | ((score | 0L) << 32);
+	}
 
 }

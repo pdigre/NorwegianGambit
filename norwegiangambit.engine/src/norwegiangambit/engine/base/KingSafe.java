@@ -1,7 +1,8 @@
 package norwegiangambit.engine.base;
 
-import norwegiangambit.util.FEN;
 import norwegiangambit.engine.fen.Position;
+import norwegiangambit.util.FEN;
+import norwegiangambit.util.IConst;
 
 public class KingSafe implements IConst {
 

@@ -1,8 +1,8 @@
 package norwegiangambit.engine;
 
-import norwegiangambit.engine.base.IConst.BITS;
 import norwegiangambit.profile.GameData;
 import norwegiangambit.profile.Player;
+import norwegiangambit.util.BITS;
 
 import org.junit.Assert;
 

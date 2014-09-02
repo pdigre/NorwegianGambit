@@ -2,10 +2,10 @@ package norwegiangambit.profile;
 
 import java.util.ArrayList;
 
-import norwegiangambit.engine.base.IConst;
 import norwegiangambit.engine.base.NodeUtil;
 import norwegiangambit.engine.fen.FEN_POS;
 import norwegiangambit.profile.Marking.MarkingType;
+import norwegiangambit.util.BITS;
 
 public class Manual extends Player {
  
@@ -41,16 +41,16 @@ public class Manual extends Player {
         ArrayList<Marking> list = new ArrayList<Marking>();
         long[] bitmaps = moves.getBitmaps();
         if(from == -1) {
-            int best = IConst.BITS.getFrom(bitmaps[0]);
+            int best = BITS.getFrom(bitmaps[0]);
             for (long n : bitmaps) {
-                int fr = IConst.BITS.getFrom(n);
+                int fr = BITS.getFrom(n);
                 list.add(new Marking(fr == best ? MarkingType.BestMoveFrom : MarkingType.MoveFrom, fr));
             }
         } else {
             list.add(new Marking(MarkingType.MarkFrom, from));
             for (long n : bitmaps) {
-                if (IConst.BITS.getFrom(n) == from)
-                    list.add(new Marking(MarkingType.MoveTo, IConst.BITS.getTo(n), 0));
+                if (BITS.getFrom(n) == from)
+                    list.add(new Marking(MarkingType.MoveTo, BITS.getTo(n), 0));
             }
         }
         return list;

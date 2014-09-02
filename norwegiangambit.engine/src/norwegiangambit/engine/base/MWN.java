@@ -1,9 +1,11 @@
 package norwegiangambit.engine.base;
 
+import static norwegiangambit.engine.base.BASE.KNIGHT_MOVES;
+import static norwegiangambit.engine.base.BASE.inside;
 import java.util.ArrayList;
 import java.util.List;
 
-import static norwegiangambit.engine.base.BASE.*;
+import norwegiangambit.util.IConst;
 
 public class MWN extends MBase{
 
@@ -29,7 +31,7 @@ public class MWN extends MBase{
 		if (inside(to, from)){
 			MOVEDATA[] m=new MOVEDATA[6];
 			list.add(m);
-			long bitmap = BITS.assemble(IConst.WN, from, to, CASTLING_STATE | HALFMOVES);
+			long bitmap = PSQT.assemble(IConst.WN, from, to, CASTLING_STATE | HALFMOVES);
 			m[5]=MOVEDATA.create(bitmap);
 			for (int i = 0; i < 5; i++){
 				int c = WCAPTURES[i];

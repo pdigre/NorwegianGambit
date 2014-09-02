@@ -1,6 +1,6 @@
 package norwegiangambit.profile;
 
-import norwegiangambit.engine.base.IConst.BITS;
+import norwegiangambit.util.BITS;
 
 import org.junit.Assert;
 

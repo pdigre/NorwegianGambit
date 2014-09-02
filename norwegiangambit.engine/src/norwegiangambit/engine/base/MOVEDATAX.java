@@ -1,6 +1,7 @@
 package norwegiangambit.engine.base;
 
-import norwegiangambit.engine.base.IConst.BITS;
+import norwegiangambit.util.BITS;
+import norwegiangambit.util.IConst;
 
 /**
  * When castling is broken

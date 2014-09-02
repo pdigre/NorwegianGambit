@@ -8,6 +8,7 @@ import norwegiangambit.engine.base.Movegen;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.util.Counter;
+import norwegiangambit.util.BITS;
 
 public class RunPerft implements IPerft{
 	int levels;

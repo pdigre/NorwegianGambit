@@ -1,8 +1,8 @@
 package norwegiangambit.engine.evaluate;
 
-import norwegiangambit.engine.base.IConst;
 import norwegiangambit.engine.base.PSQT;
 import norwegiangambit.engine.fen.Position;
+import norwegiangambit.util.IConst;
 
 public class FullEval implements IEvaluator {
 

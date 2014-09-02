@@ -1,5 +1,7 @@
 package norwegiangambit.engine.base;
 
+import norwegiangambit.util.IConst;
+
 public class MBP  extends MBase{
 
 	final MOVEDATA[] CL,CR;	// Capture
@@ -66,17 +68,17 @@ public class MBP  extends MBase{
 	}
 
 	private MOVEDATA move(int to) {
-		return MOVEDATA.create(BITS.assemble(IConst.BP, from, to, CASTLING_STATE));
+		return MOVEDATA.create(PSQT.assemble(IConst.BP, from, to, CASTLING_STATE));
 	}
 
 	private MOVEDATA enpassant(int to) {
-		return MOVEDATA.create(purge(BITS.assemble(IConst.BP, from, to, CASTLING_STATE),PSQT.pVal(to + 8, IConst.WP)) | (IConst.WP << IConst._CAPTURE) | IConst.SPECIAL);
+		return MOVEDATA.create(purge(PSQT.assemble(IConst.BP, from, to, CASTLING_STATE),PSQT.pVal(to + 8, IConst.WP)) | (IConst.WP << IConst._CAPTURE) | IConst.SPECIAL);
 	}
 
 	private MOVEDATA[] captures(int to) {
 		MOVEDATA[] captures=new MOVEDATA[5];
 		for (int i = 0; i < 5; i++) {
-			long bitmap = BITS.assemble(IConst.BP, from, to, CASTLING_STATE);
+			long bitmap = PSQT.assemble(IConst.BP, from, to, CASTLING_STATE);
 			captures[i]=MOVEDATA.capture(bitmap, BCAPTURES[i]);
 		}
 		return captures;
@@ -85,7 +87,7 @@ public class MBP  extends MBase{
 	private MOVEDATA[] promotes(int to) {
 		MOVEDATA[] promotes=new MOVEDATA[4];
 		for (int p = 0; p < 4; p++)
-			promotes[p]=MOVEDATA.create(BITS.assemblePromote(IConst.BP, BPROMOTES[p], from, to, CASTLING_STATE | SPECIAL));
+			promotes[p]=MOVEDATA.create(PSQT.assemblePromote(IConst.BP, BPROMOTES[p], from, to, CASTLING_STATE | SPECIAL));
 		return promotes;
 	}
 
@@ -93,7 +95,7 @@ public class MBP  extends MBase{
 		MOVEDATA[] promotes=new MOVEDATA[20];
 		for (int p = 0; p < 4; p++)
 			for (int i = 0; i < 5; i++) {
-				long bitmap = BITS.assemblePromote(IConst.BP, BPROMOTES[p], from, to, CASTLING_STATE | SPECIAL);
+				long bitmap = PSQT.assemblePromote(IConst.BP, BPROMOTES[p], from, to, CASTLING_STATE | SPECIAL);
 				promotes[p*5+i]=MOVEDATA.capture(bitmap, BCAPTURES[i]);
 			}
 		return promotes;

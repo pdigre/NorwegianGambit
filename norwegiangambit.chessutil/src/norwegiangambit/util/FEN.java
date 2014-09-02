@@ -159,7 +159,7 @@ public class FEN implements IConst {
     }
 
 	public final static String move2literal(long bitmap) {
-		String fromto = FEN.pos2string(IConst.BITS.getFrom(bitmap))+FEN.pos2string(IConst.BITS.getTo(bitmap));
+		String fromto = FEN.pos2string(BITS.getFrom(bitmap))+FEN.pos2string(BITS.getTo(bitmap));
 		if(!BITS.isPromotion(bitmap))		
 			return fromto;
 		return fromto+FEN.piecePrefix(BITS.getType(bitmap)).toLowerCase();

@@ -2,9 +2,7 @@ package norwegiangambit.engine;
 
 import norwegiangambit.engine.base.BASE;
 import norwegiangambit.engine.base.MovegenCache;
-import norwegiangambit.util.EngineQperft;
 import norwegiangambit.util.EngineRoce;
-import norwegiangambit.util.EngineStockfish;
 import norwegiangambit.util.PerftTest;
 
 import org.junit.AfterClass;
