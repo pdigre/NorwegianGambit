@@ -13,13 +13,13 @@ public class TestUCI {
 	public void testStockFish() {
 		WrapExe engine = new EngineStockfish("C:/fishtest/worker/testing/stockfish.exe");
 //		engine.command("uci", "uciok");
-		engine.command("isready", "readyok");
+		engine.waitFor("isready", "readyok");
 //		engine.command("copyprotection", "copyprotection ok");
 		engine.command("position startpos");
 		engine.command("perft 6");
-		engine.command("isready", "readyok");
+		engine.waitFor("isready", "readyok");
 		engine.command("divide 6");
-		engine.command("isready", "readyok");
+		engine.waitFor("isready", "readyok");
 		engine.command("quit");
 		engine.loop();
 	}
@@ -48,8 +48,8 @@ public class TestUCI {
 		engine.command("setboard "+STARTPOS);
 		engine.command("perft 6");
 		engine.command("divide 6");
-		engine.command("uci", "uciok");
-		engine.command("isready", "readyok");
+		engine.waitFor("uci", "uciok");
+		engine.waitFor("isready", "readyok");
 		engine.command("quit");
 		engine.loop();
 	}

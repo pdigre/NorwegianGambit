@@ -14,12 +14,12 @@ public class Medium extends Player {
 
     @Override
     public void run() {
-        int n = checkPolyglot();
-        if(n>0){
-            int pick = (int)(Math.random()*Math.random()*n);
-            makeMove(((Position)moves.toArray()[pick]).getBitmap());
-            return;
-        }
+//        int n = checkPolyglot();
+//        if(n>0){
+//            int pick = (int)(Math.random()*Math.random()*n);
+//            makeMove(((Position)moves.toArray()[pick]).getBitmap());
+//            return;
+//        }
         IIterator iter0 = new IterateEnd();
         IIterator iter1 = new AlphaBeta(iter0);
         IIterator iter2 = new AlphaBeta(iter1);
@@ -30,7 +30,7 @@ public class Medium extends Player {
         for (Position m : moves.getSortedArray())
             runThinker(m, moves, iter3);
         processUntilTimeout(iter4);
-        makeMove(moves.first().getBitmap());
+        makeMove(mvs[0]);
     }
 
 

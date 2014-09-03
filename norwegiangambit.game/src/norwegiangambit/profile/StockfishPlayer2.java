@@ -4,12 +4,10 @@ import norwegiangambit.engine.evaluate.IEvaluator;
 import norwegiangambit.engine.fen.FEN_POS;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.engine.fen.PositionScore;
-import norwegiangambit.engine.iterate.AlphaBeta;
 import norwegiangambit.engine.iterate.IIterator;
-import norwegiangambit.engine.iterate.IterateEnd;
 import norwegiangambit.engine.util.IterateScores;
 
-public class Hard extends Player {
+public class StockfishPlayer2 extends Player {
 
     @Override
     public String getDescription() {
@@ -21,23 +19,23 @@ public class Hard extends Player {
         int n = checkPolyglot();
         if (n > 0) {
             int pick = (int) (Math.random() * Math.random() * Math.random() * n);
-            makeMove(((Position) moves.toArray()[pick]).getBitmap());
+//            makeMove(((Position) moves.toArray()[pick]).getBitmap());
             return;
         }
-        IIterator iter0 = new IterateEnd();
-        IIterator iter1 = new AlphaBeta(iter0);
-        IIterator iter2 = new AlphaBeta(iter1);
-        IIterator iter3 = new AlphaBeta(iter2);
-
-        printTestHeader();
-        setTimeout(20000);
-
-        for (int run = 1; run < 10; run++) {
-//            System.out.println("**** Phase " + run + " ****");
-            Position pos = getPosition();
-            recursive(pos, moves, iter3, run, "");
-//            printScore(moves, "---- Phase " + run + " ----");
-        }
+//        IIterator iter0 = new IterateEnd();
+//        IIterator iter1 = new AlphaBeta(iter0);
+//        IIterator iter2 = new AlphaBeta(iter1);
+//        IIterator iter3 = new AlphaBeta(iter2);
+//
+//        printTestHeader();
+//        setTimeout(20000);
+//
+//        for (int run = 1; run < 10; run++) {
+////            System.out.println("**** Phase " + run + " ****");
+//            Position pos = getPosition();
+//            recursive(pos, moves, iter3, run, "");
+////            printScore(moves, "---- Phase " + run + " ----");
+//        }
         makeMove();
     }
 
@@ -80,7 +78,7 @@ public class Hard extends Player {
                         if (move.children == null)
                             move.children = new IterateScores(parent, IEvaluator.FULL);
                         IterateScores moves = move.children;
-                        recursive(move, moves, iterator, remainder, prefix + FEN_POS.notation(move) + ", ");
+                        recursive(move, moves, iterator, remainder, prefix + FEN_POS.notation(move.getFen()) + ", ");
                         moves.improveScore(move, move.score);
                         if (n-- < 1)
                             break;
@@ -102,7 +100,7 @@ public class Hard extends Player {
                         if (move.children == null)
                             move.children = new IterateScores(parent, IEvaluator.FULL);
                         IterateScores moves = move.children;
-                        recursive(move, moves, iterator, remainder, prefix + FEN_POS.notation(move) + ", ");
+                        recursive(move, moves, iterator, remainder, prefix + FEN_POS.notation(move.getFen()) + ", ");
                         moves.improveScore(move, move.score);
                     }
                 }

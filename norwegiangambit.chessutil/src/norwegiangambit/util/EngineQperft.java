@@ -11,16 +11,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
 /**
  * Very fast PERFT that utilizes hashing
  * Available from http://home.hccnet.nl/h.g.muller/dwnldpage.html
  *
  */
 public class EngineQperft implements IDivide {
-	String exepath = "C:/git/TheChessProject/TheChessProject/resources/perft.exe";
-
-	public EngineQperft(String string) {
-		this.exepath=string;
+	
+	public static String DEFAULT_EXEPATH = "C:/chess/perft.exe";
+	public String exepath;
+	
+	public EngineQperft(String exe) {
+		this.exepath=exe;
 	}
 
 	@Override

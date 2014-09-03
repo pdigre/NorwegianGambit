@@ -91,7 +91,6 @@ public class SwtChessDialog extends Composite{
 
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
-                //
             }
         });
     }

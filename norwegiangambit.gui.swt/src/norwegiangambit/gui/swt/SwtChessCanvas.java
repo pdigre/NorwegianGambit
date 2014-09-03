@@ -2,7 +2,6 @@ package norwegiangambit.gui.swt;
 
 import java.util.ArrayList;
 
-import norwegiangambit.engine.fen.Position;
 import norwegiangambit.profile.GraphicsCommon;
 import norwegiangambit.profile.Marking;
 import norwegiangambit.profile.Square;
@@ -45,7 +44,7 @@ public class SwtChessCanvas extends Canvas {
         setLayoutData(new GridData(270, 270));
     }
 
-    public void drawBoard(Position pos, ArrayList<Marking> markers) {
+    public void drawBoard(int[] brd, ArrayList<Marking> markers) {
         if (common.nobuffer) {
             Rectangle area = getClientArea();
             gc.drawRectangle(area.x + 1, area.y + 1, area.width - 2, area.height - 2);
@@ -78,7 +77,7 @@ public class SwtChessCanvas extends Canvas {
 
         for (int i = 0; i < 64; i++) {
             Square square = common.setup(i);
-            int piece = pos.getPiece(i);
+            int piece = brd[i];
             int[] r = GraphicsCommon.getRectangleXYWH(i);
             if (square.piece != piece || square.score != score[i]) {
                 square.piece = piece;

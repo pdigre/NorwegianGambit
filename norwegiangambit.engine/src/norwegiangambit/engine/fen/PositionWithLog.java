@@ -25,6 +25,6 @@ public class PositionWithLog extends Position {
 
     @Override
     public String toString() {
-        return FEN_POS.printMove(this)+"\n"+norwegiangambit.util.FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black);
+        return FEN_POS.notation(this.getFen())+"\n"+norwegiangambit.util.FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black);
     }
 }

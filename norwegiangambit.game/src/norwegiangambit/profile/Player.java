@@ -4,148 +4,152 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import norwegiangambit.engine.base.ZobristKey;
-import norwegiangambit.engine.evaluate.IEvaluator;
+import norwegiangambit.engine.base.MovegenUtil;
 import norwegiangambit.engine.fen.FEN_POS;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.engine.fen.PositionScore;
-import norwegiangambit.engine.fen.PositionWithLog;
+import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.iterate.IIterator;
-import norwegiangambit.engine.polyglot.BookMove;
-import norwegiangambit.engine.polyglot.Polyglot;
 import norwegiangambit.engine.util.IterateScores;
 import norwegiangambit.util.BITS;
+import norwegiangambit.util.FEN;
+import norwegiangambit.util.polyglot.BookMove;
+import norwegiangambit.util.polyglot.Polyglot;
 
 public abstract class Player implements IPlayer {
 
-    public volatile RunState state = RunState.READY;
+	public volatile RunState state = RunState.READY;
 
-    public static boolean debug = true;
+	public static boolean debug = true;
 
-    public IterateScores moves;
+	String[] mvs;
+	
+	public IterateScores moves;
 
-    protected GameData game;
+	protected GameData game;
 
-    public void setGameData(GameData game) {
-        this.game = game;
-    }
+	public void setGameData(GameData game) {
+		this.game = game;
+	}
 
-    @Override
-    public ArrayList<Marking> getMarkers() {
-        return new ArrayList<Marking>();
-    }
+	public String[] getMoves(){
+		return mvs;
+	}
+	
+	public String getFen(){
+		return game.fen;
+	}
+	
+	@Override
+	public ArrayList<Marking> getMarkers() {
+		return new ArrayList<Marking>();
+	}
 
-    @Override
-    public int clickSquare(int i) {
-        return -1;
-    }
+	@Override
+	public String clickSquare(int i) {
+		return null;
+	}
 
-    public int checkPolyglot() {
-        PositionWithLog pos = game.pos;
-        boolean white=pos.whiteNext();
-        ArrayList<BookMove> list = Polyglot.get(ZobristKey.getKey(pos));
-        int best = moves.first().getScore();
-        Position[] array = moves.toArray(new Position[moves.size()]);
-        for (BookMove book: list) {
-            int bitmap = book.move;
-            int f1 = Polyglot.getFrom(bitmap);
-            int t1 = Polyglot.getTo(bitmap);
-            for (Position p : array) {
-                if (BITS.getFrom(p.getBitmap()) == f1 && BITS.getTo(p.getBitmap()) == t1){
-                    moves.remove(p);
-                    ((PositionScore)p).score=white?best+book.weight:best-book.weight;
-                    moves.add(p);
-                }
-            }
-        }
-        return list.size();
-    }
+	public int checkPolyglot() {
+		boolean white = FEN.whiteNext(game.fen);
+		long zobristKey = new StartGame(game.fen).getZobristKey();
 
-    protected void makeMove(long bitmap) {
-        game.makeMove(bitmap);
-    }
+		ArrayList<BookMove> list = Polyglot.get(zobristKey);
+		int best = moves.first().getScore();
+		Position[] array = moves.toArray(new Position[moves.size()]);
+		for (BookMove book : list) {
+			int bitmap = book.move;
+			int f1 = Polyglot.getFrom(bitmap);
+			int t1 = Polyglot.getTo(bitmap);
+			for (Position p : array) {
+				if (BITS.getFrom(p.getBitmap()) == f1 && BITS.getTo(p.getBitmap()) == t1) {
+					moves.remove(p);
+					((PositionScore) p).score = white ? best + book.weight : best - book.weight;
+					moves.add(p);
+				}
+			}
+		}
+		return list.size();
+	}
 
-    public void makeMove() {
-        game.makeMove(moves.first().getBitmap());
-    }
+	protected void makeMove(String bitmap) {
+		game.makeMove(bitmap);
+	}
 
-    protected void printFEN() {
-        System.out.println(FEN_POS.getFen(getPosition()));
-    }
+	public void makeMove() {
+		game.makeMove(mvs[0]);
+	}
 
-    protected Position getPosition() {
-        return game.pos;
-    }
+	protected void printFEN() {
+		System.out.println(game.fen);
+	}
 
-    public static void printScore(IterateScores moves, String txt) {
-        if (debug) {
-            System.out.println("\n**** " + txt + " ****");
-            for (Position m : moves)
-                System.out.println(m.getQuality() + " "+m.getScore() + ":" + (m.whiteNext() ? "b " : "w ") + FEN_POS.notation(m));
-        }
-    }
+	public static void printScore(IterateScores moves, String txt) {
+		if (debug) {
+			System.out.println("\n**** " + txt + " ****");
+			for (Position m : moves)
+				System.out.println(m.getQuality() + " " + m.getScore() + ":" + (m.whiteNext() ? "b " : "w ") + FEN_POS.notation(m.getFen()));
+		}
+	}
 
-    public static void runThinker(Position move, IterateScores moves, IIterator iter) {
-        int score = 0;
-        score = move.whiteNext() ? iter.white(move, IIterator.MIN, IIterator.MAX) : iter.black(move,
-            IIterator.MIN, IIterator.MAX);
-        moves.improveScore((PositionScore) move,score);
-    }
+	public static void runThinker(Position move, IterateScores moves, IIterator iter) {
+		int score = 0;
+		score = move.whiteNext() ? iter.white(move, IIterator.MIN, IIterator.MAX) : iter.black(move, IIterator.MIN, IIterator.MAX);
+		moves.improveScore((PositionScore) move, score);
+	}
 
-    public static void initRun(Position pos) {
-        if (debug)
-            System.out.println(norwegiangambit.util.FEN.board2string(pos.bb_bit1, pos.bb_bit2, pos.bb_bit3, pos.bb_black));
-    }
+	public static void initRun(String fen) {
+		if (debug){
+			System.out.println(FEN.board2string(fen));
+		}
+	}
 
-    @Override
-    public String getDescription() {
-        return "<No description>";
-    }
+	@Override
+	public String getDescription() {
+		return "<No description>";
+	}
 
-    public void prepare() {
-        moves = new IterateScores(getPosition(), IEvaluator.FULL);
-    }
+	public void prepare() {
+		mvs=MovegenUtil.getLegalMoves(game.fen);
+	}
 
-    public void processAndMove(IIterator iterator) {
-        IterateScores copy = (IterateScores) moves.clone();
-        for (Position m : copy)
-            runThinker(m, moves, iterator);
-        makeMove();
-    }
+	public void processAndMove(IIterator iterator) {
+		IterateScores copy = (IterateScores) moves.clone();
+		for (Position m : copy)
+			runThinker(m, moves, iterator);
+		makeMove();
+	}
 
-    public void printTestHeader() {
-    	Position pos = getPosition();
-        System.out.println("**********************************************");
-        System.out.println("START:" + FEN_POS.getFen(pos));
-        initRun(pos);
-    }
+	public void printTestHeader() {
+		System.out.println("**********************************************");
+		System.out.println("START:" + game.fen);
+		initRun(game.fen);
+	}
 
-    public void setTimeout(int timeout_ms) {
-        state = RunState.RUNNING;
-        Timer timer=new Timer();
-        timer.schedule(new TimerTask() {
-            
-            @Override
-            public void run() {
-                state=RunState.TIMEOUT;
-            }
-        }, timeout_ms);
-    }
+	public void setTimeout(int timeout_ms) {
+		state = RunState.RUNNING;
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
 
-    public void processUntilTimeout(IIterator iterator) {
-        for (Position m : moves.toArray(new Position[moves.size()])) {
-            if (state != RunState.RUNNING)
-                break;
-//            System.out.println("Processing:"+FEN.notation(m));
-            runThinker(m, moves, iterator);
-        }
-    }
+			@Override
+			public void run() {
+				state = RunState.TIMEOUT;
+			}
+		}, timeout_ms);
+	}
 
-    public void processSimple(IIterator iterator) {
-        for (Position m : (IterateScores) moves.clone())
-            runThinker(m, moves, iterator);
-    }
+	public void processUntilTimeout(IIterator iterator) {
+		for (Position m : moves.toArray(new Position[moves.size()])) {
+			if (state != RunState.RUNNING)
+				break;
+			// System.out.println("Processing:"+FEN.notation(m));
+			runThinker(m, moves, iterator);
+		}
+	}
 
+	public void processSimple(IIterator iterator) {
+		for (Position m : (IterateScores) moves.clone())
+			runThinker(m, moves, iterator);
+	}
 
-    
 }

@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 public class EngineRoce extends WrapExe implements IDivide{
 
+	public static String DEFAULT_EXEPATH = "C:/chess/roce39.exe";
+
 	public EngineRoce(String exepath) {
 		super(exepath);
 	}
@@ -15,7 +17,7 @@ public class EngineRoce extends WrapExe implements IDivide{
 			return map;
 		command("setboard "+fen);
 		String prefix = "Moves:";
-		String[] lines = command("divide "+depth, prefix).split("\n");
+		String[] lines = waitFor("divide "+depth, prefix).split("\n");
 		boolean started=false;
 		for (String line : lines) {
 			if(line.matches("[a-h][1-8][a-h][1-8] ([0-9]+)"))

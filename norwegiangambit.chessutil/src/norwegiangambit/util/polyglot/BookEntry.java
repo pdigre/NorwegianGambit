@@ -1,4 +1,4 @@
-package norwegiangambit.engine.polyglot;
+package norwegiangambit.util.polyglot;
 
 import java.util.ArrayList;
 

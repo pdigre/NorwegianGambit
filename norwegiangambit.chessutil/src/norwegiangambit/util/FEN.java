@@ -34,6 +34,30 @@ public class FEN implements IConst {
         return board;
     }
 
+	public static String board2fen(int[] board) {
+		StringBuilder fen = new StringBuilder();
+        for (int y = 8; y-- > 0;) {
+            int i = 0;
+            if (y != 7)
+                fen.append("/");
+            for (int x = 0; x < 8; x++) {
+                PieceType type = PieceType.types[board[y * 8 + x]];
+                if (type == null) {
+                    i++;
+                } else {
+                    if (i > 0) {
+                        fen.append(i);
+                        i = 0;
+                    }
+                    fen.append(type.fen);
+                }
+            }
+            if (i > 0)
+                fen.append(i);
+        }
+        return fen.toString();
+	}
+    
     final public static String board2string(String fen) {
     	return board2string(fen2board(fen));
     }
@@ -264,29 +288,54 @@ public class FEN implements IConst {
         return sb.toString();
 	}
 
-    final public static String board2fen(int[] brd) {
-        StringBuilder fen = new StringBuilder();
-        for (int y = 8; y-- > 0;) {
-            int i = 0;
-            if (y != 7)
-                fen.append("/");
-            for (int x = 0; x < 8; x++) {
-                PieceType type = PieceType.types[brd[y * 8 + x]];
-                if (type == null) {
-                    i++;
-                } else {
-                    if (i > 0) {
-                        fen.append(i);
-                        i = 0;
-                    }
-                    fen.append(type.fen);
-                }
+	public static long getCastling(String fen) {
+		return BITS.getCastlingState(fen.split(" ")[2]);
+	}
+
+	public static int getEnpassant(String fen) {
+		return FEN.text2pos(fen.split(" ")[3]);
+	}
+
+	public static int getHalfMoves(String fen) {
+		return Integer.parseInt(fen.split(" ")[4]);
+	}
+
+	public static boolean whiteNext(String fen) {
+		return "w".equalsIgnoreCase(fen.split(" ")[1]);
+	}
+
+	public static int getFullMoves(String fen) {
+		return fen.split(" ").length>5?Integer.parseInt(fen.split(" ")[5]):1;
+	}
+	
+    public static String[] filterFrom(String[] moves, int from) {
+        int length = 0;
+        String[] array = new String[moves.length];
+        for (int i = 0; i < moves.length; i++) {
+        	String move = moves[i];
+            if (text2pos(move.substring(0, 2)) == from) {
+                array[length] = move;
+                length++;
             }
-            if (i > 0)
-                fen.append(i);
         }
-        return fen.toString();
+        String[] ret = new String[length];
+        System.arraycopy(array, 0, ret, 0, length);
+        return ret;
     }
 
+    public static String[] filterTo(String[] moves, int to) {
+        int length = 0;
+        String[] array = new String[moves.length];
+        for (int i = 0; i < moves.length; i++) {
+        	String move = moves[i];
+            if (text2pos(move.substring(2, 4)) == to) {
+                array[length] = move;
+                length++;
+            }
+        }
+        String[] ret = new String[length];
+        System.arraycopy(array, 0, ret, 0, length);
+        return ret;
+    }
 
 }
