@@ -16,8 +16,7 @@ public class FxGameData extends GameData{
     @Override
     public void updateBoard() {
         ArrayList<Marking> markers = getMarkers();
-        int[] board = pos.getBoard();
-        canvas.drawBoard(board, markers);
+        canvas.drawBoard(getBoard(), markers);
     }
 
 

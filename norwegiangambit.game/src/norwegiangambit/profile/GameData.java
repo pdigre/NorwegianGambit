@@ -3,18 +3,21 @@ package norwegiangambit.profile;
 import java.lang.Thread.State;
 import java.util.ArrayList;
 
-import norwegiangambit.engine.fen.PositionWithLog;
-import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.profile.IPlayer.Players;
+import norwegiangambit.util.FEN;
 
 public abstract class GameData {
 
-    public PositionWithLog pos;
-
+    public String fen;
+    
     private Player[] players=new Player[2];
 
 	public Thread thread;
 
+	public int[] getBoard(){
+		return FEN.fen2board(fen);
+	}
+	
     public void setPlayer(Players profile,boolean white){
     	Player player = profile.getInstance();
     	setPlayer(player, white);
@@ -26,8 +29,9 @@ public abstract class GameData {
     }
     
     public void setupFEN(String fen) {
-        pos = new StartGame(fen);
-        getPlayer().prepare();
+    	this.fen=fen;
+        Player player = getPlayer();
+		player.prepare();
 		updateBoard();
     }
 
@@ -45,21 +49,22 @@ public abstract class GameData {
     }
 
     protected Player getPlayer() {
-        return players[pos.whiteNext() ? 0 : 1];
+        return players[FEN.whiteNext(fen) ? 0 : 1];
     }
 
     public void clickSquare(int i) {
         Player player = getPlayer();
-        int move=player.clickSquare(i);
-        if(move>-1)
+        String move=player.clickSquare(i);
+        if(move!=null)
             makeMove(move);
         else
         	updateBoard();
     }
 
-    public void makeMove(long bitmap) {
-        pos = new PositionWithLog(pos, bitmap);
-        System.out.println("\n<=======================================>\n"+pos.toString());
+    public void makeMove(String move) {
+        System.out.println("\n<=======================================>\n"+fen);
+        String fen2=FEN.make(fen, move);
+        fen=fen2;
 		updateBoard();
         run();
     }

@@ -14,11 +14,6 @@ public class SwtChess {
     private Shell shell;
 	private SwtChessDialog dialog;
 
-	public static void main(String[] args) {
-        SwtChess game = new SwtChess(new Display());
-        runDisplay(game.shell);
-    }
-
     public SwtChess(Display display) {
 		shell = new Shell(display);
         shell.setLayout(new GridLayout(2, false));
@@ -30,20 +25,14 @@ public class SwtChess {
 			
 			@Override
 			public void shellIconified(ShellEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
 			public void shellDeiconified(ShellEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
 			public void shellDeactivated(ShellEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
@@ -54,12 +43,14 @@ public class SwtChess {
 			
 			@Override
 			public void shellActivated(ShellEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});;
     }
     
+	public static void main(String[] args) {
+        SwtChess game = new SwtChess(new Display());
+        runDisplay(game.shell);
+    }
 
     public static void runDisplay(Shell shell) {
         Display display = shell.getDisplay();

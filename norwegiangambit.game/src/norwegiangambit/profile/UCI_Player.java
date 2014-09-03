@@ -23,7 +23,7 @@ public class UCI_Player extends TestPlayer {
 			}
 			
 			@Override
-			public void makeMove(long bitmap) {
+			public void makeMove(String bitmap) {
 //				System.out.println(">"+FEN.printMove(pos.move(bitmap)));
 			}
 			

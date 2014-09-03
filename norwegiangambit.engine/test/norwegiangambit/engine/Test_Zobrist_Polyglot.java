@@ -1,10 +1,8 @@
 package norwegiangambit.engine;
 
 import static org.junit.Assert.assertEquals;
-import norwegiangambit.engine.base.ZobristKey;
 import norwegiangambit.engine.fen.StartGame;
-import norwegiangambit.engine.polyglot.Polyglot;
-
+import norwegiangambit.util.polyglot.Polyglot;
 import org.junit.Test;
 
 public class Test_Zobrist_Polyglot {
@@ -47,12 +45,11 @@ public class Test_Zobrist_Polyglot {
     }
 
     public static void _assertZobrist(String fen, String key) {
-        assertEquals(key, Long.toHexString(ZobristKey.getKey(new StartGame(fen))));
+        assertEquals(key, Long.toHexString(new StartGame(fen).getZobristKey()));
     }
 
     public static void _assertMoves(String fen, String moves_expected) {
-        StartGame pos = new StartGame(fen);
-		assertEquals(moves_expected,Polyglot.printMoves(Polyglot.get(ZobristKey.getKey(pos))));
+		assertEquals(moves_expected,Polyglot.printMoves(Polyglot.get(new StartGame(fen).getZobristKey())));
     }
 
 

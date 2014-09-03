@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-public class WrapExe{
+public class WrapExe implements IEXE{
 	
 	
 	String exepath;
@@ -58,7 +58,7 @@ public class WrapExe{
 						BufferedReader br = new BufferedReader(new InputStreamReader(is));
 						String line;
 						while ((line = br.readLine()) != null) {
-//							System.out.println(">"+line);
+							System.out.println(">"+line);
 							response(line);
 						}
 					} catch (IOException e) {
@@ -73,6 +73,7 @@ public class WrapExe{
 		}
 	}
 
+	@Override
 	public void response(String line){
 		response.add(line);
 	}
@@ -81,6 +82,7 @@ public class WrapExe{
 	 * Send a command but not wait for response
 	 * @param line
 	 */
+	@Override
 	public void command(String line) {
 		try {
 			while(writer==null)
@@ -109,7 +111,8 @@ public class WrapExe{
 	 * @param out
 	 * @return
 	 */
-	public String command(String in, String out) {
+	@Override
+	public String waitFor(String in, String out) {
 		command(in);
 		return waitFor(out);
 	}
@@ -122,10 +125,13 @@ public class WrapExe{
 					String test = response.get(0);
 					sb.append(test+"\n");
 					response.remove(0);
-					if(test.startsWith(match))
-						return sb.toString();
+					if(test.startsWith(match)) {
+						String string = sb.toString();
+						response.clear();
+						return string;
+					}
 				}
-				Thread.sleep(100);
+				Thread.sleep(5);
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -136,12 +142,12 @@ public class WrapExe{
 	public void loop() {
 		try {
 			while(!exit)
-				Thread.sleep(100);
+				Thread.sleep(10);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 
-
+	
 
 }

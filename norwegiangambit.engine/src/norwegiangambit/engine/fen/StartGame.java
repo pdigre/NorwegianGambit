@@ -1,6 +1,7 @@
 package norwegiangambit.engine.fen;
 
 import norwegiangambit.engine.evaluate.IEvaluator;
+import norwegiangambit.util.FEN;
 
 
 public class StartGame extends PositionWithLog {
@@ -10,25 +11,18 @@ public class StartGame extends PositionWithLog {
 	public StartGame(String fen) {
 		super();
 		try {
-			String[] split = fen.split(" ");
-			setBoard(norwegiangambit.util.FEN.fen2board(split[0]));
-			fullMoves = split.length>5?Integer.parseInt(split[5]):1;
-			bitmap = getBitmap(norwegiangambit.util.FEN.text2pos(split[3]),"w".equalsIgnoreCase(split[1]),Integer.parseInt(split[4]),getCastlingState(split[2]));
+			setBoard(FEN.fen2board(fen));
+			fullMoves = FEN.getFullMoves(fen);
+			bitmap = getBitmap(FEN.getEnpassant(fen),FEN.whiteNext(fen),FEN.getHalfMoves(fen),FEN.getCastling(fen));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+
 	@Override
 	public int totalMoves() {
 		return fullMoves;
-	}
-
-	private long getCastlingState(String castling) {
-		return (castling.contains("K") ? CANCASTLE_WHITEKING:0)
-				| (castling.contains("Q") ? CANCASTLE_WHITEQUEEN:0)
-				| (castling.contains("k") ? CANCASTLE_BLACKKING:0)
-				| (castling.contains("q") ? CANCASTLE_BLACKQUEEN:0);
 	}
 
     private long getBitmap(int enpassant,boolean white,int halfMoves,long castling) {
@@ -45,13 +39,8 @@ public class StartGame extends PositionWithLog {
 
     @Override
     public String toString() {
-        return norwegiangambit.util.FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black) + "\nSTART\n";
+        return FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black) + "\nSTART\n";
     }
-
-	@Override
-	public long getZobristKey() {
-		return 0L;
-	}
 
 	@Override
 	public int getScore() {

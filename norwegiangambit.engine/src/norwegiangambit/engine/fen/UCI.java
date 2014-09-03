@@ -1,11 +1,8 @@
-package norwegiangambit.engine.uci;
+package norwegiangambit.engine.fen;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import norwegiangambit.engine.fen.Position;
-import norwegiangambit.engine.fen.StartGame;
 
 public class UCI {
 

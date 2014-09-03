@@ -1,6 +1,5 @@
 package norwegiangambit.engine.base;
 
-import norwegiangambit.engine.fen.FEN_POS;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
@@ -81,7 +80,7 @@ public class KingSafe implements IConst {
 	public void errorKing() {
 		Position p = pos;
 		while(p!=null){
-			System.out.println(FEN.move2literal(p.bitmap)+" > "+FEN_POS.board2fen(p));
+			System.out.println(FEN.move2literal(p.bitmap)+" > "+FEN.board2fen(p.getBoard()));
 			p=p.parent;
 		}
 		System.out.println("ERROR KINGPOS:"+toString());

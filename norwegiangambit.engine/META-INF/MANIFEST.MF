@@ -16,6 +16,4 @@ Export-Package: norwegiangambit.engine,
  norwegiangambit.engine.evaluate,
  norwegiangambit.engine.fen,
  norwegiangambit.engine.iterate,
- norwegiangambit.engine.polyglot,
- norwegiangambit.engine.uci,
  norwegiangambit.engine.util

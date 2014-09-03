@@ -15,7 +15,7 @@ public class EngineRoce extends WrapExe implements IDivide{
 			return map;
 		command("setboard "+fen);
 		String prefix = "Moves:";
-		String[] lines = command("divide "+depth, prefix).split("\n");
+		String[] lines = waitFor("divide "+depth, prefix).split("\n");
 		boolean started=false;
 		for (String line : lines) {
 			if(line.matches("[a-h][1-8][a-h][1-8] ([0-9]+)"))

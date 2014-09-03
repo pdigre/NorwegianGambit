@@ -16,8 +16,10 @@ public class Test_PERFT_114s extends PerftTest{
 	@BeforeClass
 	public static void prepare() {
 		new BASE();
-		setTesting(new RunPerftFast());
+//		setTesting(new RunPerftFast());
+		setTesting(new EngineStockfish("C:/chess/stockfish.exe"));
 		setValidator(new EngineStockfish("C:/chess/stockfish.exe"));
+//		setValidator(new RunPerftFast());
 //		setValidator(new EngineRoce("C:/git/chess/roce39/roce39.exe"));
 	}
 

@@ -1,34 +1,34 @@
 package norwegiangambit.util;
 
-public class BITS {
+public class BITS implements IConst {
 
 	final public static long assemble2(int piece, int from, int to, long extra) {
 		int score = 0;
-		return (piece << IConst._PIECE) | (from << IConst._FROM) | (to << IConst._TO) | extra | ((score | 0L) << 32);
+		return (piece << _PIECE) | (from << _FROM) | (to << _TO) | extra | ((score | 0L) << 32);
 	}
 
 	final public static long getCastlingState(final long bitmap) {
-		return bitmap & IConst.CASTLING_STATE;
+		return bitmap & CASTLING_STATE;
 	}
 
 	final static public int getFrom(final long bitmap) {
-		return (int) ((bitmap >> IConst._FROM) & IConst.BITS6);
+		return (int) ((bitmap >> _FROM) & BITS6);
 	}
 
 	final static public long bitsFrom(final long bitmap) {
-		return 1L << ((bitmap >> IConst._FROM) & IConst.BITS6);
+		return 1L << ((bitmap >> _FROM) & BITS6);
 	}
 
 	final static public int getTo(final long bitmap) {
-		return (int) ((bitmap >> IConst._TO) & IConst.BITS6);
+		return (int) ((bitmap >> _TO) & BITS6);
 	}
 
 	final static public long bitsTo(final long bitmap) {
-		return 1L << ((bitmap >> IConst._TO) & IConst.BITS6);
+		return 1L << ((bitmap >> _TO) & BITS6);
 	}
 
 	final public static boolean isCapture(final long bitmap) {
-		return (bitmap & IConst.CAPTURE) != 0;
+		return (bitmap & CAPTURE) != 0;
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class BITS {
 	 * @return
 	 */
 	final static public boolean white(final long bitmap) {
-		return (bitmap & IConst.BLACK) == 0;
+		return (bitmap & BLACK) == 0;
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class BITS {
 	 * @return
 	 */
 	final static public boolean black(final long bitmap) {
-		return (bitmap & IConst.BLACK) != 0;
+		return (bitmap & BLACK) != 0;
 	}
 
 	/**
@@ -58,42 +58,42 @@ public class BITS {
 	 * @return
 	 */
 	final static public boolean whiteNext(final long bitmap) {
-		return (bitmap & IConst.BLACK) > 0;
+		return (bitmap & BLACK) > 0;
 	}
 
 	final static public boolean isCastling(final long bitmap) {
-		return (bitmap & IConst.SPECIAL) != 0 && BITS.getType(bitmap) == IConst.WK;
+		return (bitmap & SPECIAL) != 0 && BITS.getType(bitmap) == WK;
 	}
 
 	final static public boolean isEnpassant(final long bitmap) {
-		return (bitmap & IConst.SPECIAL) != 0 && BITS.getType(bitmap) == IConst.WP;
+		return (bitmap & SPECIAL) != 0 && BITS.getType(bitmap) == WP;
 	}
 
 	final public static boolean isPromotion(final long bitmap) {
-		return ((bitmap & IConst.SPECIAL) != 0) && BITS.getType(bitmap) != IConst.WK && BITS.getType(bitmap) != IConst.WP;
+		return ((bitmap & SPECIAL) != 0) && BITS.getType(bitmap) != WK && BITS.getType(bitmap) != WP;
 	}
 
 	final public static int getPiece(final long bitmap) {
-		return (int) ((bitmap & IConst.PIECE) >> IConst._PIECE);
+		return (int) ((bitmap & PIECE) >> _PIECE);
 	}
 
 	final public static int getType(final long bitmap) {
-		return (int) ((bitmap & IConst.PIECETYPE) >> IConst._PIECE);
+		return (int) ((bitmap & PIECETYPE) >> _PIECE);
 	}
 
 	final public static int halfMoves(final long bitmap) {
-		return (int) ((bitmap >> IConst._HALFMOVES) & IConst.BITS6);
+		return (int) ((bitmap >> _HALFMOVES) & BITS6);
 	}
 
 	public static int getEnpassant(final long bitmap) {
 		int from2 = getFrom(bitmap);
 		int to2 = getTo(bitmap);
 		switch (getPiece(bitmap)) {
-		case IConst.WP:
+		case WP:
 			if (from2 - to2 == -16)
 				return from2 + 8;
 			return -1;
-		case IConst.BP:
+		case BP:
 			if (from2 - to2 == 16)
 				return from2 - 8;
 			return -1;
@@ -103,15 +103,23 @@ public class BITS {
 	}
 
 	public static int getCapturedType(long bitmap) {
-		return (int) ((bitmap & IConst.CAPTURE) >>> IConst._CAPTURE);
+		return (int) ((bitmap & CAPTURE) >>> _CAPTURE);
 	}
 
 	public static int getCaptured(long bitmap) {
-		return (int) (((bitmap & IConst.CAPTURE) >>> IConst._CAPTURE) | (~bitmap & IConst.BLACK));
+		return (int) (((bitmap & CAPTURE) >>> _CAPTURE) | (~bitmap & BLACK));
 	}
 
 	public static int score(long bitmap) {
 		return (int) (bitmap >> 32);
 	}
+
+	public static long getCastlingState(String castling) {
+		return (castling.contains("K") ? CANCASTLE_WHITEKING:0)
+				| (castling.contains("Q") ? CANCASTLE_WHITEQUEEN:0)
+				| (castling.contains("k") ? CANCASTLE_BLACKKING:0)
+				| (castling.contains("q") ? CANCASTLE_BLACKQUEEN:0);
+	}
+
 
 }

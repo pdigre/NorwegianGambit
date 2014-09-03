@@ -1,9 +1,7 @@
-package norwegiangambit.engine.base;
+package norwegiangambit.util.polyglot;
 
 import java.util.Arrays;
 
-import norwegiangambit.engine.fen.Position;
-import norwegiangambit.util.BITS;
 import norwegiangambit.util.IConst;
 
 /**
@@ -225,51 +223,5 @@ public class ZobristKey implements IConst {
 	public final static long ZOBRIST_CBQ = random64[771];
 	public final static long ZOBRIST_NXT = random64[780];
 	public final static long[] ZOBRIST_ENP = Arrays.copyOfRange(random64, 772, 780);
-
-	public final static long getKey(Position pos) {
-		long key = 0;
-		long bitmap = pos.getBitmap();
-		for (int i = 0; i < 64; i++) {
-			int piece = pos.getPiece(i);
-			if(piece!=0)
-				key ^= KEYS[piece][i];
-		}
-		key=castling(key, bitmap);
-
-		// passant flags only when pawn can capture
-		int enpassant = BITS.getEnpassant(bitmap);
-		if (enpassant != -1) {
-			int file = enpassant & 7;
-			if (BITS.whiteNext(bitmap)) {
-				if (file != 0 && pos.getPiece(enpassant - 7) == WP) {
-					key ^= ZOBRIST_ENP[file];
-				} else if (file != 7 && pos.getPiece(enpassant - 9) == WP) {
-					key ^= ZOBRIST_ENP[file];
-				}
-			} else {
-				if (file != 0 && pos.getPiece(enpassant + 7) == BP) {
-					key ^= ZOBRIST_ENP[file];
-				} else if (file != 7 && pos.getPiece(enpassant + 9) == BP) {
-					key ^= ZOBRIST_ENP[file];
-				}
-			}
-		}
-		if (BITS.whiteNext(bitmap))
-			key ^= ZOBRIST_NXT;
-		return key;
-	}
-
-	public static long castling(long key, long cstl) {
-		if ((cstl & CANCASTLE_WHITEKING) != 0)
-			key ^= ZOBRIST_CWK;
-		if ((cstl & CANCASTLE_WHITEQUEEN) != 0)
-			key ^= ZOBRIST_CWQ;
-		if ((cstl & CANCASTLE_BLACKKING) != 0)
-			key ^= ZOBRIST_CBK;
-		if ((cstl & CANCASTLE_BLACKQUEEN) != 0)
-			key ^= ZOBRIST_CBQ;
-		return key;
-	}
-
 
 }

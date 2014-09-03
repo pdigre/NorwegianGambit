@@ -6,6 +6,7 @@ import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 import norwegiangambit.util.PieceType;
+import norwegiangambit.util.polyglot.ZobristKey;
 
 public class Position implements IConst, Comparable<Position> {
 
@@ -17,7 +18,7 @@ public class Position implements IConst, Comparable<Position> {
 	public int wking;
 	public int bking;
 	public long bitmap;
-	public long zobrist;
+	public long zobrist=0L;
 	public int score=0;
 	public int quality=0;
 	public long castling=0L;
@@ -144,7 +145,46 @@ public class Position implements IConst, Comparable<Position> {
 	}
 
 	public long getZobristKey() {
-		return zobrist;
+		if(zobrist!=0L)
+			return zobrist;
+		long key = 0;
+		long bitmap = getBitmap();
+		for (int i = 0; i < 64; i++) {
+			int piece = getPiece(i);
+			if(piece!=0)
+				key ^= ZobristKey.KEYS[piece][i];
+		}
+		if ((bitmap & CANCASTLE_WHITEKING) != 0)
+			key ^= ZobristKey.ZOBRIST_CWK;
+		if ((bitmap & CANCASTLE_WHITEQUEEN) != 0)
+			key ^= ZobristKey.ZOBRIST_CWQ;
+		if ((bitmap & CANCASTLE_BLACKKING) != 0)
+			key ^= ZobristKey.ZOBRIST_CBK;
+		if ((bitmap & CANCASTLE_BLACKQUEEN) != 0)
+			key ^= ZobristKey.ZOBRIST_CBQ;
+
+		// passant flags only when pawn can capture
+		int enpassant = BITS.getEnpassant(bitmap);
+		if (enpassant != -1) {
+			int file = enpassant & 7;
+			if (BITS.whiteNext(bitmap)) {
+				if (file != 0 && getPiece(enpassant - 7) == WP) {
+					key ^= ZobristKey.ZOBRIST_ENP[file];
+				} else if (file != 7 && getPiece(enpassant - 9) == WP) {
+					key ^= ZobristKey.ZOBRIST_ENP[file];
+				}
+			} else {
+				if (file != 0 && getPiece(enpassant + 7) == BP) {
+					key ^= ZobristKey.ZOBRIST_ENP[file];
+				} else if (file != 7 && getPiece(enpassant + 9) == BP) {
+					key ^= ZobristKey.ZOBRIST_ENP[file];
+				}
+			}
+		}
+		if (BITS.whiteNext(bitmap))
+			key ^= ZobristKey.ZOBRIST_NXT;
+		zobrist=key;
+		return key;
 	}
 
 	public int getScore() {
@@ -271,4 +311,21 @@ public class Position implements IConst, Comparable<Position> {
 		else if(type==IConst.BK)
 			bking=BITS.getTo(bitmap);
 	}
+	
+    final public String getFen() {
+        StringBuilder fen = new StringBuilder();
+        fen.append(FEN.board2fen(getBoard()));
+        fen.append(" ");
+        fen.append(whiteNext() ? "w" : "b");
+        fen.append(" ");
+        fen.append(FEN.getFenCastling(getBitmap()));
+        fen.append(" ");
+        fen.append(FEN.pos2string(BITS.getEnpassant(getBitmap())));
+        fen.append(" ");
+        fen.append(BITS.halfMoves(getBitmap()));
+        fen.append(" ");
+        fen.append(totalMoves());
+        return fen.toString();
+    }
+
 }

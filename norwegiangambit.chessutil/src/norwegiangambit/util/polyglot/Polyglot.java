@@ -1,12 +1,10 @@
-package norwegiangambit.engine.polyglot;
+package norwegiangambit.util.polyglot;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import norwegiangambit.engine.base.ZobristKey;
 
 public class Polyglot {
 

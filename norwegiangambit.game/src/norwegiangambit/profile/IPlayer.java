@@ -39,7 +39,7 @@ public interface IPlayer {
 
     void run();
 
-    int clickSquare(int i);
+    String clickSquare(int i);
 
     ArrayList<Marking> getMarkers();
     

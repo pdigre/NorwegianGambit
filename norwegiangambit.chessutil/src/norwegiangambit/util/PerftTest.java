@@ -11,15 +11,15 @@ import java.util.Set;
 
 public class PerftTest {
 	
-	static IDivide testing;
-	static IDivide locator;
+	protected static IDivide testing;
+	protected static IDivide validator;
 	
 	public static void setTesting(IDivide engine){
 		testing=engine;
 	}
 
 	public static void setValidator(IDivide engine){
-		locator=engine;
+		validator=engine;
 	}
 
 	public static void testPerft(IDivide inst, int depth, int expected, String fen) {
@@ -40,7 +40,7 @@ public class PerftTest {
 	public static void findError(String fen, int levels,String append) {
 		try {
 			Map<String, Integer> actual = testing.divide(fen,levels);
-			Map<String, Integer> expected = locator.divide(fen, levels);
+			Map<String, Integer> expected = validator.divide(fen, levels);
 			Set<String> kactual = new HashSet<String>(actual.keySet());
 			Set<String> kexpected = new HashSet<String>(expected.keySet());
 			if(!kactual.equals(kexpected)){
