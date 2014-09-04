@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
     
-<toc label="Norwegian Gambit Tools" topic="html/main.html">
-   <topic href="html/main.html" label="Chess UI">
+<toc label="Norwegian Gambit Tools">
+   <topic href="html/Configuring Norwegian Gambit Chess Tools/ConfiguringNorwegianGambitChessTools.html" label="Configuration">
    </topic>
-   <topic href="html/main.html" label="PSQT Editor">
+   <topic href="html/Play Chess/PlayChess.html" label="Chess UI">
    </topic>
-   <topic href="html/main.html" label="FEN hover">
+   <topic href="html/PSQT Editor/PSQTEditor.html" label="PSQT Editor">
    </topic>
-   <topic href="html/main.html" label="PERFT">
+   <topic href="html/FEN hover/FENhover.html" label="FEN hover">
    </topic>
-   <topic href="html/main.html" label="Engine">
+   <topic href="html/Using PERFT framework/UsingPERFTframework.html" label="PERFT">
    </topic>
 </toc>

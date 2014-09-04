@@ -5,11 +5,11 @@ import norwegiangambit.util.EngineStockfish;
 
 public class Easy extends Player {
 
-	static EngineStockfish engine=new EngineStockfish("C:/chess/stockfish.exe");
+	EngineStockfish engine=new EngineStockfish(EngineStockfish.DEFAULT_EXEPATH);
 
 	@Override
     public String getDescription() {
-        return "Easy 5 iterations Stockfish";
+        return "Easy 8 iterations Stockfish";
     }
     
     @Override

@@ -16,15 +16,13 @@ import org.eclipse.swt.widgets.Shell;
 
 public class FxChessSWT {
 
-	private Shell shell;
-	private FXCanvas canvas;
-
-
-	public FxChessSWT(Display display) {
-		shell = new Shell(display);
+	public FxGameData game;
+	
+	public FxChessSWT(Display display, String fen) {
+		Shell shell = new Shell(display);
         shell.setLayout(new FillLayout());
         shell.setSize(500, 370);
-        canvas = new FXCanvas(shell, SWT.NONE) {
+        FXCanvas canvas = new FXCanvas(shell, SWT.NONE) {
 
 			public Point computeSize(int wHint, int hHint, boolean changed) {
                 Scene scene = getScene();
@@ -34,10 +32,12 @@ public class FxChessSWT {
                 return new Point(width, height);
             }
         };
-        FxGameData game = new FxGameData();
+        game = new FxGameData();
+        game.display=display;
 	    FxChessDialog dialog = new FxChessDialog(game);
         game.start(StartingGames.FEN_GAMES[0], Players.MANUAL, Players.EASY);
         game.start(StartingGames.FEN_GAMES[0], Players.MANUAL, Players.EASY);
+		game.setupFEN(fen);
         Scene scene = new Scene(dialog, Color.rgb(
                 shell.getBackground().getRed(),
                 shell.getBackground().getGreen(),
