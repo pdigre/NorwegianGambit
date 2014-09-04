@@ -87,6 +87,7 @@ public abstract class GAbstractPrefPage extends FieldEditorPreferencePage implem
     @Override
     public boolean performOk() {
         boolean performOk = super.performOk();
+        Preferences.apply();
         return performOk;
     }
 

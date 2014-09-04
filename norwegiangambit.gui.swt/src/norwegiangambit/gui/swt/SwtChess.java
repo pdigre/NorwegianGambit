@@ -11,15 +11,13 @@ import org.eclipse.swt.widgets.Shell;
 
 public class SwtChess {
 
-    private Shell shell;
-	private SwtChessDialog dialog;
+	public SwtGameData game;
 
-    public SwtChess(Display display) {
-		shell = new Shell(display);
+    public SwtChess(Shell shell) {
         shell.setLayout(new GridLayout(2, false));
         shell.setSize(500, 370);
-        SwtGameData game = new SwtGameData();
-        dialog = new SwtChessDialog(shell,game);
+        game = new SwtGameData();
+        SwtChessDialog dialog = new SwtChessDialog(shell,game);
         game.start(StartingGames.FEN_GAMES[0], Players.MANUAL, Players.EASY);
         shell.addShellListener(new ShellListener() {
 			
@@ -48,8 +46,9 @@ public class SwtChess {
     }
     
 	public static void main(String[] args) {
-        SwtChess game = new SwtChess(new Display());
-        runDisplay(game.shell);
+		Shell shell = new Shell(new Display());
+		new SwtChess(shell);
+        runDisplay(shell);
     }
 
     public static void runDisplay(Shell shell) {

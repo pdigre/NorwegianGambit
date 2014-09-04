@@ -2,6 +2,10 @@ package norwegiangambit.game;
 
 import java.util.ResourceBundle;
 
+import norwegiangambit.util.EngineQperft;
+import norwegiangambit.util.EngineRoce;
+import norwegiangambit.util.EngineStockfish;
+
 // Prompt for name on
 public enum Preferences {
     Stockfish("C:/chess/stockfish.exe".replace("/", "\\")),
@@ -68,4 +72,11 @@ public enum Preferences {
     public void setString(String text) {
     	Activator.getDefault().getPreferenceStore().setValue(getID(), text);
     }
+    
+	public static void apply() {
+		EngineStockfish.DEFAULT_EXEPATH = Stockfish.stringValue();
+        EngineQperft.DEFAULT_EXEPATH = QPERFT.stringValue();
+        EngineRoce.DEFAULT_EXEPATH = ROCE.stringValue();
+	}
+
 }

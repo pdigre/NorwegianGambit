@@ -15,5 +15,43 @@
             class="norwegiangambit.game.PreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="norwegiangambit.game.toolbar">
+            <command
+                  commandId="norwegiangambit.game.fenhover"
+                  disabledIcon="img/fen2.png"
+                  icon="img/fen.png"
+                  id="norwegiangambit.game.fenhover"
+                  label="Fen Hover"
+                  style="toggle"
+                  tooltip="Fen Hover">
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="norwegiangambit.psqt.category"
+            id="norwegiangambit.game.fenhover"
+            name="FEN Hover">
+         <state
+               class="norwegiangambit.game.ToggleState"
+               id="norwegiangambit.game.fentoggle">
+         </state>
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="norwegiangambit.game.FenHover"
+            commandId="norwegiangambit.game.fenhover">
+      </handler>
+   </extension>
 
 </plugin>

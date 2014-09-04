@@ -11,7 +11,7 @@ public class TestUCI {
 
 	@Test
 	public void testStockFish() {
-		WrapExe engine = new EngineStockfish("C:/fishtest/worker/testing/stockfish.exe");
+		WrapExe engine = new EngineStockfish(EngineStockfish.DEFAULT_EXEPATH);
 //		engine.command("uci", "uciok");
 		engine.waitFor("isready", "readyok");
 //		engine.command("copyprotection", "copyprotection ok");
@@ -26,7 +26,7 @@ public class TestUCI {
 
 	@Test
 	public void testStockFish2() {
-		EngineStockfish engine = new EngineStockfish("C:/fishtest/worker/testing/stockfish.exe");
+		EngineStockfish engine = new EngineStockfish(EngineStockfish.DEFAULT_EXEPATH);
 		int perft= perft(engine.divide(STARTPOS,6));
 		HashMap<String, Integer> divide= engine.divide(STARTPOS,6);
 		engine.command("quit");
@@ -35,7 +35,7 @@ public class TestUCI {
 
 	@Test
 	public void testStockRoce2() {
-		EngineRoce engine = new EngineRoce("C:/git/chess/roce39/roce39.exe");
+		EngineRoce engine = new EngineRoce(EngineRoce.DEFAULT_EXEPATH);
 		int perft= perft(engine.divide(STARTPOS,5));
 		HashMap<String, Integer> divide= engine.divide(STARTPOS,5);
 		engine.command("quit");
@@ -43,20 +43,8 @@ public class TestUCI {
 	}
 
 	@Test
-	public void testRoce() {
-		WrapExe engine = new WrapExe("C:/git/TheChessProject/TheChessProject/resources/roce39.exe");
-		engine.command("setboard "+STARTPOS);
-		engine.command("perft 6");
-		engine.command("divide 6");
-		engine.waitFor("uci", "uciok");
-		engine.waitFor("isready", "readyok");
-		engine.command("quit");
-		engine.loop();
-	}
-
-	@Test
 	public void testQperft() {
-		EngineQperft engine = new EngineQperft("C:/git/TheChessProject/TheChessProject/resources/perft.exe");
+		EngineQperft engine = new EngineQperft(EngineQperft.DEFAULT_EXEPATH);
 //		int perft= perft(engine.divide(STARTPOS,6));
 //		HashMap<String, Integer> divide= engine.divide(STARTPOS,6);
 		System.out.println("hi");

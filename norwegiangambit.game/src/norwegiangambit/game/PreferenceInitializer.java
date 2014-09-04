@@ -23,4 +23,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
                 store.setDefault(pref.getID(), (String) def);
         }
     }
+    
+    
 }
