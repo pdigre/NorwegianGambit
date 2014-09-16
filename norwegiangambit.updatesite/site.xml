@@ -3,7 +3,10 @@
    <description name="Norwegian Gambit" url="http://www.norwegiangambit.com/updatesite">
       Norwegian Gambit Chess Programmers Tools
    </description>
-   <feature url="features/norwegiangambit.feature_0.9.0.201409091531.jar" id="norwegiangambit.feature" version="0.9.0.201409091531">
+   <feature url="features/norwegiangambit.feature_0.9.1.201409161842.jar" id="norwegiangambit.feature">
+      <category name="ChessTools"/>
+   </feature>
+   <feature url="features/norwegiangambit.fx.feature_0.9.1.201409161842.jar" id="norwegiangambit.fx.feature">
       <category name="ChessTools"/>
    </feature>
    <category-def name="ChessTools" label="ChessTools">

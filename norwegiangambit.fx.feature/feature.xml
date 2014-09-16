@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="norwegiangambit.fx.feature"
+      label="FX Gui [Optional - Requires E(fx)clipse]"
+      version="0.9.1.qualifier"
+      provider-name="Norwegian Gambit">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <url>
+      <update label="Norwegian Gambit" url="http://www.norwegiangambit.com/updatesite"/>
+   </url>
+
+   <plugin
+         id="norwegiangambit.gui.fx"
+         download-size="0"
+         install-size="0"
+         version="0.9.1.qualifier"
+         unpack="false"/>
+
+</feature>

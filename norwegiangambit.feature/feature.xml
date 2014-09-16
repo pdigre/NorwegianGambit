@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="norwegiangambit.feature"
-      label="Norwegian Gambit"
-      version="0.9.0.qualifier"
+      label="Norwegian Gambit Chess Tools"
+      version="0.9.1.qualifier"
       provider-name="Norwegian Gambit">
 
    <description url="http://www.norwegiangambit.com">
@@ -48,62 +48,55 @@ initial documentation
          id="norwegiangambit.chessutil"
          download-size="0"
          install-size="0"
-         version="0.9.0.qualifier"
+         version="0.9.1.qualifier"
          unpack="false"/>
 
    <plugin
          id="norwegiangambit.engine"
          download-size="0"
          install-size="0"
-         version="0.9.0.qualifier"
+         version="0.9.1.qualifier"
          unpack="false"/>
 
    <plugin
          id="norwegiangambit.game"
          download-size="0"
          install-size="0"
-         version="0.9.0.qualifier"
-         unpack="false"/>
-
-   <plugin
-         id="norwegiangambit.gui.fx"
-         download-size="0"
-         install-size="0"
-         version="0.9.0.qualifier"
+         version="0.9.1.qualifier"
          unpack="false"/>
 
    <plugin
          id="norwegiangambit.gui.swt"
          download-size="0"
          install-size="0"
-         version="0.9.0.qualifier"
+         version="0.9.1.qualifier"
          unpack="false"/>
 
    <plugin
          id="norwegiangambit.psqt"
          download-size="0"
          install-size="0"
-         version="0.9.0.qualifier"
+         version="0.9.1.qualifier"
          unpack="false"/>
 
    <plugin
          id="norwegiangambit.psqt.tests"
          download-size="0"
          install-size="0"
-         version="0.9.0.qualifier"
+         version="0.9.1.qualifier"
          unpack="false"/>
 
    <plugin
          id="norwegiangambit.psqt.ui"
          download-size="0"
          install-size="0"
-         version="0.9.0.qualifier"
+         version="0.9.1.qualifier"
          unpack="false"/>
 
    <plugin
          id="norwegiangambit.doc"
          download-size="0"
          install-size="0"
-         version="0.9.0.qualifier"/>
+         version="0.9.1.qualifier"/>
 
 </feature>
