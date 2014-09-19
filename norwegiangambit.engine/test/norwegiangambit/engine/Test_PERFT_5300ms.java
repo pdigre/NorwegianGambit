@@ -1,7 +1,6 @@
 package norwegiangambit.engine;
 
 import norwegiangambit.engine.base.BASE;
-import norwegiangambit.engine.base.MovegenCache;
 import norwegiangambit.util.EngineStockfish;
 import norwegiangambit.util.PerftTest;
 
@@ -113,7 +112,6 @@ public class Test_PERFT_5300ms extends PerftTest{
 
 	@AfterClass
 	public static void finish() {
-		System.out.println(MovegenCache.printStats());
 	}
 	
 

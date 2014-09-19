@@ -7,6 +7,12 @@ import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 
+/**
+ * checkers - current pieces giving check to king
+ * pinners  - pinned pieces blocking check
+ * hiders   - Discovered Check Candidates
+ *
+ */
 public class Movegen implements IConst{
 	protected Position pos;
 	Movegen parent;
@@ -15,7 +21,7 @@ public class Movegen implements IConst{
 	long bb_piece;
 	long bb_white;
 	long bb_black,bb_bit1,bb_bit2,bb_bit3;
-	protected long pinned=0L,checkers=0L;
+	protected long checkers=0L,pinners=0L,hiders=0L;
 	protected boolean isWhite=false;
 	public boolean isCompare=false;
 	int wking,bking;
@@ -93,7 +99,7 @@ public class Movegen implements IConst{
 		final long enemy = isWhite?bb_black:bb_white;
 		final int king=isWhite?wking:bking;
 		SQATK rev = BASE.REV[king];
-		pinned=0L;
+		pinners=0L;
 		checkers=~bb_bit3 & enemy & ((~bb_bit1 & bb_bit2 & rev.RN) | (bb_bit1 & ~bb_bit2 & (isWhite?MBP.REV[king]:MWP.REV[king])));
 		long eslider=bb_bit3 & enemy  & rev.RQ; // Sliders
 		if(checkers==0L && eslider !=0L){
@@ -105,7 +111,7 @@ public class Movegen implements IConst{
 				linePinners(own, king, lineatks);
 		}
 		if(checkers==0L){
-			nonevasive(isWhite, king,own & ~pinned);
+			nonevasive(isWhite, king,own & ~pinners);
 		} else {
 			clear(); // not interested in pinned moves for evasive moves
 			evasive(isWhite,king,own);
@@ -126,7 +132,7 @@ public class Movegen implements IConst{
 				// check for slide moves
 				long pinner = between&own;
 				int from = Long.numberOfTrailingZeros(pinner);
-				pinned|=pinner;
+				pinners|=pinner;
 				if((pinner&bb_bit1&bb_bit3)!=0){	// BISHOP / QUEEN
 					if((pinner&bb_bit2)!=0){  	// QUEEN
 						MOVEDATA[][] mm = isWhite?MWQ.WQ[from].DIAG:MBQ.BQ[from].DIAG;
@@ -199,7 +205,7 @@ public class Movegen implements IConst{
 				// check for slide moves
 				long pinner = between&own;
 				int from = Long.numberOfTrailingZeros(pinner);
-				pinned|=pinner;
+				pinners|=pinner;
 				if((pinner&bb_bit2&bb_bit3)!=0){		// ROOK / QUEEN
 					if((pinner&bb_bit1)!=0){	// QUEEN
 						MOVEDATA[][] mm = isWhite?MWQ.WQ[from].LINE:MBQ.BQ[from].LINE;
@@ -341,7 +347,7 @@ public class Movegen implements IConst{
 
 	@Override
 	public String toString() {
-		return FEN.addHorizontal(FEN.addHorizontal(pos.toString(), FEN.board2string(pinned)), FEN.board2string(checkers));
+		return FEN.addHorizontal(FEN.addHorizontal(pos.toString(), FEN.board2string(pinners)), FEN.board2string(checkers));
 	}
 
 }
