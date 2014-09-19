@@ -140,7 +140,7 @@ public class RunPerftFast implements IDivide{
 			generate();
 			for (int i = 0; i < iAll; i++) {
 				MOVEDATA md = moves[i];
-				child.setPos(pos.move(md));
+				child.make(md);
 				child.run();
 			}
 		}

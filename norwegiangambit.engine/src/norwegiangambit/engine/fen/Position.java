@@ -1,6 +1,5 @@
 package norwegiangambit.engine.fen;
 
-import norwegiangambit.engine.base.KingSafe;
 import norwegiangambit.engine.base.MOVEDATA;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
@@ -14,7 +13,6 @@ public class Position implements IConst, Comparable<Position> {
 	public long bb_bit2;
 	public long bb_bit3;
 	public long bb_black;
-	public int checkstate=0;
 	public int wking;
 	public int bking;
 	public long bitmap;
@@ -31,20 +29,6 @@ public class Position implements IConst, Comparable<Position> {
     public int totalMoves(){
     	return 0;
     }
-
-	public boolean isCheckWhite(){
-		if( (checkstate & 1) ==0) {
-			checkstate |= 1 | (!KingSafe.pos(this).isSafeWhite(wking)?2:0);
-		}
-		return (checkstate & 2)!=0 ;
-	}
-	
-	public boolean isCheckBlack(){
-		if( (checkstate & 4) ==0) {
-			checkstate |= 4 | (!KingSafe.pos(this).isSafeBlack(bking)?8:0);
-		}
-		return (checkstate & 8)!=0 ;
-	}
 
 	public void setBoard(int[] board) {
 		for (int i = 0; i < 64; i++) {
@@ -66,8 +50,6 @@ public class Position implements IConst, Comparable<Position> {
 			}
 		}
 	}
-
-	
 	
 	public Position(long bitmap, int score,boolean whiteNext, long bb_black, long bb_bit1, long bb_bit2, long bb_bit3, int wking, int bking,long zobrist) {
 		this.bitmap = bitmap;

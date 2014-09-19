@@ -6,10 +6,12 @@ import norwegiangambit.util.IConst;
 
 public class KingSafe implements IConst {
 
-	public static int getCheckState(Position pos) {
-		if (!(pos.whiteNext() ? pos.isCheckWhite() : pos.isCheckBlack()))
-			return 0;
-		return NodeGen.getLegalMoves64(pos).length==0? MATE: CHECK;
+	public static KingSafe pos(Position pos) {
+		return new KingSafe(pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+	}
+
+	public static KingSafe pos(Position pos,MOVEDATA md) {
+		return new KingSafe(pos.get64black()^md.b_black, pos.get64bit1()^md.b_bit1, pos.get64bit2()^md.b_bit2, pos.get64bit3()^md.b_bit3);
 	}
 
 	final private long bb_black;
@@ -17,7 +19,6 @@ public class KingSafe implements IConst {
 	final private long bb_bit1;
 	final private long bb_bit2;
 	final private long bb_bit3;
-	public Position pos;
 
 	public KingSafe(long bb_black, long bb_bit1, long bb_bit2, long bb_bit3) {
 		this.bb_bit1 = bb_bit1;
@@ -25,18 +26,6 @@ public class KingSafe implements IConst {
 		this.bb_bit3 = bb_bit3;
 		this.bb_piece = bb_bit1 | bb_bit2 | bb_bit3;
 		this.bb_black = bb_black;
-	}
-
-	public static KingSafe pos(Position pos) {
-		KingSafe ks = new KingSafe(pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
-		ks.pos=pos;
-		return ks;
-	}
-
-	public static KingSafe pos(Position pos,MOVEDATA md) {
-		KingSafe ks = new KingSafe(pos.get64black()^md.b_black, pos.get64bit1()^md.b_bit1, pos.get64bit2()^md.b_bit2, pos.get64bit3()^md.b_bit3);
-		ks.pos=pos;
-		return ks;
 	}
 
 	final public boolean isSafeWhite() {
@@ -78,11 +67,6 @@ public class KingSafe implements IConst {
 	}
 
 	public void errorKing() {
-		Position p = pos;
-		while(p!=null){
-			System.out.println(FEN.move2literal(p.bitmap)+" > "+FEN.board2fen(p.getBoard()));
-			p=p.parent;
-		}
 		System.out.println("ERROR KINGPOS:"+toString());
 	}
 

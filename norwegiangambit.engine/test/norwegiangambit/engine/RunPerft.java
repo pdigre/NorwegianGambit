@@ -7,7 +7,6 @@ import norwegiangambit.engine.base.MOVEDATA;
 import norwegiangambit.engine.base.Movegen;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.engine.fen.StartGame;
-import norwegiangambit.engine.util.Counter;
 import norwegiangambit.util.BITS;
 
 public class RunPerft implements IPerft{
@@ -49,7 +48,7 @@ public class RunPerft implements IPerft{
 			
 			for (int i = 0; i < iAll; i++) {
 				MOVEDATA md = moves[i];
-				child.setPos(pos.move(md));
+				child.make(md);
 				child.run();
 				if(child.checkers!=0L){
 					count.checks++;

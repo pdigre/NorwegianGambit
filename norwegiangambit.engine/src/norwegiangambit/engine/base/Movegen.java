@@ -56,6 +56,14 @@ public class Movegen implements IConst{
 		castling = ~CASTLING_STATE | inherit; // all other are set
 	}
 
+	public void make(MOVEDATA md){
+		setPos(pos.move(md));
+	}
+	
+	public void undo(MOVEDATA md){
+		
+	}
+	
 	final void add(MOVEDATA md) {
 		if(md==null)
 			System.out.println("err");

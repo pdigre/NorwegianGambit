@@ -1,4 +1,4 @@
-package norwegiangambit.engine.util;
+package norwegiangambit.engine;
 
 
 public class Counter {
