@@ -25,7 +25,7 @@ public class NodeGen implements IConst {
 	}
 
 	public static final Position[] getQuiescence64(Position pos) {
-		return wrap(pos,new Movegen(pos).quiesce());
+		return wrap(pos,new Movegen(pos).legalmoves());
 	}
 
 	/**

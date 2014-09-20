@@ -1,6 +1,6 @@
 package norwegiangambit.engine.fen;
 
-import norwegiangambit.engine.base.KingSafe;
+import norwegiangambit.engine.base.Movegen;
 import norwegiangambit.engine.base.NodeGen;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
@@ -29,8 +29,9 @@ public class FEN_POS implements IConst {
 		        suffix = col == 2 ? "O-O-O" : "O-O";
 		    }
 		}
-		KingSafe ks = KingSafe.pos(pos);
-		if(pos.whiteNext() ? !ks.isSafeWhite() : !ks.isSafeBlack()){
+		boolean white = pos.whiteNext();
+		int king = white?pos.wking:pos.bking;
+		if(!Movegen.isSafe(white,king,pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3())){
 	        suffix += "+";
 			if(NodeGen.getLegalMoves64(pos).length==0)
 		        suffix += "+";
