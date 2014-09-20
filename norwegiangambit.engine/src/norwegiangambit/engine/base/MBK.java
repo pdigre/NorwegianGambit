@@ -85,9 +85,7 @@ public class MBK extends MBase {
 	}
 
 	final static void add(Movegen gen,MOVEDATA md) {
-		KingSafe p = KingSafe.pos(gen.pos,md);
-		int to = BITS.getTo(md.bitmap);
-		if(p.isSafeBlack(to))
+		if(gen.isSafe(BITS.getTo(md.bitmap)))
 			gen.add(md);
 	}
 	
@@ -101,14 +99,14 @@ public class MBK extends MBase {
 		long castling = gen.castling & IConst.CANCASTLE_BLACK;
 		if ((IConst.CBQ & gen.bb_piece) == 0
 				&& (castling & IConst.CANCASTLE_BLACKQUEEN) != 0
-				&& KingSafe.pos(gen.pos).isSafeBlack(IConst.BK_STARTPOS - 1)
-				&& KingSafe.pos(gen.pos).isSafeBlack(IConst.BK_STARTPOS - 2)) {
+				&& gen.isSafe(IConst.BK_STARTPOS - 1)
+				&& gen.isSafe(IConst.BK_STARTPOS - 2)) {
 			add(gen,CQ);
 		}
 		if ((IConst.CBK & gen.bb_piece) == 0
 				&& (castling & IConst.CANCASTLE_BLACKKING) != 0
-				&& KingSafe.pos(gen.pos).isSafeBlack(IConst.BK_STARTPOS + 1)
-				&& KingSafe.pos(gen.pos).isSafeBlack(IConst.BK_STARTPOS + 2)) {
+				&& gen.isSafe(IConst.BK_STARTPOS + 1)
+				&& gen.isSafe(IConst.BK_STARTPOS + 2)) {
 			add(gen,CK);
 		}
 	}

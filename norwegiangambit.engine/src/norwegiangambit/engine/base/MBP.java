@@ -1,6 +1,5 @@
 package norwegiangambit.engine.base;
 
-import norwegiangambit.engine.fen.Position;
 import norwegiangambit.util.IConst;
 
 public class MBP  extends MBase{
@@ -151,7 +150,7 @@ public class MBP  extends MBase{
 				int to=from-9;
 				if (to == enp) {
 					MOVEDATA md=mp[from].EL;
-					if(KingSafe.pos(gen.pos, md).isSafeBlack())
+					if(gen.isSafe(md))
 						add(md);
 				} else {
 					int ctype=gen.ctype(1L << to);
@@ -159,7 +158,6 @@ public class MBP  extends MBase{
 						add(mp[from].CL[ctype]);
 					} else {
 						if(from-9==WR_QUEEN_STARTPOS && (gen.castling & CANCASTLE_WHITEQUEEN)!=0){
-							Position next = gen.pos.move(MBP.PQ[0]);
 							add(MBP.PQ[0]);
 							add(MBP.PQ[1]);
 							add(MBP.PQ[2]);
@@ -181,7 +179,7 @@ public class MBP  extends MBase{
 				int to=from-7;
 				if (to == enp) {
 					MOVEDATA md=mp[from].ER;
-					if(KingSafe.pos(gen.pos, md).isSafeBlack())
+					if(gen.isSafe(md))
 						add(md);
 				} else {
 					int ctype=gen.ctype(1L << to);
@@ -189,9 +187,7 @@ public class MBP  extends MBase{
 						add(mp[from].CR[ctype]);
 					} else {
 						if(from-7==WR_KING_STARTPOS && (gen.castling & CANCASTLE_WHITEKING)!=0){
-							MOVEDATA t = MBP.PK[0];
-							Position next = gen.pos.move(t);
-							add(t);
+							add(MBP.PK[0]);
 							add(MBP.PK[1]);
 							add(MBP.PK[2]);
 							add(MBP.PK[3]);

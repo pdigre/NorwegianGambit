@@ -10,6 +10,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
+ * 3700ms
+ * 
  * 
  * 4700ms with improvements in "kingsafe"
  * 4300ms with new MOVEDATA bits
@@ -31,6 +33,7 @@ public class Test_PERFT_5300ms extends PerftTest{
 	
 	
 	@Test
+	@Ignore
 	public void stock_1() {
 		testPerft(validator, 5,193690690,"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
 	}
@@ -96,11 +99,13 @@ public class Test_PERFT_5300ms extends PerftTest{
 	}
 
 	@Test
+	@Ignore
 	public void e56_err_fast() {
 		testPerft(testing, 6,525169084,"R6r/8/8/2K5/5k2/8/8/r6R w - - 0 1");
 	}
 
 	@Test
+	@Ignore
 	public void e58_err_fast() {
 		testPerft(testing, 6,524966748,"R6r/8/8/2K5/5k2/8/8/r6R b - - 0 1");
 	}

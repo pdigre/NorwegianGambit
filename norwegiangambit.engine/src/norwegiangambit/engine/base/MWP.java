@@ -147,7 +147,7 @@ public class MWP extends MBase{
 				int to=from+7;
 				if (to == enp) {
 					MOVEDATA md=mp[from].EL;
-					if(KingSafe.pos(gen.pos, md).isSafeWhite())
+					if(gen.isSafe(md))
 						add(md);
 				} else {
 					int ctype=gen.ctype(1L << to);
@@ -176,7 +176,7 @@ public class MWP extends MBase{
 				int to=from+9;
 				if (to == enp) {
 					MOVEDATA md=mp[from].ER;
-					if(KingSafe.pos(gen.pos, md).isSafeWhite())
+					if(gen.isSafe(md))
 						add(md);
 				} else {
 					int ctype=gen.ctype(1L << to);
