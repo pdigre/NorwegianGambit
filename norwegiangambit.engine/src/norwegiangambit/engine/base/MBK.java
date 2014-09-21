@@ -89,6 +89,11 @@ public class MBK extends MBase {
 			gen.add(md);
 	}
 	
+	final static void addCapture(Movegen gen,MOVEDATA md) {
+		if(gen.isSafe(BITS.getTo(md.bitmap)))
+			gen.capture(md);
+	}
+	
 	public MOVEDATA[][] getCastlingMoves(Movegen gen) {
 		final boolean qc=(gen.castling & IConst.CANCASTLE_BLACKQUEEN) != 0;
 		final boolean kc=(gen.castling & IConst.CANCASTLE_BLACKKING) != 0;

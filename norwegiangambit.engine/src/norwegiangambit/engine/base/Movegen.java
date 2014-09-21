@@ -20,7 +20,7 @@ public class Movegen implements IConst{
 	public int wking,bking;
 	public int enpassant;
 	long castling;
-	long bb_piece,bb_white;
+	long bb_piece,bb_white, own, enemy;
 	long bb_knights,bb_kings,bb_pawns;
 	long checkers=0L,pinners=0L,hiders=0L;
 	int king,eking;
@@ -29,11 +29,13 @@ public class Movegen implements IConst{
 	public int iAll = 0;
 	int iLegal = 0;
 	int iTested = 0;
+	int iCapture=0;
 
 	final void clear(){
 		iLegal = 0;
 		iTested = 0;
 		iAll=0;
+		iCapture=0;
 	}
 
 	public void setPos(boolean isWhite, long bitmap, int wking, int bking, long bb, long b1, long b2, long b3) {
@@ -56,6 +58,8 @@ public class Movegen implements IConst{
 		this.bb_knights = ~bb_bit1 & bb_bit2 & ~bb_bit3;
 		this.bb_kings 	= bb_bit1 & bb_bit2 & ~bb_bit3;
 		this.bb_pawns 	= bb_bit1 & ~bb_bit2 & ~bb_bit3;
+		this.own 		= isWhite?bb_white:bb_black;
+		this.enemy 		= isWhite?bb_black:bb_white;
 		this.enpassant 	= BITS.getEnpassant(bitmap);
 		this.castling 	= ~CASTLING_STATE | bitmap; // all other are set
 	}
@@ -83,6 +87,11 @@ public class Movegen implements IConst{
 		moves[iAll++] = md;
 	}
 	
+	final void capture(MOVEDATA md) {
+		moves[iAll++] = moves[iCapture];
+		moves[iCapture++]=md;
+	}
+	
 	final int ctype(long bit) {
 		return ((bb_bit1 & bit) == 0 ? 0 : 1) + ((bb_bit2 & bit) == 0 ? 0 : 2) + ((bb_bit3 & bit) == 0 ? 0 : 2) - 1;
 	}
@@ -94,19 +103,17 @@ public class Movegen implements IConst{
 	public void generate() {
 		clear();
 		// Calculate checkers and pinners
-		final long own = isWhite?bb_white:bb_black;
-		final long enemy = isWhite?bb_black:bb_white;
 		SQATK rev = BASE.REV[king];
 		pinners=0L;
-		checkers=~bb_bit3 & enemy & ((~bb_bit1 & bb_bit2 & rev.RN) | (bb_bit1 & ~bb_bit2 & (isWhite?MBP.REV[king]:MWP.REV[king])));
-		long eslider=bb_bit3 & enemy  & rev.RQ; // Sliders
-		if(checkers==0L && eslider !=0L){
-			long diagatks = bb_bit1 & eslider & rev.RB;
+		checkers=enemy & ~bb_bit3 & ((~bb_bit1 & bb_bit2 & rev.RN) | (bb_bit1 & ~bb_bit2 & (isWhite?MBP.REV[king]:MWP.REV[king])));
+		long sliders=enemy  & bb_bit3 & rev.RQ; // Sliders
+		if(checkers==0L && sliders !=0L){
+			long diagatks = bb_bit1 & sliders & rev.RB;
 			if (diagatks != 0L)
-				diagPinners(own, king, diagatks);
-			long lineatks = bb_bit2 & eslider & rev.RR;
+				diagPinners(diagatks);
+			long lineatks = bb_bit2 & sliders & rev.RR;
 			if (checkers==0L && lineatks != 0L)
-				linePinners(own, king, lineatks);
+				linePinners(lineatks);
 		}
 		if(checkers==0L){
 			nonevasive(own & ~pinners);
@@ -114,9 +121,10 @@ public class Movegen implements IConst{
 			clear(); // not interested in pinned moves for evasive moves
 			evasive(own);
 		}
+		order();
 	}
 
-	final private  void diagPinners(final long own, final int king, long atks) {
+	final private  void diagPinners(long atks) {
 		int bits = Long.bitCount(atks);
 		for (int j = 0; j < bits; j++) {
 			int asq = Long.numberOfTrailingZeros(atks);
@@ -143,41 +151,41 @@ public class Movegen implements IConst{
 						MWP mwp = MWP.WP[from];
 						if(pinner<<7==attacker && (attacker&IConst.RIGHTLANE)==0L){
 							if(from>47){
-								add(mwp.PL[ctype]);
-								add(mwp.PL[ctype+5]);
-								add(mwp.PL[ctype+10]);
-								add(mwp.PL[ctype+15]);
+								capture(mwp.PL[ctype]);
+								capture(mwp.PL[ctype+5]);
+								capture(mwp.PL[ctype+10]);
+								capture(mwp.PL[ctype+15]);
 							} else
-								add(mwp.CL[ctype]);
+								capture(mwp.CL[ctype]);
 						}
 						if(pinner<<9==attacker && (attacker&IConst.LEFTLANE)==0L){
 							if(from>47){
-								add(mwp.PR[ctype]);
-								add(mwp.PR[ctype+5]);
-								add(mwp.PR[ctype+10]);
-								add(mwp.PR[ctype+15]);
+								capture(mwp.PR[ctype]);
+								capture(mwp.PR[ctype+5]);
+								capture(mwp.PR[ctype+10]);
+								capture(mwp.PR[ctype+15]);
 							} else
-								add(mwp.CR[ctype]);
+								capture(mwp.CR[ctype]);
 						}
 					} else {
 						MBP mbp = MBP.BP[from];
 						if(pinner>>9==attacker && (attacker&IConst.RIGHTLANE)==0L){
 							if(from<16){
-								add(mbp.PL[ctype]);
-								add(mbp.PL[ctype+5]);
-								add(mbp.PL[ctype+10]);
-								add(mbp.PL[ctype+15]);
+								capture(mbp.PL[ctype]);
+								capture(mbp.PL[ctype+5]);
+								capture(mbp.PL[ctype+10]);
+								capture(mbp.PL[ctype+15]);
 							} else
-								add(mbp.CL[ctype]);
+								capture(mbp.CL[ctype]);
 						}
 						if(pinner>>7==attacker && (attacker&IConst.LEFTLANE)==0L){
 							if(from<16){
-								add(mbp.PR[ctype]);
-								add(mbp.PR[ctype+5]);
-								add(mbp.PR[ctype+10]);
-								add(mbp.PR[ctype+15]);
+								capture(mbp.PR[ctype]);
+								capture(mbp.PR[ctype+5]);
+								capture(mbp.PR[ctype+10]);
+								capture(mbp.PR[ctype+15]);
 							} else
-								add(mbp.CR[ctype]);
+								capture(mbp.CR[ctype]);
 						}
 					}
 				}
@@ -185,7 +193,7 @@ public class Movegen implements IConst{
 		}
 	}
 
-	final private void linePinners(final long own, final int king, long atks) {
+	final private void linePinners(long atks) {
 		int bits = Long.bitCount(atks);
 		for (int j = 0; j < bits; j++) {
 			int asq = Long.numberOfTrailingZeros(atks);
@@ -232,12 +240,7 @@ public class Movegen implements IConst{
 			MWB.genLegal(this,pieces & (bb_bit1) & (~bb_bit2) & (bb_bit3), MWB.WB);
 			MWR.genLegal(this,pieces & (~bb_bit1) & (bb_bit2) & (bb_bit3), MWR.WR);
 			MWQ.genLegal(this,pieces & (bb_bit1) & (bb_bit2) & (bb_bit3), MWQ.WQ);
-			while (iTested < iAll) {
-				MOVEDATA md = moves[iTested++];
-				if (isSafe(md))
-					moves[iLegal++]=md;
-			}
-			iAll=iLegal;
+			pruneLegal();
 			MWK.WK[king].genLegal(this);
 		} else {
 			MBP.genLegal(this,pieces & bb_pawns, MBP.BP);
@@ -245,14 +248,21 @@ public class Movegen implements IConst{
 			MBB.genLegal(this,pieces & (bb_bit1) & (~bb_bit2) & (bb_bit3), MBB.BB);
 			MBR.genLegal(this,pieces & (~bb_bit1) & (bb_bit2) & (bb_bit3), MBR.BR);
 			MBQ.genLegal(this,pieces & (bb_bit1) & (bb_bit2) & (bb_bit3), MBQ.BQ);
-			while (iTested < iAll) {
-				MOVEDATA md = moves[iTested++];
-				if (isSafe(md))
-					moves[iLegal++]=md;
-			}
-			iAll=iLegal;
+			pruneLegal();
 			MBK.BK[king].genLegal(this);
 		}
+	}
+
+	public void pruneLegal() {
+		while (iTested < iAll) {
+			MOVEDATA md = moves[iTested++];
+			if (isSafe(md))
+				moves[iLegal++]=md;
+			else 
+				if(iTested<iCapture)
+					iCapture--;
+		}
+		iAll=iLegal;
 	}
 
 	protected void nonevasive(long pieces) {
@@ -292,21 +302,21 @@ public class Movegen implements IConst{
 					if(c==3){
 						if(isWhite){
 							if(bto==1L<<IConst.BR_KING_STARTPOS)
-								add(b.K);
+								capture(b.K);
 							 else if(bto==1L<<IConst.BR_QUEEN_STARTPOS)
-								add(b.Q);
+								capture(b.Q);
 							 else 
-								add(m[i + c]);
+								capture(m[i + c]);
 						} else {
 							if(bto==1L<<IConst.WR_KING_STARTPOS)
-								add(b.K);
+								capture(b.K);
 							 else if(bto==1L<<IConst.WR_QUEEN_STARTPOS)
-								add(b.Q);
+								capture(b.Q);
 							 else 
-								add(m[i + c]);
+								capture(m[i + c]);
 						}
 					} else {
-						add(m[i + c]);
+						capture(m[i + c]);
 					}
 				}
 				break;
@@ -362,15 +372,15 @@ public class Movegen implements IConst{
 		long bb_knights = ~bb_bit1 & bb_bit2 & ~bb_bit3;
 		long bb_kings = bb_bit1 & bb_bit2 & ~bb_bit3;
 		long bb_pawns = bb_bit1 & ~bb_bit2 & ~bb_bit3;
-		long e=white?bb_black:(bb_bit1 | bb_bit2 | bb_bit3)^bb_black;
+		long enemy=white?bb_black:(bb_bit1 | bb_bit2 | bb_bit3)^bb_black;
 		long rp=white?MBP.REV[king]:MWP.REV[king];
 		MWQ rq=MWQ.WQ[king];
 		SQATK rev=BASE.REV[king];
-		if(((e & bb_knights & rev.RN) != 0) || ((e & bb_kings & rev.RK) != 0) || ((e & bb_pawns & rp) != 0))
+		if(((enemy & bb_knights & rev.RN) != 0) || ((enemy & bb_kings & rev.RK) != 0) || ((enemy & bb_pawns & rp) != 0))
 			return false;
-		long slider=e & bb_bit3;
+		long slider=enemy & bb_bit3;
 		if((slider & rev.RQ) !=0){
-			long a = bb_piece  & ~(bb_kings & ~e);
+			long a = bb_piece  & ~(bb_kings & ~enemy);
 			if ((bb_bit1 & slider & rev.RB) != 0) {
 				long diag=slider & bb_bit1;
 				if(ray(diag, rq.UL, a)||ray(diag, rq.UR, a)||ray(diag, rq.DL, a)||ray(diag, rq.DR, a))
@@ -395,10 +405,38 @@ public class Movegen implements IConst{
 	}
 	
 	void order(){
-		
+		findDiscoveredCheckCandidates();
 	}
-	
-	
-	
-	
+
+	private void findDiscoveredCheckCandidates() {
+		SQATK rev = BASE.REV[eking];
+		hiders=0L;
+		long sliders=own & bb_bit3 & rev.RQ;
+		if(sliders !=0L){
+			long diagatks = sliders & bb_bit1 & rev.RB;
+			if (diagatks != 0L) {
+				int bits = Long.bitCount(diagatks);
+				for (int j = 0; j < bits; j++) {
+					int asq = Long.numberOfTrailingZeros(diagatks);
+					long attacker = 1L << asq;
+					diagatks ^= attacker;
+					long between = BASE.BETWEEN[asq+64*eking];
+					if(Long.bitCount(between&bb_piece)==1)
+						hiders|=between&own;
+				}
+			}
+			long lineatks = sliders & bb_bit2 & rev.RR;
+			if (lineatks != 0L) {
+				int bits = Long.bitCount(lineatks);
+				for (int j = 0; j < bits; j++) {
+					int asq = Long.numberOfTrailingZeros(lineatks);
+					long attacker = 1L << asq;
+					lineatks ^= attacker;
+					long between = BASE.BETWEEN[asq+64*eking];
+					if(Long.bitCount(between&bb_piece)==1)
+						hiders|=between&own;
+				}
+			}
+		}
+	}
 }

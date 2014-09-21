@@ -19,4 +19,8 @@ public abstract class Adder {
 	void add(MOVEDATA move) {
 		gen.add(move);
 	}
+
+	void capture(MOVEDATA move) {
+		gen.capture(move);
+	}
 }

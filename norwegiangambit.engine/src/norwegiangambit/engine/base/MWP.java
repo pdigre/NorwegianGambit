@@ -148,22 +148,22 @@ public class MWP extends MBase{
 				if (to == enp) {
 					MOVEDATA md=mp[from].EL;
 					if(gen.isSafe(md))
-						add(md);
+						capture(md);
 				} else {
 					int ctype=gen.ctype(1L << to);
 					if(from<48){
-						add(mp[from].CL[ctype]);
+						capture(mp[from].CL[ctype]);
 					} else {
 						if(from+7==BR_QUEEN_STARTPOS && (gen.castling & CANCASTLE_BLACKQUEEN)!=0){
-							add(MWP.PQ[0]);
-							add(MWP.PQ[1]);
-							add(MWP.PQ[2]);
-							add(MWP.PQ[3]);
+							capture(MWP.PQ[0]);
+							capture(MWP.PQ[1]);
+							capture(MWP.PQ[2]);
+							capture(MWP.PQ[3]);
 						} else {
-							add(mp[from].PL[ctype]);
-							add(mp[from].PL[ctype+5]);
-							add(mp[from].PL[ctype+10]);
-							add(mp[from].PL[ctype+15]);
+							capture(mp[from].PL[ctype]);
+							capture(mp[from].PL[ctype+5]);
+							capture(mp[from].PL[ctype+10]);
+							capture(mp[from].PL[ctype+15]);
 						}
 					}
 				}
@@ -177,22 +177,22 @@ public class MWP extends MBase{
 				if (to == enp) {
 					MOVEDATA md=mp[from].ER;
 					if(gen.isSafe(md))
-						add(md);
+						capture(md);
 				} else {
 					int ctype=gen.ctype(1L << to);
 					if(from<48){
-						add(mp[from].CR[ctype]);
+						capture(mp[from].CR[ctype]);
 					} else {
 						if(from+9==BR_KING_STARTPOS && (gen.castling & CANCASTLE_BLACKKING)!=0){
-							add(MWP.PK[0]);
-							add(MWP.PK[1]);
-							add(MWP.PK[2]);
-							add(MWP.PK[3]);
+							capture(MWP.PK[0]);
+							capture(MWP.PK[1]);
+							capture(MWP.PK[2]);
+							capture(MWP.PK[3]);
 						} else {
-							add(mp[from].PR[ctype]);
-							add(mp[from].PR[ctype+5]);
-							add(mp[from].PR[ctype+10]);
-							add(mp[from].PR[ctype+15]);
+							capture(mp[from].PR[ctype]);
+							capture(mp[from].PR[ctype+5]);
+							capture(mp[from].PR[ctype+10]);
+							capture(mp[from].PR[ctype+15]);
 						}
 					}
 				}
