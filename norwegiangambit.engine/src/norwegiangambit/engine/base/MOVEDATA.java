@@ -13,7 +13,7 @@ public class MOVEDATA {
 		StartGame pos = new StartGame("n1R5/PP1k4/1n6/8/8/8/4Kppp/5N1N b - - 2 3");
 		System.out.println(pos);
 		MOVEDATA md = MOVEDATAX.cpromote(14,7, IConst.BB, IConst.BP, IConst.WN);
-		pos.make(md);
+		pos.make(md,pos.bitmap);
 		System.out.println(pos);
 	}
 

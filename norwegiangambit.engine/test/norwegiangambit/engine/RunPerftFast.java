@@ -20,7 +20,7 @@ public class RunPerftFast implements IDivide{
 	public Map<String, Integer> divide(String fen, int levels) {
 		StartGame pos = new StartGame(fen);
 		NodeGen root = new NodeGen();
-		root.setPos(pos);
+		root.setPos(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
 		LinkedHashMap<String, Integer> map=new LinkedHashMap<String, Integer>();
 		root.generate();
 		long[] count=new long[root.iAll];
@@ -34,7 +34,6 @@ public class RunPerftFast implements IDivide{
 			}
 		    for (int i = 0; i < root.iAll; i++) {
 		    	MOVEDATA md = root.moves[i];
-				Position next = pos.move(md);
 				NodeGen[] movegen = new NodeGen[levels-1];
 				for (int i1 = 0; i1 < movegen.length; i1++) {
 					NodeGen m = i1 < movegen.length - 1 ? new NodeGen() : new LeafGen(count,i);
@@ -43,7 +42,8 @@ public class RunPerftFast implements IDivide{
 					m.parent = parent;
 					parent.child = m;
 				}
-				movegen[0].setPos(next);
+				movegen[0].setPos(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
+				movegen[0].make(md, root.bitmap);;
 				movegen[0].run();
 				map.put(FEN.move2literal(md.bitmap),(int)count[i]);
 			}
@@ -52,8 +52,8 @@ public class RunPerftFast implements IDivide{
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
 		CountTask[] tasks = new CountTask[root.iAll];
 		for (int i1 = 0; i1 < root.iAll; i1++) {
-			Position p = pos.move(root.moves[i1]);
-			CountTask task=new CountTask(p,count,i1,levels,root);
+			MOVEDATA md = root.moves[i1];
+			CountTask task=new CountTask(md,count,i1,levels,root);
 			tasks[i1]=task;
 			pool.execute(task);
 		}
@@ -72,7 +72,7 @@ public class RunPerftFast implements IDivide{
 		private static final long serialVersionUID = -2743566188067414328L;
 		NodeGen[] movegen;
 
-		public CountTask(Position pos,long[] count,int i,int levels,NodeGen root) {
+		public CountTask(MOVEDATA md,long[] count,int i,int levels,NodeGen root) {
 			movegen = new NodeGen[levels-1];
 			for (int i1 = 0; i1 < movegen.length; i1++) {
 				NodeGen m = i1 < movegen.length - 1 ? new NodeGen() : new LeafGen(count,i);
@@ -81,7 +81,8 @@ public class RunPerftFast implements IDivide{
 				m.parent = parent;
 				parent.child = m;
 			}
-			movegen[0].setPos(pos);
+			movegen[0].setPos(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
+			movegen[0].make(md, root.bitmap);;
 		}
 
 		@Override
@@ -98,7 +99,8 @@ public class RunPerftFast implements IDivide{
 			generate();
 			for (int i = 0; i < iAll; i++) {
 				MOVEDATA md = moves[i];
-				child.setPos(pos.move(md));
+				child.setPos(isWhite,bitmap,wking,bking,bb_black,bb_bit1,bb_bit2,bb_bit3);
+				child.make(md, bitmap);
 				child.run();
 			}
 		}

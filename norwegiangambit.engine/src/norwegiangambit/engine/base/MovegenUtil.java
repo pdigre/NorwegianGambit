@@ -6,7 +6,8 @@ public class MovegenUtil {
 
 	public static String[] getLegalMoves(String fen) {
 		StartGame pos = new StartGame(fen);
-		Movegen mg = new Movegen(pos);
+		Movegen mg = new Movegen();
+		mg.setPos(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
 		MOVEDATA[] mds = mg.legalmoves();
 		String[] moves=new String[mds.length];
 		for (int i = 0; i < mds.length; i++)

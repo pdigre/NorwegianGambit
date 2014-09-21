@@ -51,7 +51,7 @@ public class Position implements IConst, Comparable<Position> {
 		}
 	}
 	
-	public Position(long bitmap, int score,boolean whiteNext, long bb_black, long bb_bit1, long bb_bit2, long bb_bit3, int wking, int bking,long zobrist) {
+	public Position(boolean whiteNext, long bitmap,int wking, int bking, long bb_black, long bb_bit1, long bb_bit2, long bb_bit3, long zobrist,int score) {
 		this.bitmap = bitmap;
 		this.wking = wking;
 		this.bking = bking;
@@ -61,6 +61,18 @@ public class Position implements IConst, Comparable<Position> {
 		this.bb_bit3 = bb_bit3;
 		this.zobrist=zobrist;
 		this.score=score;
+	}
+
+	public Position(boolean whiteNext, long bitmap, int wking, int bking, long bb_black, long bb_bit1, long bb_bit2, long bb_bit3) {
+		this.bitmap = bitmap;
+		this.wking = wking;
+		this.bking = bking;
+		this.bb_black = bb_black;
+		this.bb_bit1 = bb_bit1;
+		this.bb_bit2 = bb_bit2;
+		this.bb_bit3 = bb_bit3;
+		this.zobrist=0L;
+		this.score=0;
 	}
 
 	public Position(Position pos) {
@@ -122,7 +134,7 @@ public class Position implements IConst, Comparable<Position> {
 	}
 
 	public String toString() {
-		String string = norwegiangambit.util.FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black) + "\n " +(" << "+FEN.move2literal(bitmap)+"              ").substring(0,10) + "\n";
+		String string = FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black) + "\n " +(" << "+FEN.move2literal(bitmap)+"              ").substring(0,10) + "\n";
 		return  parent==null?string:FEN.addHorizontal(string, parent.toString());
 	}
 
@@ -254,25 +266,15 @@ public class Position implements IConst, Comparable<Position> {
 				bb_black |= ((p & 8) == 0 ? 0 : bit);
 			}
 		}
-		long zobrist=0L;
-		int score=0;
-		return new Position(bitmap, score, white, bb_black, bb_bit1, bb_bit2, bb_bit3, wking, bking, zobrist);
-	}
-
-	public Position move(MOVEDATA m) {
-		Position pos=new Position(this);
-		pos.make(m);
-		return pos;
+		return new Position(white, bitmap, wking, bking, bb_black, bb_bit1, bb_bit2, bb_bit3);
 	}
 	
-	public void make(MOVEDATA m) {
-		long castling = ~CASTLING_STATE | bitmap;
-		bitmap=m.bitmap&castling;
+	public void make(MOVEDATA m,long p_castling) {
+		bitmap=m.bitmap&(~CASTLING_STATE | p_castling);
 		bb_black ^=m.b_black;
 		bb_bit1 ^=m.b_bit1;
 		bb_bit2 ^=m.b_bit2;
 		bb_bit3 ^=m.b_bit3;
-
 		int type = BITS.getPiece(bitmap);
 		if(type==IConst.WK)
 			wking=BITS.getTo(bitmap);

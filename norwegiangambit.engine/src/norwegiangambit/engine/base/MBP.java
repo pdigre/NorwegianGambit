@@ -121,8 +121,6 @@ public class MBP  extends MBase{
 			public void add(int from) {
 				MBP mbp = mp[from];
 				if(from<16){
-					if(mbp.P1==null)
-						System.out.println(gen.pos.toString());
 					add(mbp.P1[0]);
 					add(mbp.P1[1]);
 					add(mbp.P1[2]);
