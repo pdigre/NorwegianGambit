@@ -43,7 +43,7 @@ public abstract class MSlider extends MBase {
 //						else if(c==3 && bto==1L<<IConst.WR_QUEEN_STARTPOS)
 //							gen.add(Q);
 //						else
-							gen.add(m[i + c]);
+							gen.capture(m[i + c]);
 					}
 					break;
 				} else {
@@ -69,7 +69,7 @@ public abstract class MSlider extends MBase {
 //						else if(c==3 && bto==1L<<IConst.BR_QUEEN_STARTPOS)
 //							gen.add(Q);
 //						else
-							gen.add(m[i + c]);
+							gen.capture(m[i + c]);
 					}
 					break;
 				} else {

@@ -52,11 +52,11 @@ public class MBN extends MBase {
 				if ((enemy & bto) != 0) {
 					int c = gen.ctype(bto);
 					if(c==3 && bto==1L<<IConst.WR_KING_STARTPOS)
-						gen.add(K);
+						gen.capture(K);
 					else if(c==3 && bto==1L<<IConst.WR_QUEEN_STARTPOS)
-						gen.add(Q);
+						gen.capture(Q);
 					else
-						gen.add(m[c]);
+						gen.capture(m[c]);
 				}
 			}
 		}
