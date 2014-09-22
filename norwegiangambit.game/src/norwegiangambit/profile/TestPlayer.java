@@ -1,6 +1,6 @@
 package norwegiangambit.profile;
 
-import norwegiangambit.engine.iterate.AlphaBeta;
+import norwegiangambit.engine.iterate.AlphaBetaOld;
 import norwegiangambit.engine.iterate.IIterator;
 import norwegiangambit.engine.iterate.Quiescence;
 import norwegiangambit.engine.iterate.QuiescenceTT;
@@ -37,7 +37,7 @@ public abstract class TestPlayer extends Player {
 	}
 
 	public IIterator addIterator(IIterator iter) {
-		return new AlphaBeta(iter);
+		return new AlphaBetaOld(iter);
 	}
 
 	public String getLabel() {

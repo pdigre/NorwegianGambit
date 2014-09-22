@@ -4,9 +4,9 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 import norwegiangambit.engine.base.NodeGen;
-import norwegiangambit.engine.evaluate.IEvaluator;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.engine.fen.PositionScore;
+import norwegiangambit.engine.iterate.IEvaluator;
 
 public final class IterateScores extends TreeSet<Position> {
 

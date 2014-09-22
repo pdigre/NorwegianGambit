@@ -13,12 +13,13 @@ import norwegiangambit.util.IConst;
  *
  */
 public class Movegen implements IConst{
-	Movegen parent;
 	public boolean isWhite=false;
 	public long bitmap,bb_black,bb_bit1,bb_bit2,bb_bit3;
 	public int wking,bking,enpassant;
 	long castling,bb_piece,bb_white, own, enemy,bb_knights,bb_kings,bb_pawns;
-	long checkers,pinners,hiders;
+	protected long checkers;
+	protected long pinners;
+	long hiders;
 	int king,eking;
 
 	public final MOVEDATA[] moves = new MOVEDATA[99];
@@ -60,8 +61,8 @@ public class Movegen implements IConst{
 		this.castling 	= ~CASTLING_STATE | bitmap; // all other are set
 	}
 
-	public void make(MOVEDATA md,long p_castling){
-		bitmap	  =md.bitmap&(~CASTLING_STATE | p_castling);
+	public void make(MOVEDATA md){
+		bitmap	  =md.bitmap&(~CASTLING_STATE | bitmap);
 		bb_black ^=md.b_black;
 		bb_bit1  ^=md.b_bit1;
 		bb_bit2  ^=md.b_bit2;
@@ -325,8 +326,7 @@ public class Movegen implements IConst{
 	public String toString() {
 		String string = FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black) + "\n " 
 				+(" << "+FEN.move2literal(bitmap)+"              ").substring(0,10) + "\n";
-		String string2 = parent==null?string:FEN.addHorizontal(string, parent.toString());
-		return FEN.addHorizontal(FEN.addHorizontal(string2, FEN.board2string(pinners)), FEN.board2string(checkers));
+		return string;
 	}
 
 	public boolean isSafe(MOVEDATA md) {

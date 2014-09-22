@@ -1,4 +1,4 @@
-package norwegiangambit.engine.evaluate;
+package norwegiangambit.engine.iterate;
 
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.util.BITS;

@@ -7,7 +7,6 @@ import java.util.concurrent.RecursiveTask;
 
 import norwegiangambit.engine.base.MOVEDATA;
 import norwegiangambit.engine.base.Movegen;
-import norwegiangambit.engine.fen.Position;
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
@@ -43,7 +42,7 @@ public class RunPerftFast implements IDivide{
 					parent.child = m;
 				}
 				movegen[0].setPos(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
-				movegen[0].make(md, root.bitmap);;
+				movegen[0].make(md);;
 				movegen[0].run();
 				map.put(FEN.move2literal(md.bitmap),(int)count[i]);
 			}
@@ -82,7 +81,7 @@ public class RunPerftFast implements IDivide{
 				parent.child = m;
 			}
 			movegen[0].setPos(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
-			movegen[0].make(md, root.bitmap);;
+			movegen[0].make(md);
 		}
 
 		@Override
@@ -100,7 +99,7 @@ public class RunPerftFast implements IDivide{
 			for (int i = 0; i < iAll; i++) {
 				MOVEDATA md = moves[i];
 				child.setPos(isWhite,bitmap,wking,bking,bb_black,bb_bit1,bb_bit2,bb_bit3);
-				child.make(md, bitmap);
+				child.make(md);
 				child.run();
 			}
 		}

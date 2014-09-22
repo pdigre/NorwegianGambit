@@ -1,7 +1,7 @@
 package norwegiangambit.profile;
 
 import norwegiangambit.engine.fen.Position;
-import norwegiangambit.engine.iterate.AlphaBeta;
+import norwegiangambit.engine.iterate.AlphaBetaOld;
 import norwegiangambit.engine.iterate.IIterator;
 import norwegiangambit.engine.iterate.IterateEnd;
 
@@ -21,10 +21,10 @@ public class Medium extends Player {
 //            return;
 //        }
         IIterator iter0 = new IterateEnd();
-        IIterator iter1 = new AlphaBeta(iter0);
-        IIterator iter2 = new AlphaBeta(iter1);
-        IIterator iter3 = new AlphaBeta(iter2);
-        IIterator iter4 = new AlphaBeta(iter3);
+        IIterator iter1 = new AlphaBetaOld(iter0);
+        IIterator iter2 = new AlphaBetaOld(iter1);
+        IIterator iter3 = new AlphaBetaOld(iter2);
+        IIterator iter4 = new AlphaBetaOld(iter3);
 
         setTimeout(9000);
         for (Position m : moves.getSortedArray())

@@ -1,6 +1,6 @@
 package norwegiangambit.profile;
 
-import norwegiangambit.engine.iterate.AlphaBetaTT;
+import norwegiangambit.engine.iterate.AlphaBetaTTOld;
 import norwegiangambit.engine.iterate.IIterator;
 import norwegiangambit.engine.iterate.QuiescenceTT;
 import norwegiangambit.engine.iterate.Transposition;
@@ -13,7 +13,7 @@ public class P_AlphaBetaTT extends TestPlayer {
 
 	@Override
 	public IIterator addIterator(IIterator iter) {
-		return new AlphaBetaTT(iter);
+		return new AlphaBetaTTOld(iter);
 	}
 	
 	@Override

@@ -1,9 +1,9 @@
 package norwegiangambit.profile;
 
-import norwegiangambit.engine.evaluate.IEvaluator;
 import norwegiangambit.engine.fen.FEN_POS;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.engine.fen.PositionScore;
+import norwegiangambit.engine.iterate.IEvaluator;
 import norwegiangambit.engine.iterate.IIterator;
 import norwegiangambit.engine.util.IterateScores;
 

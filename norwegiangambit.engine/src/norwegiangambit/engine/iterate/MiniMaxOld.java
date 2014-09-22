@@ -5,13 +5,13 @@ import norwegiangambit.engine.fen.FEN_POS;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.util.FEN;
 
-public class MiniMax implements IIterator {
+public class MiniMaxOld implements IIterator {
 
     private IIterator deeper;
 
     private Position pos;
     
-    public MiniMax(IIterator deeper) {
+    public MiniMaxOld(IIterator deeper) {
         this.deeper = deeper;
     }
 

@@ -1,6 +1,6 @@
 package norwegiangambit.engine.fen;
 
-import norwegiangambit.engine.evaluate.IEvaluator;
+import norwegiangambit.engine.iterate.IEvaluator;
 import norwegiangambit.util.FEN;
 
 

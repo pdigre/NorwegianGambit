@@ -2,7 +2,7 @@ package norwegiangambit.profile;
 
 import norwegiangambit.engine.iterate.IIterator;
 import norwegiangambit.engine.iterate.IterateEnd;
-import norwegiangambit.engine.iterate.MiniMax;
+import norwegiangambit.engine.iterate.MiniMaxOld;
 
 public class P_MiniMax extends TestPlayer {
 
@@ -12,7 +12,7 @@ public class P_MiniMax extends TestPlayer {
 
     @Override
     public IIterator addIterator(IIterator iter) {
-    	return new MiniMax(iter);
+    	return new MiniMaxOld(iter);
     }
 
 }
