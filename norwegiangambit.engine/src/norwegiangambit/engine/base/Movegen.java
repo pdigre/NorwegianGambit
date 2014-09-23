@@ -17,16 +17,12 @@ public class Movegen implements IConst{
 	public long bitmap,bb_black,bb_bit1,bb_bit2,bb_bit3;
 	public int wking,bking,enpassant;
 	long castling,bb_piece,bb_white, own, enemy,bb_knights,bb_kings,bb_pawns;
-	protected long checkers;
-	protected long pinners;
-	long hiders;
+	protected long checkers, pinners, hiders;
 	int king,eking;
 
 	public final MOVEDATA[] moves = new MOVEDATA[99];
 	public int iAll = 0;
-	int iLegal = 0;
-	int iTested = 0;
-	int iCapture=0;
+	int iLegal = 0, iTested = 0, iCapture=0;
 
 	final void clear(){
 		iLegal = 0;

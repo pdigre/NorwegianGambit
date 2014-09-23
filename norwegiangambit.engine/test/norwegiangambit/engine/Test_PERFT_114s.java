@@ -1,6 +1,7 @@
 package norwegiangambit.engine;
 
 import norwegiangambit.engine.base.BASE;
+import norwegiangambit.engine.evaluate.RunPerftFast;
 import norwegiangambit.util.EngineStockfish;
 import norwegiangambit.util.PerftTest;
 
