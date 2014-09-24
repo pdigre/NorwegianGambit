@@ -11,7 +11,7 @@ import norwegiangambit.util.FEN;
 
 public class RunAlphaBeta implements IThinker{
 
-	public static boolean useConcurrency = true;
+	public static boolean useConcurrency = false;
 	
 	
 	public class Eval{
@@ -49,9 +49,9 @@ public class RunAlphaBeta implements IThinker{
 			}
 		    for (int i = 0; i < root.iAll; i++) {
 		    	MOVEDATA md = root.moves[i];
-				NodeGen[] movegen = new NodeGen[levels-1];
+				NodeGen[] movegen = new NodeGen[levels];
+	        	Eval eval = new Eval(0,0);
 				for (int i1 = 0; i1 < movegen.length; i1++) {
-		        	Eval eval = new Eval(0,0);
 					NodeGen m = i1 < movegen.length - 1 ? new NodeGen() : new LeafGen(eval);
 					movegen[i1] = m;
 					NodeGen parent = i1>0?movegen[i1 - 1]:root;
@@ -59,9 +59,10 @@ public class RunAlphaBeta implements IThinker{
 					parent.child = m;
 				}
 				movegen[0].set(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
-				movegen[0].set(md);;
-				movegen[0].run();
-				map.put(FEN.move2literal(md.bitmap),new Eval((int)count[i],0));
+				movegen[0].set(md);
+				movegen[0].evaluate(md);
+				eval.value=-movegen[0].alphabeta(-20000, +20000);
+				map.put(FEN.move2literal(md.bitmap),eval);
 			}
 		    return map;
 		}
@@ -88,8 +89,10 @@ public class RunAlphaBeta implements IThinker{
 	final private class CountTask extends RecursiveTask<Long> {
 		private static final long serialVersionUID = -2743566188067414328L;
 		NodeGen[] movegen;
+		Eval eval;
 
 		public CountTask(MOVEDATA md,Eval eval,int levels,NodeGen root) {
+			this.eval=eval;
 			movegen = new NodeGen[levels-1];
 			for (int i1 = 0; i1 < movegen.length; i1++) {
 				NodeGen m = i1 < movegen.length - 1 ? new NodeGen() : new LeafGen(eval);
@@ -100,26 +103,24 @@ public class RunAlphaBeta implements IThinker{
 			}
 			movegen[0].set(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
 			movegen[0].set(md);
+			movegen[0].evaluate(md);
 		}
 
 		@Override
 		protected Long compute() {
-			movegen[0].run();
+			eval.value=movegen[0].alphabeta(-20000, 20000);
 			return 0L;
 		}
 	}
 
 	class NodeGen extends AlphaBeta {
 
-		public void run() {
-			generate();
-			for (int i = 0; i < iAll; i++) {
-				MOVEDATA md = moves[i];
-				child.set(isWhite,bitmap,wking,bking,bb_black,bb_bit1,bb_bit2,bb_bit3);
-				((Evaluate)child).set(md);
-				((NodeGen)child).run();
-			}
+		@Override
+		public void make(MOVEDATA md) {
+			super.make(md);
+			((NodeGen)child).evaluate(md);
 		}
+		
 	}
 
 	class LeafGen extends NodeGen {
@@ -127,17 +128,11 @@ public class RunAlphaBeta implements IThinker{
 		public LeafGen(Eval eval) {
 			this.eval=eval;
 		}
-
-		@Override
-		public void run() {
-			eval.count++;
-			eval.value=whiteScore();
-		}
 		
 		@Override
-		public void make(MOVEDATA md) {
-			super.make(md);
-			evaluate(md);
+		public int alphabeta(int alpha, int beta) {
+			eval.count++;
+			return score();
 		}
 	}
 }

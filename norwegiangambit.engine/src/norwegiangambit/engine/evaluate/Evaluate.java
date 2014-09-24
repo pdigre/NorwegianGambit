@@ -8,8 +8,8 @@ public class Evaluate extends Movegen implements IIterate {
 
 	IIterate parent,child;
 
-	private int midscore;
-	private int endscore;
+	protected int midscore;
+	protected int endscore;
 	
 	@Override
 	public int midScore(){
