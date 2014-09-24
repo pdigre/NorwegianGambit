@@ -21,17 +21,17 @@ public class TacticEval implements IEvaluator {
 			if(BITS.isEnpassant(bitmap)){
 				int captured = BITS.getCaptured(bitmap);
 				int to2 = BITS.white(bitmap)?(to-8):(to+8);
-				int pVal = PSQT.pVal(to2, captured);
+				int pVal = PSQT.pVal(to2, captured)[0];
 				last -= pVal;
 			} else {
 				int captured = BITS.getCaptured(bitmap);
-				int pVal = PSQT.pVal(to, captured);
+				int pVal = PSQT.pVal(to, captured)[0];
 				last -= pVal;
 			}
 		}
 		if (BITS.isPromotion(bitmap)){
-			int vt = PSQT.pVal(to, piece);
-			int vf = PSQT.pVal(from, BITS.white(bitmap)?IConst.WP:IConst.BP);
+			int vt = PSQT.pVal(to, piece)[0];
+			int vf = PSQT.pVal(from, BITS.white(bitmap)?IConst.WP:IConst.BP)[0];
 			return last + vt - vf;
 		}
 		if (piece == IConst.BK) {
@@ -41,8 +41,8 @@ public class TacticEval implements IEvaluator {
 			int vfrom = PSQT.KING[0][from];
 			return last + vto - vfrom;
 		} else if (piece > 0) {
-			int vt = PSQT.pVal(to, piece);
-			int vf = PSQT.pVal(from, piece);
+			int vt = PSQT.pVal(to, piece)[0];
+			int vf = PSQT.pVal(from, piece)[0];
 			return last + vt - vf;
 		}
 		return last;

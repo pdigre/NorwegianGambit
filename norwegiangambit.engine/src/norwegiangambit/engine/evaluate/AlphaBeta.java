@@ -6,7 +6,7 @@ public class AlphaBeta extends Evaluate {
 	public int alphabeta(int alpha, int beta) {
 		generate();
 		for (int i = 0; i < iAll; i++) {
-			setPos(i);
+			make(moves[i]);
 			int score = -child.alphabeta(-beta, -alpha);
 			if (score >= beta)
 				return beta; // fail hard beta-cutoff

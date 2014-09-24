@@ -19,7 +19,7 @@ public class FullEval implements IEvaluator {
             } else if (p == IConst.WK) {
                 wk = i;
             } else if (p > 0) {
-                score += PSQT.pVal(i, p);
+                score += PSQT.pVal(i, p)[0];
                 pcs++;
             }
         }

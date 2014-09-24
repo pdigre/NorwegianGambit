@@ -9,9 +9,7 @@ import norwegiangambit.util.IConst;
 public class MOVEDATAX extends MOVEDATA {
 
 	public static MOVEDATAX capture(long bitmap,int victim){
-		long purge = purge(bitmap, PSQT.pVal(BITS.getTo(bitmap), victim));
-		long bitmap2 = (purge | ((victim & 7) << IConst._CAPTURE))^findCastling(bitmap);
-		return create(bitmap2);
+		return create((bitmap | ((victim & 7) << IConst._CAPTURE))^findCastling(bitmap));
 	}
 
 	public static MOVEDATAX create(long bitmap){

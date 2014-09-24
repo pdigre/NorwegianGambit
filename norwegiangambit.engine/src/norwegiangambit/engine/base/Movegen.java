@@ -15,8 +15,9 @@ import norwegiangambit.util.IConst;
 public class Movegen implements IConst{
 	public boolean isWhite=false;
 	public long bitmap,bb_black,bb_bit1,bb_bit2,bb_bit3;
+	public long bb_piece;
 	public int wking,bking,enpassant;
-	long castling,bb_piece,bb_white, own, enemy,bb_knights,bb_kings,bb_pawns;
+	long castling,bb_white, own, enemy,bb_knights,bb_kings,bb_pawns;
 	protected long checkers, pinners, hiders;
 	int king,eking;
 
@@ -31,7 +32,7 @@ public class Movegen implements IConst{
 		iCapture=0;
 	}
 
-	public void setPos(boolean isWhite, long bitmap, int wking, int bking, long bb, long b1, long b2, long b3) {
+	public void set(boolean isWhite, long bitmap, int wking, int bking, long bb, long b1, long b2, long b3) {
 		this.bitmap 	= bitmap;
 		this.isWhite	= isWhite;
 		this.bb_black 	= bb;
@@ -57,7 +58,7 @@ public class Movegen implements IConst{
 		this.castling 	= ~CASTLING_STATE | bitmap; // all other are set
 	}
 
-	public void make(MOVEDATA md){
+	public void set(MOVEDATA md){
 		bitmap	  =md.bitmap&(~CASTLING_STATE | bitmap);
 		bb_black ^=md.b_black;
 		bb_bit1  ^=md.b_bit1;

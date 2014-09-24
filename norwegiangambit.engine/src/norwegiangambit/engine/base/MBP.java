@@ -76,7 +76,7 @@ public class MBP  extends MBase{
 
 	private MOVEDATA enpassant(int to) {
 		long bitmap = PSQT.assemble(IConst.BP, from, to, CASTLING_STATE | IConst.SPECIAL);
-		return MOVEDATA.create(purge(bitmap,PSQT.pVal(to - 8, IConst.WP)) | (IConst.WP << IConst._CAPTURE));
+		return MOVEDATA.create(bitmap | (IConst.WP << IConst._CAPTURE));
 	}
 
 	private MOVEDATA[] captures(int to) {

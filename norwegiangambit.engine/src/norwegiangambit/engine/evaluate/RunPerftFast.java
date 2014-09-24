@@ -19,7 +19,7 @@ public class RunPerftFast implements IDivide{
 	public Map<String, Integer> divide(String fen, int levels) {
 		StartGame pos = new StartGame(fen);
 		NodeGen root = new NodeGen();
-		root.setPos(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		root.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
 		LinkedHashMap<String, Integer> map=new LinkedHashMap<String, Integer>();
 		root.generate();
 		long[] count=new long[root.iAll];
@@ -39,8 +39,8 @@ public class RunPerftFast implements IDivide{
 					m.parent = parent;
 					parent.child = m;
 				}
-				movegen[0].setPos(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
-				movegen[0].make(md);;
+				movegen[0].set(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
+				movegen[0].set(md);;
 				movegen[0].run();
 				map.put(FEN.move2literal(md.bitmap),(int)count[i]);
 			}
@@ -78,8 +78,8 @@ public class RunPerftFast implements IDivide{
 				m.parent = parent;
 				parent.child = m;
 			}
-			movegen[0].setPos(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
-			movegen[0].make(md);
+			movegen[0].set(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
+			movegen[0].set(md);
 		}
 
 		@Override
@@ -96,8 +96,8 @@ public class RunPerftFast implements IDivide{
 			generate();
 			for (int i = 0; i < iAll; i++) {
 				MOVEDATA md = moves[i];
-				child.setPos(isWhite,bitmap,wking,bking,bb_black,bb_bit1,bb_bit2,bb_bit3);
-				child.make(md);
+				child.set(isWhite,bitmap,wking,bking,bb_black,bb_bit1,bb_bit2,bb_bit3);
+				child.set(md);
 				child.run();
 			}
 		}

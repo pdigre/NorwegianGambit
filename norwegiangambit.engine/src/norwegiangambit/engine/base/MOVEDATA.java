@@ -6,8 +6,87 @@ import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 
 public class MOVEDATA {
-	
-	
+	final public long bitmap,b_black,b_bit1,b_bit2,b_bit3;
+	final public long bto;
+	final public int mscore,escore;
+
+	protected MOVEDATA(long bits) {
+		int score[]=new int[2];
+		this.bitmap = bits;
+		int piece = BITS.getPiece(bits);
+		int from = BITS.getFrom(bits);
+		int to = BITS.getTo(bits);
+		bto = 1L << to;
+		long bfrom = 1L << from;
+		long bfromto = bto|bfrom;
+		long b_bit1 = ((piece & 1) == 0 ? 0 : bfromto);
+		long b_bit2 = ((piece & 2) == 0 ? 0 : bfromto);
+		long b_bit3 = ((piece & 4) == 0 ? 0 : bfromto);
+		long b_black = (white(piece) ? 0 : bfromto);
+		if(BITS.isPromotion(bits)){
+			b_bit1 ^= ((piece & 1) != 0 ? 0 : bfrom);
+			b_bit2 ^= ((piece & 2) == 0 ? 0 : bfrom);
+			b_bit3 ^= ((piece & 4) == 0 ? 0 : bfrom);
+			sub(white(piece)?IConst.WP:IConst.BP,from,score);
+		} else {
+			sub(piece,from,score);
+		}
+		add(piece,to,score);
+	    if (BITS.isEnpassant(bits)) {
+			int enp = to + (to > from ? -8 : 8);
+			long e = 1L << enp;
+			b_bit1 ^= ((piece & 1) == 0 ? 0 : e);
+			b_black ^= ((piece & 8) != 0 ? 0 : e);
+			sub(white(piece)?IConst.WP:IConst.BP,enp,score);
+	    } else if(BITS.isCapture(bits)){
+			int victim=BITS.getCaptured(bits);
+			b_bit1 ^= ((victim & 1) == 0 ? 0 : bto);
+			b_bit2 ^= ((victim & 2) == 0 ? 0 : bto);
+			b_bit3 ^= ((victim & 4) == 0 ? 0 : bto);
+			b_black ^= (white(victim) ? 0 : bto);
+			sub(white(victim)?victim|8:victim,to,score);
+		} else if (BITS.isCastling(bits)) {
+			if (from > to) {
+				to = from - 1;
+				from = from - 4;
+			} else {
+				to = from + 1;
+				from = from + 3;
+			}
+			long cfrom = 1L << from;
+			long cto = 1L << to;
+			long cfromto =cto|cfrom;
+			b_bit2 ^= cfromto;
+			b_bit3 ^= cfromto;
+			b_black ^= (white(piece) ? 0 : cfromto);
+			int rook=white(piece)?IConst.WR:IConst.BR;
+			sub(rook,from,score);
+			add(rook,to,score);
+		}
+		this.b_bit1=b_bit1;
+		this.b_bit2=b_bit2;
+		this.b_bit3=b_bit3;
+		this.b_black=b_black;
+		this.mscore=score[0];
+		this.escore=score[1];
+	}
+
+	public boolean white(int piece) {
+		return (piece & 8) == 0;
+	}
+
+	private void sub(int piece, int sq, int[] score) {
+		int[] pv = PSQT.pVal(sq, piece);
+		score[0]-=pv[0];
+		score[1]-=pv[1];
+	}
+
+	private void add(int piece, int sq, int[] score) {
+		int[] pv = PSQT.pVal(sq, piece);
+		score[0]+=pv[0];
+		score[1]+=pv[1];
+	}
+
 	public static void main(String[] args) {
 		new BASE();
 		StartGame pos = new StartGame("n1R5/PP1k4/1n6/8/8/8/4Kppp/5N1N b - - 2 3");
@@ -22,69 +101,9 @@ public class MOVEDATA {
 	}
 	
 	public static MOVEDATA capture(long bitmap,int victim){
-		long purge = purge(bitmap, PSQT.pVal(BITS.getTo(bitmap), victim));
-		return new MOVEDATA(purge | ((victim & 7) << IConst._CAPTURE));
-	}
-	
-	final static long purge(long bitmap, int subtract) {
-		return (((long) (BITS.score(bitmap) - subtract)) << 32) | ((int) bitmap);
+		return new MOVEDATA(bitmap | ((victim & 7) << IConst._CAPTURE));
 	}
 
-	protected MOVEDATA(long bits) {
-		this.bitmap = bits;
-		int piece = BITS.getPiece(bits);
-		int from = BITS.getFrom(bits);
-		int to = BITS.getTo(bits);
-		bto = 1L << to;
-		long bfrom = 1L << from;
-		long bfromto = bto|bfrom;
-		long b_bit1 = ((piece & 1) == 0 ? 0 : bfromto);
-		long b_bit2 = ((piece & 2) == 0 ? 0 : bfromto);
-		long b_bit3 = ((piece & 4) == 0 ? 0 : bfromto);
-		long b_black = ((piece & 8) == 0 ? 0 : bfromto);
-		if(BITS.isPromotion(bits)){
-			b_bit1 ^= ((piece & 1) != 0 ? 0 : bfrom);
-			b_bit2 ^= ((piece & 2) == 0 ? 0 : bfrom);
-			b_bit3 ^= ((piece & 4) == 0 ? 0 : bfrom);
-		}
-	    if (BITS.isEnpassant(bits)) {
-			long e = 1L << (to + (to > from ? -8 : 8));
-			b_bit1 ^= ((piece & 1) == 0 ? 0 : e);
-			b_black ^= ((piece & 8) != 0 ? 0 : e);
-	    } else if(BITS.isCapture(bits)){
-			int victim=BITS.getCaptured(bits);
-			b_bit1 ^= ((victim & 1) == 0 ? 0 : bto);
-			b_bit2 ^= ((victim & 2) == 0 ? 0 : bto);
-			b_bit3 ^= ((victim & 4) == 0 ? 0 : bto);
-			b_black ^= ((victim & 8) == 0 ? 0 : bto);
-		} else if (BITS.isCastling(bits)) {
-			if (from > to) {
-				to = from - 1;
-				from = from - 4;
-			} else {
-				to = from + 1;
-				from = from + 3;
-			}
-			long cfrom = 1L << from;
-			long cto = 1L << to;
-			long cfromto =cto|cfrom;
-			b_bit2 ^= cfromto;
-			b_bit3 ^= cfromto;
-			b_black ^= ((piece & 8) == 0 ? 0 : cfromto);
-		}
-		this.b_bit1=b_bit1;
-		this.b_bit2=b_bit2;
-		this.b_bit3=b_bit3;
-		this.b_black=b_black;
-	}
-
-	final public long bitmap;
-	final public long b_black;
-	final public long b_bit1;
-	final public long b_bit2;
-	final public long b_bit3;
-	final public long bto;
-	
 	@Override
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
