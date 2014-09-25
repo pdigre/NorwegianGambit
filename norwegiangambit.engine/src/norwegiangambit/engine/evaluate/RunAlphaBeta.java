@@ -64,7 +64,7 @@ public class RunAlphaBeta implements IThinker{
 			movegen[i1] = m;
 			NodeGen parent = i1>0?movegen[i1 - 1]:root;
 			m.parent = parent;
-			parent.child = m;
+			parent.next = m;
 		}
 		NodeGen start = movegen[0];
 		start.set(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
@@ -96,7 +96,7 @@ public class RunAlphaBeta implements IThinker{
 		@Override
 		public void make(MOVEDATA md) {
 			super.make(md);
-			((NodeGen)child).evaluate(md);
+			((NodeGen)next).evaluate(md);
 		}
 		
 	}
