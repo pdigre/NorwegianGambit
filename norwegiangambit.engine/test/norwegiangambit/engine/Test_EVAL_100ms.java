@@ -28,7 +28,7 @@ public class Test_EVAL_100ms extends EvalTest{
 	
 	@Test
 	public void m1_1_553() {
-		testEval(testing, 8,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+		testEval(testing, 1,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 	}
 
 	@AfterClass
