@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
-import norwegiangambit.engine.base.MOVEDATA;
-import norwegiangambit.engine.base.Movegen;
 import norwegiangambit.engine.fen.StartGame;
+import norwegiangambit.engine.movegen.MOVEDATA;
+import norwegiangambit.engine.movegen.Movegen;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
 
@@ -26,11 +26,11 @@ public class PerftTester implements IDivide{
 		if(levels<4 || !useConcurrency){
 			if(levels==1){
 		        for (int i = 0; i < root.iAll; i++)
-		        	map.add(new Eval(FEN.move2literal(root.moves[i].bitmap),1,0));
+		        	map.add(new Eval(FEN.move2literal(root.xmoves[i].bitmap),1,0));
 		        return map;
 			}
 		    for (int i = 0; i < root.iAll; i++) {
-		    	MOVEDATA md = root.moves[i];
+		    	MOVEDATA md = root.xmoves[i];
 				NodeGen[] movegen = new NodeGen[levels-1];
 				for (int i1 = 0; i1 < movegen.length; i1++) {
 					NodeGen m = i1 < movegen.length - 1 ? new NodeGen() : new LeafGen(count,i);
@@ -49,7 +49,7 @@ public class PerftTester implements IDivide{
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
 		CountTask[] tasks = new CountTask[root.iAll];
 		for (int i1 = 0; i1 < root.iAll; i1++) {
-			MOVEDATA md = root.moves[i1];
+			MOVEDATA md = root.xmoves[i1];
 			CountTask task=new CountTask(md,count,i1,levels,root);
 			tasks[i1]=task;
 			pool.execute(task);
@@ -60,7 +60,7 @@ public class PerftTester implements IDivide{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			map.add(new Eval(FEN.move2literal(root.moves[i].bitmap),(int) count[i],0));
+			map.add(new Eval(FEN.move2literal(root.xmoves[i].bitmap),(int) count[i],0));
 		}
 		return map;
 	}
@@ -95,7 +95,7 @@ public class PerftTester implements IDivide{
 		public void run() {
 			generate();
 			for (int i = 0; i < iAll; i++) {
-				MOVEDATA md = moves[i];
+				MOVEDATA md = xmoves[i];
 				child.set(isWhite,bitmap,wking,bking,bb_black,bb_bit1,bb_bit2,bb_bit3);
 				child.set(md);
 				child.run();

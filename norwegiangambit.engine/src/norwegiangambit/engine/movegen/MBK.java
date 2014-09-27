@@ -1,9 +1,9 @@
-package norwegiangambit.engine.base;
+package norwegiangambit.engine.movegen;
 
-import static norwegiangambit.engine.base.BASE.DOWN;
-import static norwegiangambit.engine.base.BASE.LEFT;
-import static norwegiangambit.engine.base.BASE.RIGHT;
-import static norwegiangambit.engine.base.BASE.UP;
+import static norwegiangambit.engine.movegen.BASE.DOWN;
+import static norwegiangambit.engine.movegen.BASE.LEFT;
+import static norwegiangambit.engine.movegen.BASE.RIGHT;
+import static norwegiangambit.engine.movegen.BASE.UP;
 
 import java.util.ArrayList;
 import java.util.List;

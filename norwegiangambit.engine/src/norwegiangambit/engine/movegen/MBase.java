@@ -1,9 +1,7 @@
-package norwegiangambit.engine.base;
+package norwegiangambit.engine.movegen;
 
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.IConst;
-
-
 
 public abstract class MBase implements IConst{
 	

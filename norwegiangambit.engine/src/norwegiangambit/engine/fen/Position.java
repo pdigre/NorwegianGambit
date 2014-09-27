@@ -1,6 +1,6 @@
 package norwegiangambit.engine.fen;
 
-import norwegiangambit.engine.base.MOVEDATA;
+import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;

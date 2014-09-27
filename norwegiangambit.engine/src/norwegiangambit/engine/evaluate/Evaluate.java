@@ -1,7 +1,7 @@
 package norwegiangambit.engine.evaluate;
 
-import norwegiangambit.engine.base.MOVEDATA;
-import norwegiangambit.engine.base.Movegen;
+import norwegiangambit.engine.movegen.MOVEDATA;
+import norwegiangambit.engine.movegen.Movegen;
 import norwegiangambit.util.FEN;
 
 public class Evaluate extends Movegen implements IIterate {

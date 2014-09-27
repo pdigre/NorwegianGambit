@@ -1,6 +1,6 @@
 package norwegiangambit.engine.evaluate;
 
-import norwegiangambit.engine.base.MOVEDATA;
+import norwegiangambit.engine.movegen.MOVEDATA;
 
 
 public class AlphaBeta extends Evaluate {
@@ -9,7 +9,7 @@ public class AlphaBeta extends Evaluate {
 	public int alphabeta3(int alpha, int beta) {
 		generate();
 		for (int i = 0; i < iAll; i++) {
-			MOVEDATA md = moves[i];
+			MOVEDATA md = xmoves[i];
 			make(md);
 			int score = -deeper.alphabeta(-beta, -alpha);
 			if (score > alpha)
@@ -22,7 +22,7 @@ public class AlphaBeta extends Evaluate {
 	public int alphabeta2(int alpha, int beta) {
 		generate();
 		for (int i = 0; i < iAll; i++) {
-			MOVEDATA md = moves[i];
+			MOVEDATA md = xmoves[i];
 			make(md);
 			int score = -deeper.alphabeta(-beta, -alpha);
 			if (score >= beta)
@@ -36,7 +36,7 @@ public class AlphaBeta extends Evaluate {
 	// PVS
 	public int alphabeta(int alfa,int beta) {
 		generate();
-		make(moves[0]);
+		make(xmoves[0]);
 		int bestscore = -deeper.alphabeta(-beta, -alfa);
 		if( bestscore > alfa ) {
 			if( bestscore >= beta )
@@ -44,7 +44,7 @@ public class AlphaBeta extends Evaluate {
 			alfa = bestscore;
 		}
 		for (int i = 1; i < iAll; i++) {
-			MOVEDATA md = moves[i];
+			MOVEDATA md = xmoves[i];
 			make(md);
 			int score = -deeper.alphabeta(-alfa-1, -alfa);
 			if( score > alfa && score < beta ) {

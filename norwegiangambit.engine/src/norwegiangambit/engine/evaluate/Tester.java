@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
-import norwegiangambit.engine.base.MOVEDATA;
 import norwegiangambit.engine.fen.StartGame;
+import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
 
@@ -25,7 +25,7 @@ public abstract class Tester implements IDivide{
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
 		CountTask[] tasks = new CountTask[root.iAll];
 		for (int i1 = 0; i1 < root.iAll; i1++) {
-			MOVEDATA md = root.moves[i1];
+			MOVEDATA md = root.xmoves[i1];
         	Eval eval = new Eval(FEN.move2literal(md.bitmap),0,0);
         	map.add(eval);
 			CountTask task=new CountTask(md,eval,levels,root);

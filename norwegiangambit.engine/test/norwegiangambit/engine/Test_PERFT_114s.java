@@ -1,7 +1,7 @@
 package norwegiangambit.engine;
 
-import norwegiangambit.engine.base.BASE;
 import norwegiangambit.engine.evaluate.PerftTesterSlow;
+import norwegiangambit.engine.movegen.BASE;
 import norwegiangambit.util.EngineStockfish;
 import norwegiangambit.util.PerftTest;
 

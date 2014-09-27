@@ -1,7 +1,8 @@
-package norwegiangambit.engine.base;
+package norwegiangambit.engine.movegen;
 
-import static norwegiangambit.engine.base.BASE.KNIGHT_MOVES;
-import static norwegiangambit.engine.base.BASE.inside;
+import static norwegiangambit.engine.movegen.BASE.KNIGHT_MOVES;
+import static norwegiangambit.engine.movegen.BASE.inside;
+
 import java.util.ArrayList;
 import java.util.List;
 

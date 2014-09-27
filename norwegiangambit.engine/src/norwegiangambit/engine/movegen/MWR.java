@@ -1,39 +1,40 @@
-package norwegiangambit.engine.base;
+package norwegiangambit.engine.movegen;
 
-import static norwegiangambit.engine.base.BASE.DOWN;
-import static norwegiangambit.engine.base.BASE.LEFT;
-import static norwegiangambit.engine.base.BASE.RIGHT;
-import static norwegiangambit.engine.base.BASE.UP;
-import static norwegiangambit.engine.base.BASE.inside;
+import static norwegiangambit.engine.movegen.BASE.DOWN;
+import static norwegiangambit.engine.movegen.BASE.LEFT;
+import static norwegiangambit.engine.movegen.BASE.RIGHT;
+import static norwegiangambit.engine.movegen.BASE.UP;
+import static norwegiangambit.engine.movegen.BASE.inside;
+
 import java.util.ArrayList;
 
 import norwegiangambit.util.IConst;
 
 
-public class MBR extends MSlider{
+public class MWR extends MSlider{
 
 	final static MOVEDATA[] XQU,XQD,XQL,XQR,XKU,XKD,XKL,XKR;
 	final MOVEDATA[] U, D, L, R;
 	final MOVEDATA[][] LINE;
 
-	final static MBR[] BR;
+	final static MWR[] WR;
 	static {
-		BR=new MBR[64];
+		WR=new MWR[64];
 		for (int from = 0; from < 64; from++)
-			BR[from] = new MBR(from);
-		MBR Q=BR[BR_QUEEN_STARTPOS];
+			WR[from] = new MWR(from);
+		MWR Q=WR[WR_QUEEN_STARTPOS];
 		XQU=castlingRook(Q.U);
 		XQD=castlingRook(Q.D);
 		XQL=castlingRook(Q.L);
 		XQR=castlingRook(Q.R);
-		MBR K=BR[BR_KING_STARTPOS];
+		MWR K=WR[WR_KING_STARTPOS];
 		XKU=castlingRook(K.U);
 		XKD=castlingRook(K.D);
 		XKL=castlingRook(K.L);
 		XKR=castlingRook(K.R);
 	}
 
-	public MBR(int from) {
+	public MWR(int from) {
 		super(from);
 		U=slide(UP);
 		D=slide(DOWN);
@@ -46,13 +47,13 @@ public class MBR extends MSlider{
 		ArrayList<MOVEDATA> list = new ArrayList<MOVEDATA>();
 		int to=from+offset;
 		while(inside(to, to-offset)){
-			long bitmap = assemble(IConst.BR, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
-			if(from==IConst.BR_QUEEN_STARTPOS)
-				bitmap^= IConst.CANCASTLE_BLACKQUEEN;
-			else if(from==IConst.BR_KING_STARTPOS)
-				bitmap^= IConst.CANCASTLE_BLACKKING;
+			long bitmap = assemble(IConst.WR, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
+			if(from==IConst.WR_QUEEN_STARTPOS)
+				bitmap^= IConst.CANCASTLE_WHITEQUEEN;
+			else if(from==IConst.WR_KING_STARTPOS)
+				bitmap^= IConst.CANCASTLE_WHITEKING;
 			for (int i = 0; i < 5; i++) {
-				int c = BCAPTURES[i];
+				int c = WCAPTURES[i];
 				list.add(MOVEDATA.capture(bitmap, c));
 				rookCapture(to, bitmap, c);
 			}
@@ -63,7 +64,7 @@ public class MBR extends MSlider{
 	}
 
 	public void genLegal(Movegen gen){
-		bslide(gen,LINE);
+		wslide(gen,LINE);
 	}
 	
 }

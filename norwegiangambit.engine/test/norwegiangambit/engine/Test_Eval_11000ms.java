@@ -1,8 +1,8 @@
 package norwegiangambit.engine;
 
-import norwegiangambit.engine.base.BASE;
 import norwegiangambit.engine.evaluate.EvalTest;
 import norwegiangambit.engine.evaluate.EvalTester;
+import norwegiangambit.engine.movegen.BASE;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

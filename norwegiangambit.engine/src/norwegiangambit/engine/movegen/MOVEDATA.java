@@ -1,4 +1,4 @@
-package norwegiangambit.engine.base;
+package norwegiangambit.engine.movegen;
 
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.util.BITS;
@@ -98,11 +98,11 @@ public class MOVEDATA {
 	}
 
 	public static MOVEDATA create(long bitmap){
-		return new MOVEDATA(bitmap);
+		return BASE.add(new MOVEDATA(bitmap));
 	}
 	
 	public static MOVEDATA capture(long bitmap,int victim){
-		return new MOVEDATA(bitmap | ((victim & 7) << IConst._CAPTURE));
+		return BASE.add(new MOVEDATA(bitmap | ((victim & 7) << IConst._CAPTURE)));
 	}
 
 	@Override

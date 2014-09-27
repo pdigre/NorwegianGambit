@@ -26,7 +26,7 @@ public class PerftTest {
 		validator=engine;
 	}
 
-	public static void testPerft(IDivide inst, int depth, int expected, String fen) {
+	public static void testPerft(IDivide inst, int depth, long expected, String fen) {
 		Collection<Eval> divide = inst.divide(fen, depth);
 		long actual=0;
 		for (Eval eval : divide)
@@ -34,7 +34,7 @@ public class PerftTest {
 		assertPERFT(expected,fen,depth,actual);
 	}
 
-	public static void assertPERFT(int cnt, String fen, int levels,long run) {
+	public static void assertPERFT(long cnt, String fen, int levels,long run) {
 		if(cnt==run)
 			return;
 		findError(fen, levels,FEN.board2string(fen));

@@ -1,8 +1,7 @@
 package norwegiangambit.engine;
 
-import norwegiangambit.engine.base.BASE;
 import norwegiangambit.engine.evaluate.PerftTester;
-import norwegiangambit.engine.evaluate.PerftTesterSlow;
+import norwegiangambit.engine.movegen.BASE;
 import norwegiangambit.util.EngineStockfish;
 import norwegiangambit.util.PerftTest;
 
@@ -27,10 +26,7 @@ public class Test_PERFT_5300ms extends PerftTest{
 	public static void prepare() {
 		new BASE();
 		setTesting(new PerftTester());
-//		setValidator(new EngineQperft(EngineQperft.DEFAULT_EXEPATH));
-//		setValidator(new EngineRoce(EngineRoce.DEFAULT_EXEPATH));
 		setValidator(new EngineStockfish(EngineStockfish.DEFAULT_EXEPATH));
-		
 	}
 	
 	
@@ -48,6 +44,12 @@ public class Test_PERFT_5300ms extends PerftTest{
 	@Test
 	public void m1_1_553() {
 		testPerft(testing, 5,4865609,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+	}
+
+	@Test
+	@Ignore
+	public void m1_FULL9() {
+		testPerft(testing, 9,3195901860L,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 	}
 
 	@Test
@@ -119,6 +121,7 @@ public class Test_PERFT_5300ms extends PerftTest{
 
 	@AfterClass
 	public static void finish() {
+		BASE.stats();
 	}
 	
 

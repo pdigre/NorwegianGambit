@@ -1,4 +1,4 @@
-package norwegiangambit.engine.base;
+package norwegiangambit.engine.movegen;
 
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.IConst;
@@ -13,7 +13,7 @@ public class MOVEDATAX extends MOVEDATA {
 	}
 
 	public static MOVEDATAX create(long bitmap){
-		return new MOVEDATAX(bitmap);
+		return BASE.add(new MOVEDATAX(bitmap));
 	}
 
 	private MOVEDATAX(long bitmap) {

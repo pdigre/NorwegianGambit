@@ -1,8 +1,8 @@
 package norwegiangambit.engine.iterate;
 
-import norwegiangambit.engine.base.MOVEDATA;
-import norwegiangambit.engine.base.Movegen;
 import norwegiangambit.engine.fen.Position;
+import norwegiangambit.engine.movegen.MOVEDATA;
+import norwegiangambit.engine.movegen.Movegen;
 import norwegiangambit.util.IConst;
 
 public class NodeGen implements IConst {

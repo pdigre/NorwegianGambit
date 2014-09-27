@@ -1,4 +1,4 @@
-package norwegiangambit.engine.base;
+package norwegiangambit.engine.movegen;
 
 import norwegiangambit.util.IConst;
 
@@ -116,87 +116,88 @@ public class MWP extends MBase{
 		final MWP[] mp=(MWP[])arr;
 		long occ=~(gen.bb_piece>>8);
 		long m1=b&occ;
-		new Adder(gen,m1) {
-
-			@Override
-			public void add(int from) {
-				if(from>47){
-					add(mp[from].P1[0]);
-					add(mp[from].P1[1]);
-					add(mp[from].P1[2]);
-					add(mp[from].P1[3]);
-				} else {
-					add(mp[from].M1);
-				}
+		int pop = Long.bitCount(m1);
+		for (int j = 0; j < pop; j++) {
+			int from = Long.numberOfTrailingZeros(m1);
+			m1 ^= 1L << from;
+			if(from>47){
+				gen.add(mp[from].P1[0]);
+				gen.add(mp[from].P1[1]);
+				gen.add(mp[from].P1[2]);
+				gen.add(mp[from].P1[3]);
+			} else {
+				gen.add(mp[from].M1);
 			}
-		};
-		new Adder(gen,m1&0xFF00L&(occ>>8)) {
+		}
 
-			@Override
-			public void add(int from) {
-				add(mp[from].M2);
-			}
-		};
+		long m2 = b&occ&0xFF00L&(occ>>8);
+		pop = Long.bitCount(m2);
+		for (int j = 0; j < pop; j++) {
+			int from = Long.numberOfTrailingZeros(m2);
+			m2 ^= 1L << from;
+			gen.add(mp[from].M2);
+		}
+		
 		final int enp = gen.enpassant;
 		long e=gen.bb_black|(1L<<enp);
-
-		new Adder(gen,(b & IConst.LEFTMASK) &(e>>7)) {
-
-			@Override
-			public void add(int from) {
-				int to=from+7;
-				if (to == enp) {
-					MOVEDATA md=mp[from].EL;
-					if(gen.isSafe(md))
-						capture(md);
+		long cl = (b & IConst.LEFTMASK) &(e>>7);
+		pop = Long.bitCount(cl);
+		for (int j = 0; j < pop; j++) {
+			int from = Long.numberOfTrailingZeros(cl);
+			cl ^= 1L << from;
+			int to=from+7;
+			if (to == enp) {
+				MOVEDATA md=mp[from].EL;
+				if(gen.isSafe(md))
+					gen.capture(md);
+			} else {
+				int ctype=gen.ctype(1L << to);
+				if(from<48){
+					gen.capture(mp[from].CL[ctype]);
 				} else {
-					int ctype=gen.ctype(1L << to);
-					if(from<48){
-						capture(mp[from].CL[ctype]);
+					if(from+7==BR_QUEEN_STARTPOS && (gen.castling & CANCASTLE_BLACKQUEEN)!=0){
+						gen.capture(MWP.PQ[0]);
+						gen.capture(MWP.PQ[1]);
+						gen.capture(MWP.PQ[2]);
+						gen.capture(MWP.PQ[3]);
 					} else {
-						if(from+7==BR_QUEEN_STARTPOS && (gen.castling & CANCASTLE_BLACKQUEEN)!=0){
-							capture(MWP.PQ[0]);
-							capture(MWP.PQ[1]);
-							capture(MWP.PQ[2]);
-							capture(MWP.PQ[3]);
-						} else {
-							capture(mp[from].PL[ctype]);
-							capture(mp[from].PL[ctype+5]);
-							capture(mp[from].PL[ctype+10]);
-							capture(mp[from].PL[ctype+15]);
-						}
+						gen.capture(mp[from].PL[ctype]);
+						gen.capture(mp[from].PL[ctype+5]);
+						gen.capture(mp[from].PL[ctype+10]);
+						gen.capture(mp[from].PL[ctype+15]);
 					}
 				}
 			}
-		};
-		new Adder(gen,(b & IConst.RIGHTMASK) &(e>>9)) {
+		}
 
-			@Override
-			public void add(int from) {
-				int to=from+9;
-				if (to == enp) {
-					MOVEDATA md=mp[from].ER;
-					if(gen.isSafe(md))
-						capture(md);
+		long cr = (b & IConst.RIGHTMASK) &(e>>9);
+		pop = Long.bitCount(cr);
+		for (int j = 0; j < pop; j++) {
+			int from = Long.numberOfTrailingZeros(cr);
+			cr ^= 1L << from;
+			int to=from+9;
+			if (to == enp) {
+				MOVEDATA md=mp[from].ER;
+				if(gen.isSafe(md))
+					gen.capture(md);
+			} else {
+				int ctype=gen.ctype(1L << to);
+				if(from<48){
+					gen.capture(mp[from].CR[ctype]);
 				} else {
-					int ctype=gen.ctype(1L << to);
-					if(from<48){
-						capture(mp[from].CR[ctype]);
+					if(from+9==BR_KING_STARTPOS && (gen.castling & CANCASTLE_BLACKKING)!=0){
+						gen.capture(MWP.PK[0]);
+						gen.capture(MWP.PK[1]);
+						gen.capture(MWP.PK[2]);
+						gen.capture(MWP.PK[3]);
 					} else {
-						if(from+9==BR_KING_STARTPOS && (gen.castling & CANCASTLE_BLACKKING)!=0){
-							capture(MWP.PK[0]);
-							capture(MWP.PK[1]);
-							capture(MWP.PK[2]);
-							capture(MWP.PK[3]);
-						} else {
-							capture(mp[from].PR[ctype]);
-							capture(mp[from].PR[ctype+5]);
-							capture(mp[from].PR[ctype+10]);
-							capture(mp[from].PR[ctype+15]);
-						}
+						gen.capture(mp[from].PR[ctype]);
+						gen.capture(mp[from].PR[ctype+5]);
+						gen.capture(mp[from].PR[ctype+10]);
+						gen.capture(mp[from].PR[ctype+15]);
 					}
 				}
 			}
-		};
+		}
 	}
 }

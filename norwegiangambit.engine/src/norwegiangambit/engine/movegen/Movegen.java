@@ -1,8 +1,8 @@
-package norwegiangambit.engine.base;
+package norwegiangambit.engine.movegen;
 
 import java.util.Arrays;
 
-import norwegiangambit.engine.base.BASE.SQATK;
+import norwegiangambit.engine.movegen.BASE.SQATK;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
@@ -22,7 +22,8 @@ public class Movegen implements IConst{
 	protected long checkers, pinners, hiders;
 	int king,eking;
 
-	public final MOVEDATA[] moves = new MOVEDATA[99];
+//	public final int[] moves = new int[99];
+	public final MOVEDATA[] xmoves = new MOVEDATA[99];
 	public int iAll = 0;
 	int iLegal = 0, iTested = 0, iCapture=0;
 
@@ -78,13 +79,13 @@ public class Movegen implements IConst{
 		
 	}
 	
-	final void add(MOVEDATA md) {
-		moves[iAll++] = md;
+	final public void add(MOVEDATA md) {
+		xmoves[iAll++] = md;
 	}
 	
-	final void capture(MOVEDATA md) {
-		moves[iAll++] = moves[iCapture];
-		moves[iCapture++]=md;
+	final public void capture(MOVEDATA md) {
+		xmoves[iAll++] = xmoves[iCapture];
+		xmoves[iCapture++]=md;
 	}
 	
 	final int ctype(long bit) {
@@ -93,8 +94,21 @@ public class Movegen implements IConst{
 	
 	final public MOVEDATA[] legalmoves() {
 		generate();
-		return Arrays.copyOfRange(moves, 0, iAll);
+		return Arrays.copyOfRange(xmoves, 0, iAll);
 	}
+
+	public void pruneLegal() {
+		while (iTested < iAll) {
+			MOVEDATA md = xmoves[iTested++];
+			if (isSafe(md)){
+				xmoves[iLegal++]=md;
+			} else 
+				if(iTested<iCapture)
+					iCapture--;
+		}
+		iAll=iLegal;
+	}
+	
 	public void generate() {
 		clear();
 		// Calculate checkers and pinners
@@ -246,18 +260,6 @@ public class Movegen implements IConst{
 			pruneLegal();
 			MBK.BK[king].genLegal(this);
 		}
-	}
-
-	public void pruneLegal() {
-		while (iTested < iAll) {
-			MOVEDATA md = moves[iTested++];
-			if (isSafe(md))
-				moves[iLegal++]=md;
-			else 
-				if(iTested<iCapture)
-					iCapture--;
-		}
-		iAll=iLegal;
 	}
 
 	protected void nonevasive(long pieces) {
