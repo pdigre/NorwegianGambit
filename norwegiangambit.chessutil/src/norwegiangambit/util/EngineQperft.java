@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -27,7 +26,7 @@ public class EngineQperft implements IDivide {
 	}
 
 	@Override
-	public HashMap<String, Integer> divide(String fen, int depth) {
+	public List<Eval> divide(String fen, int depth) {
 		ArrayList<String> cmd=new ArrayList<String>();
 		cmd.add(exepath);
 		cmd.add(String.valueOf(depth));
@@ -35,15 +34,15 @@ public class EngineQperft implements IDivide {
 		cmd.add("\""+fen+"\"");
 		ArrayList<String> lines = runExec(cmd);
 
-		HashMap<String, Integer> map = new HashMap<>();
+		ArrayList<Eval> list = new ArrayList<Eval>();
 		for (String line : lines) {
 			if (line.startsWith("2. ")){
 				String[] split = line.split("=");
 				String s = split[1].split("\\(")[0].split(",")[0].trim();
-				map.put(line.split(" ")[1], Integer.parseInt(s));
+				list.add(new Eval(line.split(" ")[1], Integer.parseInt(s),0));
 			}
 		}
-		return map;
+		return list;
 	}
 
 	private ArrayList<String> runExec(List<String> cmd) {

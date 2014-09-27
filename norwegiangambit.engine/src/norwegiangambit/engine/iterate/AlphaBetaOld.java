@@ -1,6 +1,5 @@
 package norwegiangambit.engine.iterate;
 
-import norwegiangambit.engine.base.NodeGen;
 import norwegiangambit.engine.fen.FEN_POS;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.util.FEN;

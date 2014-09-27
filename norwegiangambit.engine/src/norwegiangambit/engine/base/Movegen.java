@@ -2,6 +2,7 @@ package norwegiangambit.engine.base;
 
 import java.util.Arrays;
 
+import norwegiangambit.engine.base.BASE.SQATK;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;

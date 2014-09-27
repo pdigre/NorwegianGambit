@@ -26,8 +26,8 @@ public class MBK extends MBase {
 		X=castlingKing(M,IConst.CANCASTLE_BLACK);
 		XQ=castlingKing(M,IConst.CANCASTLE_BLACKQUEEN);
 		XK=castlingKing(M,IConst.CANCASTLE_BLACKKING);
-		CQ=MOVEDATAX.create(PSQT.assemble(IConst.BK, IConst.BK_STARTPOS, IConst.BK_STARTPOS - 2, IConst.CANCASTLE_WHITE | IConst.SPECIAL));
-		CK=MOVEDATAX.create(PSQT.assemble(IConst.BK, IConst.BK_STARTPOS, IConst.BK_STARTPOS + 2, IConst.CANCASTLE_WHITE | IConst.SPECIAL));
+		CQ=MOVEDATAX.create(assemble(IConst.BK, IConst.BK_STARTPOS, IConst.BK_STARTPOS - 2, IConst.CANCASTLE_WHITE | IConst.SPECIAL));
+		CK=MOVEDATAX.create(assemble(IConst.BK, IConst.BK_STARTPOS, IConst.BK_STARTPOS + 2, IConst.CANCASTLE_WHITE | IConst.SPECIAL));
 	}
 
 	public MBK(int from) {
@@ -49,7 +49,7 @@ public class MBK extends MBase {
 		if (BASE.inside(to, from)){
 			MOVEDATA[] m=new MOVEDATA[6];
 			list.add(m);
-			long bitmap = PSQT.assemble(IConst.BK, from, to, CANCASTLE_WHITE | HALFMOVES);
+			long bitmap = assemble(IConst.BK, from, to, CANCASTLE_WHITE | HALFMOVES);
 			m[5]=MOVEDATA.create(bitmap);
 			for (int i = 0; i < 5; i++){
 				int c = BCAPTURES[i];

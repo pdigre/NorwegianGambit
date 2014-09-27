@@ -46,7 +46,7 @@ public class MBR extends MSlider{
 		ArrayList<MOVEDATA> list = new ArrayList<MOVEDATA>();
 		int to=from+offset;
 		while(inside(to, to-offset)){
-			long bitmap = PSQT.assemble(IConst.BR, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
+			long bitmap = assemble(IConst.BR, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
 			if(from==IConst.BR_QUEEN_STARTPOS)
 				bitmap^= IConst.CANCASTLE_BLACKQUEEN;
 			else if(from==IConst.BR_KING_STARTPOS)

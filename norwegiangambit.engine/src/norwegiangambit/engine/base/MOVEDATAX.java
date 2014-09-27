@@ -40,7 +40,7 @@ public class MOVEDATAX extends MOVEDATA {
 	}
 
 	public static MOVEDATA cpromote(int from,int to, int promote, int pawn, int victim) {
-		long promo = PSQT.assemblePromote(pawn, promote, from, to, IConst.CASTLING_STATE | IConst.SPECIAL);
+		long promo = MBase.assemblePromote(pawn, promote, from, to, IConst.CASTLING_STATE | IConst.SPECIAL);
 		return capture(promo, victim);
 	}
 

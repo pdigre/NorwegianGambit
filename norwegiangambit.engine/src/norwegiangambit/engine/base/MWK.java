@@ -26,8 +26,8 @@ public class MWK extends MBase {
 		X=castlingKing(M,IConst.CANCASTLE_WHITE);
 		XQ=castlingKing(M,IConst.CANCASTLE_WHITEQUEEN);
 		XK=castlingKing(M,IConst.CANCASTLE_WHITEKING);
-		CK=MOVEDATAX.create(PSQT.assemble(IConst.WK, IConst.WK_STARTPOS, IConst.WK_STARTPOS + 2, IConst.CANCASTLE_BLACK | IConst.SPECIAL));
-		CQ=MOVEDATAX.create(PSQT.assemble(IConst.WK, IConst.WK_STARTPOS, IConst.WK_STARTPOS - 2, IConst.CANCASTLE_BLACK | IConst.SPECIAL));
+		CK=MOVEDATAX.create(assemble(IConst.WK, IConst.WK_STARTPOS, IConst.WK_STARTPOS + 2, IConst.CANCASTLE_BLACK | IConst.SPECIAL));
+		CQ=MOVEDATAX.create(assemble(IConst.WK, IConst.WK_STARTPOS, IConst.WK_STARTPOS - 2, IConst.CANCASTLE_BLACK | IConst.SPECIAL));
 	}
 
 	public MWK(int from) {
@@ -49,7 +49,7 @@ public class MWK extends MBase {
 		if (BASE.inside(to, from)){
 			MOVEDATA[] m=new MOVEDATA[6];
 			list.add(m);
-			long bitmap = PSQT.assemble(IConst.WK, from, to, CANCASTLE_BLACK | HALFMOVES);
+			long bitmap = assemble(IConst.WK, from, to, CANCASTLE_BLACK | HALFMOVES);
 			m[5]=MOVEDATA.create(bitmap);
 			for (int i = 0; i < 5; i++){
 				int c = WCAPTURES[i];

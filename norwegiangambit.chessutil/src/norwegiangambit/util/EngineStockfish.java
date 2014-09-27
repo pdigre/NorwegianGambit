@@ -1,6 +1,7 @@
 package norwegiangambit.util;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EngineStockfish extends WrapUCI implements IDivide{
 
@@ -11,8 +12,8 @@ public class EngineStockfish extends WrapUCI implements IDivide{
 	}
 
 	@Override
-	public HashMap<String, Integer> divide(String fen,int depth){
-		HashMap<String, Integer> map=new HashMap<>();
+	public List<Eval> divide(String fen,int depth){
+		ArrayList<Eval> map=new ArrayList<Eval>();
 		command("position fen "+fen);
 		command("divide "+depth);
 		String[] lines = waitFor("isready", "readyok").split("\n");
@@ -23,7 +24,7 @@ public class EngineStockfish extends WrapUCI implements IDivide{
 				if(line.trim().isEmpty())
 					break;
 				String[] s = line.split(": ");
-				map.put(s[0], Integer.parseInt(s[1]));
+				map.add(new Eval(s[0], Integer.parseInt(s[1]),0));
 			}
 			if(line.startsWith(prefix))
 				started=true;

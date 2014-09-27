@@ -1,7 +1,7 @@
 package norwegiangambit.engine;
 
 import norwegiangambit.engine.base.BASE;
-import norwegiangambit.engine.evaluate.RunPerftFast;
+import norwegiangambit.engine.evaluate.PerftTesterSlow;
 import norwegiangambit.util.EngineStockfish;
 import norwegiangambit.util.PerftTest;
 
@@ -17,7 +17,7 @@ public class Test_PERFT_114s extends PerftTest{
 	@BeforeClass
 	public static void prepare() {
 		new BASE();
-		setTesting(new RunPerftFast());
+		setTesting(new PerftTesterSlow());
 //		setTesting(new EngineStockfish(EngineStockfish.DEFAULT_EXEPATH));
 		setValidator(new EngineStockfish(EngineStockfish.DEFAULT_EXEPATH));
 //		setValidator(new RunPerftFast());

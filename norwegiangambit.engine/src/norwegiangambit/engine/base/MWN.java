@@ -31,7 +31,7 @@ public class MWN extends MBase{
 		if (inside(to, from)){
 			MOVEDATA[] m=new MOVEDATA[6];
 			list.add(m);
-			long bitmap = PSQT.assemble(IConst.WN, from, to, CASTLING_STATE | HALFMOVES);
+			long bitmap = assemble(IConst.WN, from, to, CASTLING_STATE | HALFMOVES);
 			m[5]=MOVEDATA.create(bitmap);
 			for (int i = 0; i < 5; i++){
 				int c = WCAPTURES[i];

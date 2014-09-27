@@ -5,9 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+
+import norwegiangambit.util.IDivide.Eval;
 
 public class PerftTest {
 	
@@ -23,10 +27,10 @@ public class PerftTest {
 	}
 
 	public static void testPerft(IDivide inst, int depth, int expected, String fen) {
-		Map<String, Integer> divide = inst.divide(fen, depth);
+		Collection<Eval> divide = inst.divide(fen, depth);
 		long actual=0;
-		for (Integer div : divide.values())
-			actual+=div;
+		for (Eval eval : divide)
+			actual+=eval.count;
 		assertPERFT(expected,fen,depth,actual);
 	}
 
@@ -37,21 +41,24 @@ public class PerftTest {
 		assertTrue("Wrong "+run+"/"+cnt,false);
 	}
 
+	
+	
 	public static void findError(String fen, int levels,String append) {
 		try {
-			Map<String, Integer> actual = testing.divide(fen,levels);
-			Map<String, Integer> expected = validator.divide(fen, levels);
+			Map<String, Integer> actual = getMoves(testing.divide(fen,levels));
+			Map<String, Integer> expected = getMoves(validator.divide(fen, levels));
 			Set<String> kactual = new HashSet<String>(actual.keySet());
 			Set<String> kexpected = new HashSet<String>(expected.keySet());
 			if(!kactual.equals(kexpected)){
+				Set<String> kactual2=new HashSet<String>(kactual);
 				kactual.removeAll(kexpected);
-				kexpected.removeAll(actual.keySet());
+				kexpected.removeAll(kactual2);
 				System.out.println(append);
 				System.out.println("ILLEGAL= "+String.join(" ", kactual)+", MISSING= "+String.join(" ", kexpected));
 				System.out.println(fen);
 				return;
 			} else {
-				String[] keys = expected.keySet().toArray(new String[expected.size()]);
+				String[] keys = kexpected.toArray(new String[expected.size()]);
 				for (int i = 0; i < keys.length; i++) {
 					String move=keys[i];
 					int e = expected.get(move);
@@ -70,6 +77,13 @@ public class PerftTest {
 			System.out.println(append);
 			System.out.println(fen);
 		}
+	}
+
+	private static Map<String,Integer> getMoves(Collection<Eval> actual) {
+		TreeMap<String,Integer> map = new TreeMap<String,Integer>();
+		for (Eval eval : actual)
+			map.put(eval.move,eval.count);
+		return map;
 	}
 
 	public static class Score {
@@ -111,7 +125,7 @@ public class PerftTest {
 			int levels = score.count.length;
 			long actual=0;
 			try {
-				Map<String, Integer> divide = testing.divide(score.fen, levels);
+				Map<String, Integer> divide = getMoves(testing.divide(score.fen, levels));
 				for (Integer div : divide.values())
 					actual+=div;
 			} catch (Exception e) {

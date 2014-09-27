@@ -46,7 +46,7 @@ public class MWR extends MSlider{
 		ArrayList<MOVEDATA> list = new ArrayList<MOVEDATA>();
 		int to=from+offset;
 		while(inside(to, to-offset)){
-			long bitmap = PSQT.assemble(IConst.WR, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
+			long bitmap = assemble(IConst.WR, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
 			if(from==IConst.WR_QUEEN_STARTPOS)
 				bitmap^= IConst.CANCASTLE_WHITEQUEEN;
 			else if(from==IConst.WR_KING_STARTPOS)

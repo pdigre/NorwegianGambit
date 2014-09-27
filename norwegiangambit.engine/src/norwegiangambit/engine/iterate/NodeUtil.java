@@ -1,4 +1,4 @@
-package norwegiangambit.engine.base;
+package norwegiangambit.engine.iterate;
 
 import norwegiangambit.util.BITS;
 

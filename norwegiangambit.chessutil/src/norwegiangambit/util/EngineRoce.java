@@ -1,6 +1,7 @@
 package norwegiangambit.util;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EngineRoce extends WrapExe implements IDivide{
 
@@ -11,8 +12,8 @@ public class EngineRoce extends WrapExe implements IDivide{
 	}
 
 	@Override
-	public HashMap<String, Integer> divide(String fen,int depth){
-		HashMap<String, Integer> map=new HashMap<>();
+	public List<Eval> divide(String fen,int depth){
+		ArrayList<Eval> map=new ArrayList<Eval>();
 		if(process==null)
 			return map;
 		command("setboard "+fen);
@@ -26,7 +27,7 @@ public class EngineRoce extends WrapExe implements IDivide{
 				if(line.trim().isEmpty() || line.startsWith(prefix) || line.contains(":"))
 					break;
 				String[] s = line.split(" ");
-				map.put(s[0], Integer.parseInt(s[1]));
+				map.add(new Eval(s[0], Integer.parseInt(s[1]),0));
 			}
 		}
 		return map;

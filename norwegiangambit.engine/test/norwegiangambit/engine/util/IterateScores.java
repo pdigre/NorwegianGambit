@@ -3,10 +3,10 @@ package norwegiangambit.engine.util;
 import java.util.Comparator;
 import java.util.TreeSet;
 
-import norwegiangambit.engine.base.NodeGen;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.engine.fen.PositionScore;
 import norwegiangambit.engine.iterate.IEvaluator;
+import norwegiangambit.engine.iterate.NodeGen;
 
 public final class IterateScores extends TreeSet<Position> {
 

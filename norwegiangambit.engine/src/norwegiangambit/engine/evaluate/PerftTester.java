@@ -1,7 +1,7 @@
 package norwegiangambit.engine.evaluate;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
@@ -11,22 +11,22 @@ import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
 
-public class RunPerftFast implements IDivide{
+public class PerftTester implements IDivide{
 
 	public static boolean useConcurrency = true;
 	
 	@Override
-	public Map<String, Integer> divide(String fen, int levels) {
+	public List<Eval> divide(String fen, int levels) {
 		StartGame pos = new StartGame(fen);
 		NodeGen root = new NodeGen();
 		root.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
-		LinkedHashMap<String, Integer> map=new LinkedHashMap<String, Integer>();
+		ArrayList<Eval> map=new ArrayList<Eval>();
 		root.generate();
 		long[] count=new long[root.iAll];
 		if(levels<4 || !useConcurrency){
 			if(levels==1){
 		        for (int i = 0; i < root.iAll; i++)
-		        	map.put(FEN.move2literal(root.moves[i].bitmap),1);
+		        	map.add(new Eval(FEN.move2literal(root.moves[i].bitmap),1,0));
 		        return map;
 			}
 		    for (int i = 0; i < root.iAll; i++) {
@@ -42,7 +42,7 @@ public class RunPerftFast implements IDivide{
 				movegen[0].set(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
 				movegen[0].set(md);;
 				movegen[0].run();
-				map.put(FEN.move2literal(md.bitmap),(int)count[i]);
+				map.add(new Eval(FEN.move2literal(md.bitmap),(int)count[i],0));
 			}
 		    return map;
 		}
@@ -60,7 +60,7 @@ public class RunPerftFast implements IDivide{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			map.put(FEN.move2literal(root.moves[i].bitmap),(int) count[i]);
+			map.add(new Eval(FEN.move2literal(root.moves[i].bitmap),(int) count[i],0));
 		}
 		return map;
 	}

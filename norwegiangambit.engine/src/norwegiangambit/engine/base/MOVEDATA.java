@@ -4,6 +4,7 @@ import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
+import norwegiangambit.util.PSQT_SEF;
 
 public class MOVEDATA {
 	final public long bitmap,b_black,b_bit1,b_bit2,b_bit3;
@@ -76,13 +77,13 @@ public class MOVEDATA {
 	}
 
 	private void sub(int piece, int sq, int[] score) {
-		int[] pv = PSQT.pVal(sq, piece);
+		int[] pv = PSQT_SEF.psqt(sq, piece);
 		score[0]-=pv[0];
 		score[1]-=pv[1];
 	}
 
 	private void add(int piece, int sq, int[] score) {
-		int[] pv = PSQT.pVal(sq, piece);
+		int[] pv = PSQT_SEF.psqt(sq, piece);
 		score[0]+=pv[0];
 		score[1]+=pv[1];
 	}
@@ -122,7 +123,7 @@ public class MOVEDATA {
 	}
 	
 	public static MOVEDATA cpromote(int from,int to, int promote, int pawn, int victim) {
-		long promo = PSQT.assemblePromote(pawn, promote, from, to, IConst.CASTLING_STATE | IConst.SPECIAL);
+		long promo = MBase.assemblePromote(pawn, promote, from, to, IConst.CASTLING_STATE | IConst.SPECIAL);
 		return capture(promo, victim);
 	}
 

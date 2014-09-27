@@ -71,18 +71,18 @@ public class MWP extends MBase{
 	}
 
 	private MOVEDATA move(int to) {
-		return MOVEDATA.create(PSQT.assemble(IConst.WP, from, to, CASTLING_STATE));
+		return MOVEDATA.create(assemble(IConst.WP, from, to, CASTLING_STATE));
 	}
 
 	private MOVEDATA enpassant(int to) {
-		long bitmap = PSQT.assemble(IConst.WP, from, to, CASTLING_STATE | IConst.SPECIAL);
+		long bitmap = assemble(IConst.WP, from, to, CASTLING_STATE | IConst.SPECIAL);
 		return MOVEDATA.create(bitmap | (IConst.WP << IConst._CAPTURE));
 	}
 
 	private MOVEDATA[] captures(int to) {
 		MOVEDATA[] captures=new MOVEDATA[5];
 		for (int i = 0; i < 5; i++) {
-			long bitmap = PSQT.assemble(IConst.WP, from, to, CASTLING_STATE);
+			long bitmap = assemble(IConst.WP, from, to, CASTLING_STATE);
 			captures[i]=MOVEDATA.capture(bitmap, WCAPTURES[i]);
 		}
 		return captures;
@@ -91,7 +91,7 @@ public class MWP extends MBase{
 	private MOVEDATA[] promotes(int to) {
 		MOVEDATA[] promotes=new MOVEDATA[4];
 		for (int p = 0; p < 4; p++)
-			promotes[p]=MOVEDATA.create(PSQT.assemblePromote(IConst.WP, WPROMOTES[p], from, to, CASTLING_STATE | SPECIAL));
+			promotes[p]=MOVEDATA.create(assemblePromote(IConst.WP, WPROMOTES[p], from, to, CASTLING_STATE | SPECIAL));
 		return promotes;
 	}
 

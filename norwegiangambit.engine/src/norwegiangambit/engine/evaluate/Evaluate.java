@@ -6,7 +6,7 @@ import norwegiangambit.util.FEN;
 
 public class Evaluate extends Movegen implements IIterate {
 
-	IIterate parent,next;
+	IIterate parent,deeper;
 
 	protected int midscore;
 	protected int endscore;
@@ -39,7 +39,7 @@ public class Evaluate extends Movegen implements IIterate {
 	
 	@Override
 	public void setChild(IIterate child){
-		this.next=child;
+		this.deeper=child;
 	}
 	
 	public int alphabeta(int alpha, int beta){
@@ -47,8 +47,8 @@ public class Evaluate extends Movegen implements IIterate {
 	}
 	
 	public void make(MOVEDATA md) {
-		next.set(isWhite, bitmap, wking, bking, bb_black, bb_bit1, bb_bit2, bb_bit3);
-		((Movegen)next).set(md);
+		deeper.set(isWhite, bitmap, wking, bking, bb_black, bb_bit1, bb_bit2, bb_bit3);
+		((Movegen)deeper).set(md);
 	}
 
 	@Override

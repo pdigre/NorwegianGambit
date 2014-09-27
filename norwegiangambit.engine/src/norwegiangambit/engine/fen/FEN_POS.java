@@ -1,7 +1,7 @@
 package norwegiangambit.engine.fen;
 
 import norwegiangambit.engine.base.Movegen;
-import norwegiangambit.engine.base.NodeGen;
+import norwegiangambit.engine.iterate.NodeGen;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;

@@ -29,7 +29,7 @@ public class MBN extends MBase {
 		if (inside(to, from)){
 			MOVEDATA[] m=new MOVEDATA[6];
 			list.add(m);
-			long bitmap = PSQT.assemble(IConst.BN, from, to, CASTLING_STATE | HALFMOVES);
+			long bitmap = assemble(IConst.BN, from, to, CASTLING_STATE | HALFMOVES);
 			m[5]=MOVEDATA.create(bitmap);
 			for (int i = 0; i < 5; i++){
 				int c = BCAPTURES[i];

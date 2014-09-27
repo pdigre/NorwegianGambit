@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import norwegiangambit.engine.base.MovegenUtil;
 import norwegiangambit.engine.fen.FEN_POS;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.engine.fen.PositionScore;
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.iterate.IIterator;
+import norwegiangambit.engine.iterate.MovegenUtil;
 import norwegiangambit.engine.util.IterateScores;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;

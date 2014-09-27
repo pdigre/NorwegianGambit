@@ -1,6 +1,5 @@
 package norwegiangambit.engine.iterate;
 
-import norwegiangambit.engine.base.NodeGen;
 import norwegiangambit.engine.fen.Position;
 
 public class Quiescence implements IIterator {

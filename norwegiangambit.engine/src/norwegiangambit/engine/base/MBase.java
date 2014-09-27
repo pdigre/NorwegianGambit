@@ -75,5 +75,13 @@ public abstract class MBase implements IConst{
 			}
 		}
 	}
-	
+
+	final public static long assemble(int piece, int from, int to, long extra) {
+		return (piece << IConst._PIECE) | (from << IConst._FROM) | (to << IConst._TO) | extra;
+	}
+
+	final public static long assemblePromote(int pawn, int promote, int from, int to, long extra) {
+		return (promote << IConst._PIECE) | (from << IConst._FROM) | (to << IConst._TO) | extra;
+	}
+
 }

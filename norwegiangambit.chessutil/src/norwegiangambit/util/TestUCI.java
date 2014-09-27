@@ -1,6 +1,8 @@
 package norwegiangambit.util;
 
-import java.util.HashMap;
+import java.util.List;
+
+import norwegiangambit.util.IDivide.Eval;
 
 import org.junit.Test;
 
@@ -28,7 +30,7 @@ public class TestUCI {
 	public void testStockFish2() {
 		EngineStockfish engine = new EngineStockfish(EngineStockfish.DEFAULT_EXEPATH);
 		int perft= perft(engine.divide(STARTPOS,6));
-		HashMap<String, Integer> divide= engine.divide(STARTPOS,6);
+		List<Eval> divide= engine.divide(STARTPOS,6);
 		engine.command("quit");
 		engine.loop();
 	}
@@ -37,7 +39,7 @@ public class TestUCI {
 	public void testStockRoce2() {
 		EngineRoce engine = new EngineRoce(EngineRoce.DEFAULT_EXEPATH);
 		int perft= perft(engine.divide(STARTPOS,5));
-		HashMap<String, Integer> divide= engine.divide(STARTPOS,5);
+		List<Eval> divide= engine.divide(STARTPOS,5);
 		engine.command("quit");
 		engine.loop();
 	}
@@ -50,10 +52,10 @@ public class TestUCI {
 		System.out.println("hi");
 	}
 
-	private int perft(HashMap<String, Integer> divide) {
+	private int perft(List<Eval> list) {
 		int total=0;
-		for (Integer count : divide.values())
-			total+=count;
+		for (Eval eval : list)
+			total+=eval.count;
 		
 		return total;
 	}

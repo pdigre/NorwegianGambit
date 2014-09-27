@@ -11,7 +11,7 @@ public class AlphaBeta extends Evaluate {
 		for (int i = 0; i < iAll; i++) {
 			MOVEDATA md = moves[i];
 			make(md);
-			int score = -next.alphabeta(-beta, -alpha);
+			int score = -deeper.alphabeta(-beta, -alpha);
 			if (score > alpha)
 				alpha = score; // alpha acts like max in MiniMax
 		}
@@ -24,7 +24,7 @@ public class AlphaBeta extends Evaluate {
 		for (int i = 0; i < iAll; i++) {
 			MOVEDATA md = moves[i];
 			make(md);
-			int score = -next.alphabeta(-beta, -alpha);
+			int score = -deeper.alphabeta(-beta, -alpha);
 			if (score >= beta)
 				return beta; // fail hard beta-cutoff
 			if (score > alpha)
@@ -37,7 +37,7 @@ public class AlphaBeta extends Evaluate {
 	public int alphabeta(int alfa,int beta) {
 		generate();
 		make(moves[0]);
-		int bestscore = -next.alphabeta(-beta, -alfa);
+		int bestscore = -deeper.alphabeta(-beta, -alfa);
 		if( bestscore > alfa ) {
 			if( bestscore >= beta )
 				return bestscore;
@@ -46,9 +46,9 @@ public class AlphaBeta extends Evaluate {
 		for (int i = 1; i < iAll; i++) {
 			MOVEDATA md = moves[i];
 			make(md);
-			int score = -next.alphabeta(-alfa-1, -alfa);
+			int score = -deeper.alphabeta(-alfa-1, -alfa);
 			if( score > alfa && score < beta ) {
-				score = -next.alphabeta(-beta, -alfa);
+				score = -deeper.alphabeta(-beta, -alfa);
 				if( score > alfa )
 					alfa = score;
 			}
