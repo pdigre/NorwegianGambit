@@ -30,7 +30,10 @@ public class BASE implements IConst {
 	public static int cww = 0, cwb = 0,cew = 0, ceb = 0,clw = 0, clb = 0;
 	public static int xmw = 0, xmb = 0,xcw = 0, xcb = 0;
 
-
+	final public static long getBTo(int md){
+		return ALL[md].bto;
+	}
+	
 	public static void stats() {
 		System.out.println("White:"+allw+",Black:"+allb);
 
@@ -51,8 +54,7 @@ public class BASE implements IConst {
 		System.out.println("XCW:"+xcw+",XCB:"+xcb+" = 1/"+(cb/xcb));
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <X extends MOVEDATA>X add(MOVEDATA md) {
+	public static int add(MOVEDATA md) {
 		long bitmap = md.bitmap;
 		boolean isWhite = BITS.white(bitmap);
 		boolean isPromo = BITS.isPromotion(bitmap);
@@ -118,10 +120,11 @@ public class BASE implements IConst {
 		}
 		if (isWhite) {
 			ALL[allw++] = md;
+			return allw-1;
 		} else {
 			ALL[25000 + allb++] = md;
+			return 25000 + allb-1;
 		}
-		return (X) md;
 	}
 
 	final public static int LEFT = -1;

@@ -92,16 +92,15 @@ public class MOVEDATA {
 		new BASE();
 		StartGame pos = new StartGame("n1R5/PP1k4/1n6/8/8/8/4Kppp/5N1N b - - 2 3");
 		System.out.println(pos);
-		MOVEDATA md = MOVEDATAX.cpromote(14,7, IConst.BB, IConst.BP, IConst.WN);
-		pos.make(md,pos.bitmap);
+		pos.make(MOVEDATAX.cpromote(14,7, IConst.BB, IConst.BP, IConst.WN),pos.bitmap);
 		System.out.println(pos);
 	}
 
-	public static MOVEDATA create(long bitmap){
+	public static int create(long bitmap){
 		return BASE.add(new MOVEDATA(bitmap));
 	}
 	
-	public static MOVEDATA capture(long bitmap,int victim){
+	public static int capture(long bitmap,int victim){
 		return BASE.add(new MOVEDATA(bitmap | ((victim & 7) << IConst._CAPTURE)));
 	}
 
@@ -122,7 +121,7 @@ public class MOVEDATA {
 		return FEN.move2literal(bitmap);
 	}
 	
-	public static MOVEDATA cpromote(int from,int to, int promote, int pawn, int victim) {
+	public static int cpromote(int from,int to, int promote, int pawn, int victim) {
 		long promo = MBase.assemblePromote(pawn, promote, from, to, IConst.CASTLING_STATE | IConst.SPECIAL);
 		return capture(promo, victim);
 	}

@@ -6,7 +6,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
 import norwegiangambit.engine.fen.StartGame;
-import norwegiangambit.engine.movegen.MOVEDATA;
+import norwegiangambit.engine.movegen.BASE;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
 
@@ -25,8 +25,8 @@ public abstract class Tester implements IDivide{
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
 		CountTask[] tasks = new CountTask[root.iAll];
 		for (int i1 = 0; i1 < root.iAll; i1++) {
-			MOVEDATA md = root.xmoves[i1];
-        	Eval eval = new Eval(FEN.move2literal(md.bitmap),0,0);
+			int md = root.moves[i1];
+        	Eval eval = new Eval(FEN.move2literal(BASE.ALL[md].bitmap),0,0);
         	map.add(eval);
 			CountTask task=new CountTask(md,eval,levels,root);
 			tasks[i1]=task;
@@ -47,7 +47,7 @@ public abstract class Tester implements IDivide{
 		return map;
 	}
 
-	public Evaluate[] init(MOVEDATA md, Evaluate root, int levels, Eval eval) {
+	public Evaluate[] init(int md, Evaluate root, int levels, Eval eval) {
 		Evaluate[] movegen = new Evaluate[levels];
 		for (int i1 = 0; i1 < movegen.length; i1++) {
 			Evaluate m = insert(eval, movegen.length, i1);
@@ -58,7 +58,7 @@ public abstract class Tester implements IDivide{
 		}
 		Evaluate start = movegen[0];
 		start.set(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
-		start.set(md);
+		start.set(BASE.ALL[md]);
 		start.evaluate(md);
 		return movegen;
 	}
@@ -68,7 +68,7 @@ public abstract class Tester implements IDivide{
 		Evaluate start;
 		Eval eval;
 
-		public CountTask(MOVEDATA md,Eval eval,int levels,Evaluate root) {
+		public CountTask(int md,Eval eval,int levels,Evaluate root) {
 			this.eval=eval;
 			start=init(md, root, levels,eval )[0];
 		}

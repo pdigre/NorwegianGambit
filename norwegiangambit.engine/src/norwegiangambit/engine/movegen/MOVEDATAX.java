@@ -8,11 +8,11 @@ import norwegiangambit.util.IConst;
  */
 public class MOVEDATAX extends MOVEDATA {
 
-	public static MOVEDATAX capture(long bitmap,int victim){
+	public static int capture(long bitmap,int victim){
 		return create((bitmap | ((victim & 7) << IConst._CAPTURE))^findCastling(bitmap));
 	}
 
-	public static MOVEDATAX create(long bitmap){
+	public static int create(long bitmap){
 		return BASE.add(new MOVEDATAX(bitmap));
 	}
 
@@ -39,7 +39,7 @@ public class MOVEDATAX extends MOVEDATA {
 		return castling;
 	}
 
-	public static MOVEDATA cpromote(int from,int to, int promote, int pawn, int victim) {
+	public static int cpromote(int from,int to, int promote, int pawn, int victim) {
 		long promo = MBase.assemblePromote(pawn, promote, from, to, IConst.CASTLING_STATE | IConst.SPECIAL);
 		return capture(promo, victim);
 	}

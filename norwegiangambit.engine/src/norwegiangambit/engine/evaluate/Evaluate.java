@@ -1,5 +1,6 @@
 package norwegiangambit.engine.evaluate;
 
+import norwegiangambit.engine.movegen.BASE;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.engine.movegen.Movegen;
 import norwegiangambit.util.FEN;
@@ -46,9 +47,9 @@ public class Evaluate extends Movegen implements IIterate {
 		return score();
 	}
 	
-	public void make(MOVEDATA md) {
+	public void make(int md) {
 		deeper.set(isWhite, bitmap, wking, bking, bb_black, bb_bit1, bb_bit2, bb_bit3);
-		((Movegen)deeper).set(md);
+		((Movegen)deeper).set(BASE.ALL[md]);
 	}
 
 	@Override
@@ -60,7 +61,8 @@ public class Evaluate extends Movegen implements IIterate {
 		return FEN.addHorizontal(FEN.addHorizontal(string2, string3), string4);
 	}
 
-	public void evaluate(MOVEDATA md) {
+	public void evaluate(int i) {
+		MOVEDATA md = BASE.ALL[i];
 		midscore=parent.midScore()+md.mscore;
 		endscore=parent.endScore()+md.escore;
 	}

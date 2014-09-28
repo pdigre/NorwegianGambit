@@ -1,6 +1,5 @@
 package norwegiangambit.engine.evaluate;
 
-import norwegiangambit.engine.movegen.MOVEDATA;
 
 public class EvalTester extends Tester{
 
@@ -17,7 +16,7 @@ public class EvalTester extends Tester{
 	class MiniMax extends Evaluate {
 
 		@Override
-		public void make(MOVEDATA md) {
+		public void make(int md) {
 			super.make(md);
 			((Evaluate)deeper).evaluate(md);
 		}
@@ -26,7 +25,7 @@ public class EvalTester extends Tester{
 		public int alphabeta(int alpha, int beta) {
 			generate();
 			for (int i = 0; i < iAll; i++) {
-				MOVEDATA md = xmoves[i];
+				int md = moves[i];
 				make(md);
 				int score = -deeper.alphabeta(-beta, -alpha);
 				if (score > alpha)
@@ -39,7 +38,7 @@ public class EvalTester extends Tester{
 	class AlphaBeta extends Evaluate {
 
 		@Override
-		public void make(MOVEDATA md) {
+		public void make(int md) {
 			super.make(md);
 			((Evaluate)deeper).evaluate(md);
 		}
@@ -48,7 +47,7 @@ public class EvalTester extends Tester{
 		public int alphabeta(int alpha, int beta) {
 			generate();
 			for (int i = 0; i < iAll; i++) {
-				MOVEDATA md = xmoves[i];
+				int md = moves[i];
 				make(md);
 				int score = -deeper.alphabeta(-beta, -alpha);
 				if (score >= beta)
@@ -63,7 +62,7 @@ public class EvalTester extends Tester{
 	class PVS extends Evaluate {
 
 		@Override
-		public void make(MOVEDATA md) {
+		public void make(int md) {
 			super.make(md);
 			((Evaluate)deeper).evaluate(md);
 		}
@@ -71,7 +70,7 @@ public class EvalTester extends Tester{
 		// PVS
 		public int alphabeta(int alfa,int beta) {
 			generate();
-			make(xmoves[0]);
+			make(moves[0]);
 			int bestscore = -deeper.alphabeta(-beta, -alfa);
 			if( bestscore > alfa ) {
 				if( bestscore >= beta )
@@ -79,7 +78,7 @@ public class EvalTester extends Tester{
 				alfa = bestscore;
 			}
 			for (int i = 1; i < iAll; i++) {
-				MOVEDATA md = xmoves[i];
+				int md = moves[i];
 				make(md);
 				int score = -deeper.alphabeta(-alfa-1, -alfa);
 				if( score > alfa && score < beta ) {

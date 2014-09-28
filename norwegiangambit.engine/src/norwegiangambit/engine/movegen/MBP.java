@@ -4,11 +4,11 @@ import norwegiangambit.util.IConst;
 
 public class MBP  extends MBase{
 
-	final MOVEDATA[] CL,CR;	// Capture
-	final MOVEDATA EL,ER;  // Enpassant
-	final MOVEDATA M1,M2;   // Forward
-	final MOVEDATA[] P1,PL,PR;   // Promotion
-	static MOVEDATA[] PQ,PK;  // Promotion & Capture rook
+	final int[] CL,CR;	// Capture
+	final int EL,ER;  // Enpassant
+	final int M1,M2;   // Forward
+	final int[] P1,PL,PR;   // Promotion
+	static int[] PQ,PK;  // Promotion & Capture rook
 	final static long[] REV=new long[64];
 	final static MBP[] BP;
 	static {
@@ -19,8 +19,8 @@ public class MBP  extends MBase{
 
 	public MBP(int from) {
 		super(from);
-		MOVEDATA[] CL=null,CR=null,P1=null,PL=null,PR=null;	
-		MOVEDATA EL=null,ER=null,M1=null,M2=null;
+		int[] CL=null,CR=null,P1=null,PL=null,PR=null;	
+		int EL=0,ER=0,M1=0,M2=0;
 		if(from>7 && from < 56){
 			if (from > 15) {
 				M1=move(from - 8);
@@ -70,17 +70,17 @@ public class MBP  extends MBase{
 		this.PR=PR;
 	}
 
-	private MOVEDATA move(int to) {
+	private int move(int to) {
 		return MOVEDATA.create(assemble(IConst.BP, from, to, CASTLING_STATE));
 	}
 
-	private MOVEDATA enpassant(int to) {
+	private int enpassant(int to) {
 		long bitmap = assemble(IConst.BP, from, to, CASTLING_STATE | IConst.SPECIAL);
 		return MOVEDATA.create(bitmap | (IConst.WP << IConst._CAPTURE));
 	}
 
-	private MOVEDATA[] captures(int to) {
-		MOVEDATA[] captures=new MOVEDATA[5];
+	private int[] captures(int to) {
+		int[] captures=new int[5];
 		for (int i = 0; i < 5; i++) {
 			long bitmap = assemble(IConst.BP, from, to, CASTLING_STATE);
 			captures[i]=MOVEDATA.capture(bitmap, BCAPTURES[i]);
@@ -88,23 +88,23 @@ public class MBP  extends MBase{
 		return captures;
 	}
 
-	private MOVEDATA[] promotes(int to) {
-		MOVEDATA[] promotes=new MOVEDATA[4];
+	private int[] promotes(int to) {
+		int[] promotes=new int[4];
 		for (int p = 0; p < 4; p++)
 			promotes[p]=MOVEDATA.create(assemblePromote(IConst.BP, BPROMOTES[p], from, to, CASTLING_STATE | SPECIAL));
 		return promotes;
 	}
 
-	private MOVEDATA[] cpromotes(int to) {
-		MOVEDATA[] promotes=new MOVEDATA[20];
+	private int[] cpromotes(int to) {
+		int[] promotes=new int[20];
 		for (int p = 0; p < 4; p++)
 			for (int i = 0; i < 5; i++)
 				promotes[p*5+i]=MOVEDATA.cpromote(from,to, BPROMOTES[p], IConst.BP, BCAPTURES[i]);
 		return promotes;
 	}
 
-	private MOVEDATA[] cpromotesx(int to) {
-		MOVEDATA[] promotes=new MOVEDATA[4];
+	private int[] cpromotesx(int to) {
+		int[] promotes=new int[4];
 		for (int p = 0; p < 4; p++){
 			promotes[p]=MOVEDATAX.cpromote(from,to, BPROMOTES[p], IConst.BP, IConst.WR);
 		}
@@ -146,8 +146,8 @@ public class MBP  extends MBase{
 			cl ^= 1L << from;
 			int to=from-9;
 			if (to == enp) {
-				MOVEDATA md=mp[from].EL;
-				if(gen.isSafe(md))
+				int md=mp[from].EL;
+				if(gen.isSafeMove(md))
 					gen.capture(md);
 			} else {
 				int ctype=gen.ctype(1L << to);
@@ -176,8 +176,8 @@ public class MBP  extends MBase{
 			cr ^= 1L << from;
 			int to=from-7;
 			if (to == enp) {
-				MOVEDATA md=mp[from].ER;
-				if(gen.isSafe(md))
+				int md=mp[from].ER;
+				if(gen.isSafeMove(md))
 					gen.capture(md);
 			} else {
 				int ctype=gen.ctype(1L << to);

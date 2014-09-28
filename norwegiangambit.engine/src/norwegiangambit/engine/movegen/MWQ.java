@@ -9,8 +9,8 @@ import norwegiangambit.util.IConst;
 
 public class MWQ extends MSlider{
 
-	final MOVEDATA[] U,D, L,R,UL,UR,DL,DR;
-	final MOVEDATA[][] DIAG,LINE;
+	final int[] U,D, L,R,UL,UR,DL,DR;
+	final int[][] DIAG,LINE;
 
 	final static MWQ[] WQ;
 	static {
@@ -29,8 +29,8 @@ public class MWQ extends MSlider{
 		UR=slide(IConst.WQ, UP + RIGHT);
 		DL=slide(IConst.WQ, DOWN + LEFT);
 		DR=slide(IConst.WQ, DOWN + RIGHT);
-		DIAG=new MOVEDATA[][]{UL,UR,DL,DR};
-		LINE=new MOVEDATA[][]{U,D, L,R};
+		DIAG=new int[][]{UL,UR,DL,DR};
+		LINE=new int[][]{U,D, L,R};
 	}
 
 	public void genLegal(Movegen gen){

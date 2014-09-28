@@ -13,9 +13,9 @@ import norwegiangambit.util.IConst;
 
 public class MWR extends MSlider{
 
-	final static MOVEDATA[] XQU,XQD,XQL,XQR,XKU,XKD,XKL,XKR;
-	final MOVEDATA[] U, D, L, R;
-	final MOVEDATA[][] LINE;
+	final static int[] XQU,XQD,XQL,XQR,XKU,XKD,XKL,XKR;
+	final int[] U, D, L, R;
+	final int[][] LINE;
 
 	final static MWR[] WR;
 	static {
@@ -40,11 +40,11 @@ public class MWR extends MSlider{
 		D=slide(DOWN);
 		L=slide(LEFT);
 		R=slide(RIGHT);
-		LINE=new MOVEDATA[][]{U,D, L,R};
+		LINE=new int[][]{U,D, L,R};
 	}
 
-	private MOVEDATA[] slide(int offset) {
-		ArrayList<MOVEDATA> list = new ArrayList<MOVEDATA>();
+	private int[] slide(int offset) {
+		ArrayList<Integer> list = new ArrayList<Integer>();
 		int to=from+offset;
 		while(inside(to, to-offset)){
 			long bitmap = assemble(IConst.WR, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
@@ -60,7 +60,7 @@ public class MWR extends MSlider{
 			list.add(MOVEDATA.create(bitmap));
 			to+=offset;
 		}
-		return list.toArray(new MOVEDATA[list.size()]);
+		return makeArray(list);
 	}
 
 	public void genLegal(Movegen gen){

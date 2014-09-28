@@ -8,21 +8,20 @@ import static norwegiangambit.engine.movegen.BASE.UP;
 import java.util.ArrayList;
 import java.util.List;
 
-import norwegiangambit.util.BITS;
 import norwegiangambit.util.IConst;
 
 public class MBK extends MBase {
 
-	final MOVEDATA[][] M;
-	final static MOVEDATA CQ,CK;
-	final static MOVEDATA[][] X,XQ,XK;
+	final int[][] M;
+	final static int CQ,CK;
+	final static int[][] X,XQ,XK;
 	
 	final static MBK[] BK;
 	static {
 		BK=new MBK[64];
 		for (int from = 0; from < 64; from++)
 			BK[from] = new MBK(from);
-		MOVEDATA[][] M=BK[IConst.BK_STARTPOS].M;
+		int[][] M=BK[IConst.BK_STARTPOS].M;
 		X=castlingKing(M,IConst.CANCASTLE_BLACK);
 		XQ=castlingKing(M,IConst.CANCASTLE_BLACKQUEEN);
 		XK=castlingKing(M,IConst.CANCASTLE_BLACKKING);
@@ -32,7 +31,7 @@ public class MBK extends MBase {
 
 	public MBK(int from) {
 		super(from);
-		ArrayList<MOVEDATA[]> list=new ArrayList<MOVEDATA[]>();
+		ArrayList<int[]> list=new ArrayList<int[]>();
 		add(UP,list);
 		add(DOWN,list);
 		add(LEFT,list);
@@ -41,13 +40,13 @@ public class MBK extends MBase {
 		add(UP + RIGHT,list);
 		add(DOWN + LEFT,list);
 		add(DOWN + RIGHT,list);
-		M=list.toArray(new MOVEDATA[list.size()][]);
+		M=list.toArray(new int[list.size()][]);
 	}
 
-	protected void add(int offset, List<MOVEDATA[]> list) {
+	protected void add(int offset, List<int[]> list) {
 		int to = from + offset;
 		if (BASE.inside(to, from)){
-			MOVEDATA[] m=new MOVEDATA[6];
+			int[] m=new int[6];
 			list.add(m);
 			long bitmap = assemble(IConst.BK, from, to, CANCASTLE_WHITE | HALFMOVES);
 			m[5]=MOVEDATA.create(bitmap);
@@ -63,11 +62,11 @@ public class MBK extends MBase {
 		kmoves(gen,from == IConst.BK_STARTPOS?getCastlingMoves(gen):M);
 	}
 	
-	public void kmoves(Movegen gen, MOVEDATA[][] moves) {
+	public void kmoves(Movegen gen, int[][] moves) {
 		long enemy = gen.bb_white;
 		long all = gen.bb_piece;
-		for (MOVEDATA[] m : moves){
-			long bto = m[5].bto;
+		for (int[] m : moves){
+			long bto = BASE.getBTo(m[5]);
 			if ((all & bto) == 0) {
 				add(gen,m[5]);
 			} else {
@@ -84,17 +83,17 @@ public class MBK extends MBase {
 		}
 	}
 
-	final static void add(Movegen gen,MOVEDATA md) {
-		if(gen.isSafe(BITS.getTo(md.bitmap)))
+	final static void add(Movegen gen,int md) {
+		if(gen.isSafeKingMove(md))
 			gen.add(md);
 	}
 	
-	final static void addCapture(Movegen gen,MOVEDATA md) {
-		if(gen.isSafe(BITS.getTo(md.bitmap)))
+	final static void addCapture(Movegen gen,int md) {
+		if(gen.isSafeKingMove(md))
 			gen.capture(md);
 	}
 	
-	public MOVEDATA[][] getCastlingMoves(Movegen gen) {
+	public int[][] getCastlingMoves(Movegen gen) {
 		final boolean qc=(gen.castling & IConst.CANCASTLE_BLACKQUEEN) != 0;
 		final boolean kc=(gen.castling & IConst.CANCASTLE_BLACKKING) != 0;
 		return qc?(kc?X:XQ):(kc?XK:M);
@@ -104,14 +103,14 @@ public class MBK extends MBase {
 		long castling = gen.castling & IConst.CANCASTLE_BLACK;
 		if ((IConst.CBQ & gen.bb_piece) == 0
 				&& (castling & IConst.CANCASTLE_BLACKQUEEN) != 0
-				&& gen.isSafe(IConst.BK_STARTPOS - 1)
-				&& gen.isSafe(IConst.BK_STARTPOS - 2)) {
+				&& gen.isSafePos(IConst.BK_STARTPOS - 1)
+				&& gen.isSafePos(IConst.BK_STARTPOS - 2)) {
 			add(gen,CQ);
 		}
 		if ((IConst.CBK & gen.bb_piece) == 0
 				&& (castling & IConst.CANCASTLE_BLACKKING) != 0
-				&& gen.isSafe(IConst.BK_STARTPOS + 1)
-				&& gen.isSafe(IConst.BK_STARTPOS + 2)) {
+				&& gen.isSafePos(IConst.BK_STARTPOS + 1)
+				&& gen.isSafePos(IConst.BK_STARTPOS + 2)) {
 			add(gen,CK);
 		}
 	}

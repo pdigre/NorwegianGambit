@@ -21,16 +21,16 @@ public class MWN extends MBase{
 	
 	public MWN(int from) {
 		super(from);
-		ArrayList<MOVEDATA[]> list=new ArrayList<MOVEDATA[]>();
+		ArrayList<int[]> list=new ArrayList<int[]>();
 		for (int i = 0; i < KNIGHT_MOVES.length; i++)
 			add(KNIGHT_MOVES[i], list);
-		M=list.toArray(new MOVEDATA[list.size()][]);
+		M=list.toArray(new int[list.size()][]);
 	}
 
-	private void add(int offset, List<MOVEDATA[]> list) {
+	private void add(int offset, List<int[]> list) {
 		int to = from + offset;
 		if (inside(to, from)){
-			MOVEDATA[] m=new MOVEDATA[6];
+			int[] m=new int[6];
 			list.add(m);
 			long bitmap = assemble(IConst.WN, from, to, CASTLING_STATE | HALFMOVES);
 			m[5]=MOVEDATA.create(bitmap);
@@ -42,13 +42,13 @@ public class MWN extends MBase{
 		}
 	}
 	
-	final MOVEDATA[][] M;
+	final int[][] M;
 
 	public void genLegal(Movegen gen) {
 		long all = gen.bb_piece;
 		long enemy = gen.bb_black;
-		for (MOVEDATA[] m : M){
-			long bto = m[5].bto;
+		for (int[] m : M){
+			long bto = BASE.getBTo(m[5]);
 			if ((all & bto) == 0) {
 				gen.add(m[5]);
 			} else {

@@ -1,5 +1,6 @@
 package norwegiangambit.engine.fen;
 
+import norwegiangambit.engine.movegen.BASE;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
@@ -269,7 +270,8 @@ public class Position implements IConst, Comparable<Position> {
 		return new Position(white, bitmap, wking, bking, bb_black, bb_bit1, bb_bit2, bb_bit3);
 	}
 	
-	public void make(MOVEDATA m,long p_castling) {
+	public void make(int i,long p_castling) {
+		MOVEDATA m=BASE.ALL[i];
 		bitmap=m.bitmap&(~CASTLING_STATE | p_castling);
 		bb_black ^=m.b_black;
 		bb_bit1 ^=m.b_bit1;

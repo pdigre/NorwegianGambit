@@ -1,5 +1,7 @@
 package norwegiangambit.engine.movegen;
 
+import java.util.ArrayList;
+
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.IConst;
 
@@ -10,7 +12,7 @@ public abstract class MBase implements IConst{
 	final static int[] WCAPTURES=new int[]{IConst.BP,IConst.BN,IConst.BB,IConst.BR,IConst.BQ};
 	final static int[] BCAPTURES=new int[]{IConst.WP,IConst.WN,IConst.WB,IConst.WR,IConst.WQ};
 	
-	MOVEDATA Q, K; // Break castling
+	int Q, K; // Break castling
 	
 	final public int from;
 	
@@ -18,29 +20,36 @@ public abstract class MBase implements IConst{
 		this.from = from;
 	}
 
+	public int[] makeArray(ArrayList<Integer> list) {
+		int[] arr = new int[list.size()];
+		for (int i = 0; i < list.size(); i++)
+			arr[i] = list.get(i);
+		return arr;
+	}
+
 	final static long purge(long bitmap, int subtract) {
 		int score = BITS.score(bitmap) - subtract;
 		return (((long) score) << 32) | ((int) bitmap);
 	}
 
-	public static MOVEDATA[] castlingRook(MOVEDATA[] M) {
-		MOVEDATA[] x=new MOVEDATA[M.length];
+	public static int[] castlingRook(int[] M) {
+		int[] x=new int[M.length];
 		for (int i = 0; i < M.length; i++)
-			x[i]=MOVEDATAX.create(M[i].bitmap);
+			x[i]=MOVEDATAX.create(BASE.ALL[M[i]].bitmap);
 		return x;
 	}
 
-	public static MOVEDATA[][] castlingKing(MOVEDATA[][] M,long castling) {
-		MOVEDATA[][] x=new MOVEDATA[M.length][];
+	public static int[][] castlingKing(int[][] M,long castling) {
+		int[][] x=new int[M.length][];
 		for (int i = 0; i < M.length; i++)
 			x[i]=castling(M[i],castling);
 		return x;
 	}
 	
-	private static MOVEDATA[] castling(MOVEDATA[] m,long mask) {
-		MOVEDATA[] x=new MOVEDATA[m.length];
+	private static int[] castling(int[] m,long mask) {
+		int[] x=new int[m.length];
 		for (int i = 0; i < m.length; i++)
-			x[i]=MOVEDATAX.create(m[i].bitmap^mask);
+			x[i]=MOVEDATAX.create(BASE.ALL[m[i]].bitmap^mask);
 		return x;
 	}
 

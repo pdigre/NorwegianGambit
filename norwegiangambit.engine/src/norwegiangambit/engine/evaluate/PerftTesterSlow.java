@@ -1,6 +1,5 @@
 package norwegiangambit.engine.evaluate;
 
-import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.IDivide;
 
 public class PerftTesterSlow extends Tester implements IDivide{
@@ -14,7 +13,7 @@ public class PerftTesterSlow extends Tester implements IDivide{
 	class NodeGen extends Evaluate {
 
 		@Override
-		public void evaluate(MOVEDATA md) {
+		public void evaluate(int md) {
 			//
 		}
 
@@ -22,7 +21,7 @@ public class PerftTesterSlow extends Tester implements IDivide{
 		public int alphabeta(int alpha, int beta) {
 			generate();
 			for (int i = 0; i < iAll; i++) {
-				MOVEDATA md = xmoves[i];
+				int md = moves[i];
 				make(md);
 				deeper.alphabeta(alpha, beta);
 			}

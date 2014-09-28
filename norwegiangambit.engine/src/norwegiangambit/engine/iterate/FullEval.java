@@ -3,7 +3,6 @@ package norwegiangambit.engine.iterate;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.util.IConst;
 import norwegiangambit.util.PSQT_SEF;
-import norwegiangambit.util.PieceType;
 
 public class FullEval implements IEvaluator {
 

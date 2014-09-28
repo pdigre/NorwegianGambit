@@ -1,7 +1,6 @@
 package norwegiangambit.engine.iterate;
 
 import norwegiangambit.engine.fen.Position;
-import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.engine.movegen.Movegen;
 import norwegiangambit.util.IConst;
 
@@ -21,12 +20,11 @@ public class NodeGen implements IConst {
 		return wrap(pos, movegen.legalmoves());
 	}
 
-	public static Position[] wrap(Position pos, MOVEDATA[] moves) {
+	public static Position[] wrap(Position pos, int[] moves) {
 		Position[] list=new Position[moves.length];
 		for (int i = 0; i < moves.length; i++) {
-			MOVEDATA md = moves[i];
 			list[i]=new Position(pos);
-			list[i].make(md,list[i].bitmap);
+			list[i].make(i,list[i].bitmap);
 		}
 		return list;
 	}

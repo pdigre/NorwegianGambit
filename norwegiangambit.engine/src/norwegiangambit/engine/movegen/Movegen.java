@@ -22,8 +22,7 @@ public class Movegen implements IConst{
 	protected long checkers, pinners, hiders;
 	int king,eking;
 
-//	public final int[] moves = new int[99];
-	public final MOVEDATA[] xmoves = new MOVEDATA[99];
+	public final int[] moves = new int[99];
 	public int iAll = 0;
 	int iLegal = 0, iTested = 0, iCapture=0;
 
@@ -79,29 +78,29 @@ public class Movegen implements IConst{
 		
 	}
 	
-	final public void add(MOVEDATA md) {
-		xmoves[iAll++] = md;
+	final public void add(int md) {
+		moves[iAll++] = md;
 	}
 	
-	final public void capture(MOVEDATA md) {
-		xmoves[iAll++] = xmoves[iCapture];
-		xmoves[iCapture++]=md;
+	final public void capture(int md) {
+		moves[iAll++] = moves[iCapture];
+		moves[iCapture++]=md;
 	}
 	
 	final int ctype(long bit) {
 		return ((bb_bit1 & bit) == 0 ? 0 : 1) + ((bb_bit2 & bit) == 0 ? 0 : 2) + ((bb_bit3 & bit) == 0 ? 0 : 2) - 1;
 	}
 	
-	final public MOVEDATA[] legalmoves() {
+	final public int[] legalmoves() {
 		generate();
-		return Arrays.copyOfRange(xmoves, 0, iAll);
+		return Arrays.copyOfRange(moves, 0, iAll);
 	}
 
 	public void pruneLegal() {
 		while (iTested < iAll) {
-			MOVEDATA md = xmoves[iTested++];
-			if (isSafe(md)){
-				xmoves[iLegal++]=md;
+			int md = moves[iTested++];
+			if (isSafeMove(md)){
+				moves[iLegal++]=md;
 			} else 
 				if(iTested<iCapture)
 					iCapture--;
@@ -284,11 +283,11 @@ public class Movegen implements IConst{
 		}
 	}
 
-	private void slide(MOVEDATA[][] mm,MBase b,long attacker,long between) {
-		for (MOVEDATA[] m : mm) {
+	private void slide(int[][] mm,MBase b,long attacker,long between) {
+		for (int[] m : mm) {
 			int i = 0;
 			while (i < m.length) {
-				long bto = m[i + 5].bto;
+				long bto = BASE.getBTo(m[i + 5]);
 				if((between&bto)!=0){
 					add(m[i + 5]);
 					i += 6;
@@ -329,11 +328,16 @@ public class Movegen implements IConst{
 		return string;
 	}
 
-	public boolean isSafe(MOVEDATA md) {
-		return isSafe(isWhite,king,bb_black^md.b_black, bb_bit1^md.b_bit1, bb_bit2^md.b_bit2, bb_bit3^md.b_bit3);
+	public boolean isSafeMove(int md) {
+		MOVEDATA m=BASE.ALL[md];
+		return isSafe(isWhite,king,bb_black^m.b_black, bb_bit1^m.b_bit1, bb_bit2^m.b_bit2, bb_bit3^m.b_bit3);
 	}
 
-	final public boolean isSafe(int kingpos) {
+	final public boolean isSafeKingMove(int md) {
+		return isSafePos(BITS.getTo(BASE.ALL[md].bitmap));
+	}
+	
+	final public boolean isSafePos(int kingpos) {
 		long e=isWhite?bb_black:bb_white;
 		long rp=isWhite?MBP.REV[kingpos]:MWP.REV[kingpos];
 		MWQ rq=MWQ.WQ[kingpos];
@@ -391,9 +395,9 @@ public class Movegen implements IConst{
 		return true;
 	}
 
-	final private static boolean ray(long enemy, MOVEDATA[] s, long a) {
-		for (MOVEDATA m : s) {
-			long bit = m.bto;
+	final private static boolean ray(long enemy, int[] s, long a) {
+		for (int m : s) {
+			long bit = BASE.getBTo(m);
 			if ((a & bit) != 0)
 				return (enemy & bit) != 0;
 		}
