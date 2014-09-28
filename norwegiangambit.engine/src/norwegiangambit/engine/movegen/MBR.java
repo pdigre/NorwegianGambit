@@ -64,7 +64,7 @@ public class MBR extends MSlider{
 	}
 
 	public void genLegal(Movegen gen){
-		bslide(gen,LINE);
+		bslide(gen,LINE, 3);
 	}
 	
 }

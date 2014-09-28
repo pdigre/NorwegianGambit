@@ -34,8 +34,8 @@ public class MWQ extends MSlider{
 	}
 
 	public void genLegal(Movegen gen){
-		wslide(gen,LINE);
-		wslide(gen,DIAG);
+		wslide(gen,LINE, 4);
+		wslide(gen,DIAG, 4);
 	}
 	
 }

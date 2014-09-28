@@ -28,7 +28,7 @@ public abstract class MSlider extends MBase {
 		return makeArray(list);
 	}
 
-	public void bslide(Movegen gen, int[][] mm) {
+	public void bslide(Movegen gen, int[][] mm, int type) {
 		long occ = gen.bb_piece;
 		long enemy = gen.bb_white;
 		for (int[] m : mm) {
@@ -43,18 +43,18 @@ public abstract class MSlider extends MBase {
 //						else if(c==3 && bto==1L<<IConst.WR_QUEEN_STARTPOS)
 //							gen.add(Q);
 //						else
-							gen.capture(m[i + c]);
+							gen.capture(m[i + c], type, c);
 					}
 					break;
 				} else {
-					gen.add(m[i + 5]);
+					gen.move(m[i + 5]);
 					i += 6;
 				}
 			}
 		}
 	}
 
-	public void wslide(Movegen gen, int[][] mm) {
+	public void wslide(Movegen gen, int[][] mm, int type) {
 		long occ = gen.bb_piece;
 		long enemy = gen.bb_black;
 		for (int[] m : mm) {
@@ -69,11 +69,11 @@ public abstract class MSlider extends MBase {
 //						else if(c==3 && bto==1L<<IConst.BR_QUEEN_STARTPOS)
 //							gen.add(Q);
 //						else
-							gen.capture(m[i + c]);
+							gen.capture(m[i + c], type, c);
 					}
 					break;
 				} else {
-					gen.add(m[i + 5]);
+					gen.move(m[i + 5]);
 					i += 6;
 				}
 			}

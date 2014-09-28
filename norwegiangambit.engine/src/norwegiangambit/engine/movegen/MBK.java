@@ -85,12 +85,7 @@ public class MBK extends MBase {
 
 	final static void add(Movegen gen,int md) {
 		if(gen.isSafeKingMove(md))
-			gen.add(md);
-	}
-	
-	final static void addCapture(Movegen gen,int md) {
-		if(gen.isSafeKingMove(md))
-			gen.capture(md);
+			gen.move(md);
 	}
 	
 	public int[][] getCastlingMoves(Movegen gen) {

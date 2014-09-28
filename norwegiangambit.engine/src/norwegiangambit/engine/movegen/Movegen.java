@@ -23,14 +23,16 @@ public class Movegen implements IConst{
 	int king,eking;
 
 	public final int[] moves = new int[99];
-	public int iAll = 0;
-	int iLegal = 0, iTested = 0, iCapture=0;
+	public int iAll = 0, lvl1=0,lvl2=0;
+	int iLegal = 0, iTested = 0, lvl3=0;
 
 	final void clear(){
 		iLegal = 0;
 		iTested = 0;
+		lvl1=0;
+		lvl2=0;
+		lvl3=0;
 		iAll=0;
-		iCapture=0;
 	}
 
 	public void set(boolean isWhite, long bitmap, int wking, int bking, long bb, long b1, long b2, long b3) {
@@ -78,13 +80,72 @@ public class Movegen implements IConst{
 		
 	}
 	
-	final public void add(int md) {
+	/**
+	 * - 1 - 
+	 * good
+	 * promoteCapture
+	 * promote
+	 * 
+	 * - 2 -
+	 * equal
+	 * enpassant
+	 * 
+	 * - 3 -
+	 * bad
+	 * castling
+	 * quiet
+	 * 
+	 * - iAll -
+	 * 
+	 * 
+	 * @param md
+	 */
+	final public void capturePromote(int md, int type, int victim) {
+		moves[iAll++] = moves[lvl3];
+		moves[lvl3++] = moves[lvl2];
+		moves[lvl2++] = moves[lvl1];
+		moves[lvl1++]=md;
+	}
+	
+	final public void promote(int md,int type) {
+		moves[iAll++] = moves[lvl3];
+		moves[lvl3++] = moves[lvl2];
+		moves[lvl2++] = moves[lvl1];
+		moves[lvl1++]=md;
+	}
+	
+	final public void capture(int md, int type, int victim) {
+		if(type<victim){ // Good
+			moves[iAll++] = moves[lvl3];
+			moves[lvl3++] = moves[lvl2];
+			moves[lvl2++] = moves[lvl1];
+			moves[lvl1++]=md;
+		} else if(type==victim){ // Equal
+			moves[iAll++] = moves[lvl3];
+			moves[lvl3++] = moves[lvl2];
+			moves[lvl2++]=md;
+		} else { // Bad
+			moves[iAll++] = moves[lvl3];
+			moves[lvl3++]=md;
+		}
+	}
+	
+	final public void enpassant(int md) {
+		moves[iAll++] = moves[lvl3];
+		moves[lvl3++] = moves[lvl2];
+		moves[lvl2++]=md;
+	}
+	
+	final public void move(int md) {
 		moves[iAll++] = md;
 	}
 	
-	final public void capture(int md) {
-		moves[iAll++] = moves[iCapture];
-		moves[iCapture++]=md;
+	final public void castling(int md) {
+		moves[iAll++] = md;
+	}
+	
+	final public void quiet(int md) {
+		moves[iAll++] = md;
 	}
 	
 	final int ctype(long bit) {
@@ -102,8 +163,8 @@ public class Movegen implements IConst{
 			if (isSafeMove(md)){
 				moves[iLegal++]=md;
 			} else 
-				if(iTested<iCapture)
-					iCapture--;
+				if(iTested<lvl3)
+					lvl3--;
 		}
 		iAll=iLegal;
 	}
@@ -149,9 +210,9 @@ public class Movegen implements IConst{
 				pinners|=pinner;
 				if((pinner&bb_bit1&bb_bit3)!=0){	// BISHOP / QUEEN
 					if((pinner&bb_bit2)!=0){  	// QUEEN
-						slide(isWhite?MWQ.WQ[from].DIAG:MBQ.BQ[from].DIAG,isWhite?MWQ.WQ[from]:MBQ.BQ[from],attacker,between);
+						slide(isWhite?MWQ.WQ[from].DIAG:MBQ.BQ[from].DIAG,isWhite?MWQ.WQ[from]:MBQ.BQ[from],attacker,between, 4);
 					} else {
-						slide(isWhite?MWB.WB[from].DIAG:MBB.BB[from].DIAG,isWhite?MWQ.WQ[from]:MBQ.BQ[from],attacker,between);
+						slide(isWhite?MWB.WB[from].DIAG:MBB.BB[from].DIAG,isWhite?MWQ.WQ[from]:MBQ.BQ[from],attacker,between, 2);
 					}
 				} else if((pinner&bb_bit1&~bb_bit2&~bb_bit3)!=0){  // PAWN CAPTURE
 					int ctype = ctype(attacker);
@@ -159,46 +220,41 @@ public class Movegen implements IConst{
 						MWP mwp = MWP.WP[from];
 						if(pinner<<7==attacker && (attacker&IConst.RIGHTLANE)==0L){
 							if(from>47){
-								capture(mwp.PL[ctype]);
-								capture(mwp.PL[ctype+5]);
-								capture(mwp.PL[ctype+10]);
-								capture(mwp.PL[ctype+15]);
+								capturePromote(mwp.PL, ctype);
 							} else
-								capture(mwp.CL[ctype]);
+								capture(mwp.CL[ctype], 0, ctype);
 						}
 						if(pinner<<9==attacker && (attacker&IConst.LEFTLANE)==0L){
 							if(from>47){
-								capture(mwp.PR[ctype]);
-								capture(mwp.PR[ctype+5]);
-								capture(mwp.PR[ctype+10]);
-								capture(mwp.PR[ctype+15]);
+								capturePromote(mwp.PR, ctype);
 							} else
-								capture(mwp.CR[ctype]);
+								capture(mwp.CR[ctype], 0, ctype);
 						}
 					} else {
 						MBP mbp = MBP.BP[from];
 						if(pinner>>9==attacker && (attacker&IConst.RIGHTLANE)==0L){
 							if(from<16){
-								capture(mbp.PL[ctype]);
-								capture(mbp.PL[ctype+5]);
-								capture(mbp.PL[ctype+10]);
-								capture(mbp.PL[ctype+15]);
+								capturePromote(mbp.PL, ctype);
 							} else
-								capture(mbp.CL[ctype]);
+								capture(mbp.CL[ctype], 0, ctype);
 						}
 						if(pinner>>7==attacker && (attacker&IConst.LEFTLANE)==0L){
 							if(from<16){
-								capture(mbp.PR[ctype]);
-								capture(mbp.PR[ctype+5]);
-								capture(mbp.PR[ctype+10]);
-								capture(mbp.PR[ctype+15]);
+								capturePromote(mbp.PR, ctype);
 							} else
-								capture(mbp.CR[ctype]);
+								capture(mbp.CR[ctype], 0, ctype);
 						}
 					}
 				}
 			}
 		}
+	}
+
+	public void capturePromote(int[] mvs, int ctype) {
+		capturePromote(mvs[ctype], 1, ctype);
+		capturePromote(mvs[ctype+5], 2, ctype);
+		capturePromote(mvs[ctype+10], 3, ctype);
+		capturePromote(mvs[ctype+15], 4, ctype);
 	}
 
 	final private void linePinners(long atks) {
@@ -218,22 +274,22 @@ public class Movegen implements IConst{
 				pinners|=pinner;
 				if((pinner&bb_bit2&bb_bit3)!=0){		// ROOK / QUEEN
 					if((pinner&bb_bit1)!=0){	// QUEEN
-						slide(isWhite?MWQ.WQ[from].LINE:MBQ.BQ[from].LINE,isWhite?MWQ.WQ[from]:MBQ.BQ[from],attacker,between);
+						slide(isWhite?MWQ.WQ[from].LINE:MBQ.BQ[from].LINE,isWhite?MWQ.WQ[from]:MBQ.BQ[from],attacker,between, 4);
 					} else {
-						slide(isWhite?MWR.WR[from].LINE:MBR.BR[from].LINE,isWhite?MWR.WR[from]:MBR.BR[from],attacker,between);
+						slide(isWhite?MWR.WR[from].LINE:MBR.BR[from].LINE,isWhite?MWR.WR[from]:MBR.BR[from],attacker,between, 3);
 					}
 				} else if((pinner&bb_pawns)!=0){  // PAWN FORWARD
 					if(isWhite){
 						if(((pinner<<8)&between)!=0){
-							add(MWP.WP[from].M1);
+							move(MWP.WP[from].M1);
 							if(from<16 && ((pinner<<16)&between)!=0)
-								add(MWP.WP[from].M2);
+								move(MWP.WP[from].M2);
 						}
 					} else {
 						if(((pinner>>8)&between)!=0){
-							add(MBP.BP[from].M1);
+							move(MBP.BP[from].M1);
 							if(from>47 && ((pinner>>16)&between)!=0)
-								add(MBP.BP[from].M2);
+								move(MBP.BP[from].M2);
 						}
 					}
 				}
@@ -283,13 +339,13 @@ public class Movegen implements IConst{
 		}
 	}
 
-	private void slide(int[][] mm,MBase b,long attacker,long between) {
+	private void slide(int[][] mm,MBase b,long attacker,long between, int type) {
 		for (int[] m : mm) {
 			int i = 0;
 			while (i < m.length) {
 				long bto = BASE.getBTo(m[i + 5]);
 				if((between&bto)!=0){
-					add(m[i + 5]);
+					move(m[i + 5]);
 					i += 6;
 					continue;
 				}
@@ -298,21 +354,21 @@ public class Movegen implements IConst{
 					if(c==3){
 						if(isWhite){
 							if(bto==1L<<IConst.BR_KING_STARTPOS)
-								capture(b.K);
+								capture(b.K, type, c);
 							 else if(bto==1L<<IConst.BR_QUEEN_STARTPOS)
-								capture(b.Q);
+								capture(b.Q, type, c);
 							 else 
-								capture(m[i + c]);
+								capture(m[i + c], type, c);
 						} else {
 							if(bto==1L<<IConst.WR_KING_STARTPOS)
-								capture(b.K);
+								capture(b.K, type, c);
 							 else if(bto==1L<<IConst.WR_QUEEN_STARTPOS)
-								capture(b.Q);
+								capture(b.Q, type, c);
 							 else 
-								capture(m[i + c]);
+								capture(m[i + c], type, c);
 						}
 					} else {
-						capture(m[i + c]);
+						capture(m[i + c], type, c);
 					}
 				}
 				break;

@@ -28,22 +28,36 @@ public class Test_Eval_11000ms extends EvalTest{
 	
 	@Test
 	public void m1_3() {
-		testEval(testing, 3,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","a2a3=0,a2a4=-5,b1a3=10,b1c3=50,b2b3=-15,b2b4=-10,c2c3=-20,c2c4=-10,d2d3=20,d2d4=40,e2e3=20,e2e4=40,f2f3=-20,f2f4=-10,g1f3=50,g1h3=10,g2g3=-15,g2g4=-10,h2h3=0,h2h4=-5");
+		testEval(testing, 3,5763,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","a2a3=0,a2a4=-5,b1a3=10,b1c3=50,b2b3=-15,b2b4=-10,c2c3=-20,c2c4=-10,d2d3=20,d2d4=40,e2e3=20,e2e4=40,f2f3=-20,f2f4=-10,g1f3=50,g1h3=10,g2g3=-15,g2g4=-10,h2h3=0,h2h4=-5");
 	}
 
 	@Test
 	public void m1_4() {
-		testEval(testing, 4,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","a2a3=-50,a2a4=-55,b1a3=-40,b1c3=0,b2b3=-65,b2b4=-60,c2c3=-70,c2c4=-60,d2d3=-30,d2d4=-10,e2e3=-30,e2e4=-10,f2f3=-70,f2f4=-60,g1f3=0,g1h3=-40,g2g3=-65,g2g4=-60,h2h3=-50,h2h4=-55");
+		testEval(testing, 4,49451,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","a2a3=-50,a2a4=-55,b1a3=-40,b1c3=0,b2b3=-65,b2b4=-60,c2c3=-70,c2c4=-60,d2d3=-30,d2d4=-10,e2e3=-30,e2e4=-10,f2f3=-70,f2f4=-60,g1f3=0,g1h3=-40,g2g3=-65,g2g4=-60,h2h3=-50,h2h4=-55");
 	}
 
 	@Test
 	public void m1_5() {
-		testEval(testing, 5,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","a2a3=0,a2a4=-5,b1a3=50,b1c3=60,b2b3=15,b2b4=20,c2c3=-5,c2c4=5,d2d3=40,d2d4=60,e2e3=60,e2e4=70,f2f3=-30,f2f4=-10,g1f3=60,g1h3=50,g2g3=15,g2g4=20,h2h3=0,h2h4=-5");
+		testEval(testing, 5,361320,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+				"a2a3=0,a2a4=-5,b1a3=50,b1c3=60,b2b3=15,b2b4=20,c2c3=-5,c2c4=5,d2d3=40,d2d4=60,e2e3=60,e2e4=70,f2f3=-30,f2f4=-10,g1f3=60,g1h3=50,g2g3=15,g2g4=20,h2h3=0,h2h4=-5");
 	}
 
 	@Test
 	public void m1_6() {
-		testEval(testing, 6,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","a2a3=-40,a2a4=-45,b1a3=25,b1c3=50,b2b3=-35,b2b4=-30,c2c3=-5,c2c4=5,d2d3=0,d2d4=20,e2e3=65,e2e4=90,f2f3=-70,f2f4=-50,g1f3=10,g1h3=10,g2g3=-15,g2g4=-30,h2h3=-40,h2h4=-45");
+		testEval(testing, 6,2352930,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+				"a2a3=-40,a2a4=-45,b1a3=25,b1c3=50,b2b3=-35,b2b4=-30,c2c3=-5,c2c4=5,d2d3=0,d2d4=20,e2e3=65,e2e4=90,f2f3=-70,f2f4=-50,g1f3=10,g1h3=10,g2g3=-15,g2g4=-30,h2h3=-40,h2h4=-45");
+	}
+
+	@Test
+	public void m1_7() {
+		testEval(testing, 7,14963127L,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+				"a2a3=50,a2a4=45,b1a3=370,b1c3=370,b2b3=95,b2b4=100,c2c3=370,c2c4=350,d2d3=145,d2d4=180,e2e3=418,e2e4=435,f2f3=0,f2f4=30,g1f3=379,g1h3=379,g2g3=95,g2g4=100,h2h3=50,h2h4=45");
+	}
+
+	@Test
+	public void m1_8() {
+		testEval(testing, 8,74729856L,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+				"a2a3=49,a2a4=44,b1a3=320,b1c3=320,b2b3=65,b2b4=70,c2c3=415,c2c4=373,d2d3=95,d2d4=130,e2e3=493,e2e4=490,f2f3=-50,f2f4=10,g1f3=329,g1h3=329,g2g3=83,g2g4=70,h2h3=49,h2h4=44");
 	}
 
 	@AfterClass

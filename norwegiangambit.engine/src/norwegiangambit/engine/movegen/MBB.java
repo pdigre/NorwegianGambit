@@ -29,6 +29,6 @@ public class MBB extends MSlider{
 	}
 
 	public void genLegal(Movegen gen){
-		bslide(gen,DIAG);
+		bslide(gen,DIAG, 2);
 	}
 }

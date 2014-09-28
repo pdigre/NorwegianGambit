@@ -48,16 +48,16 @@ public class MBN extends MBase {
 		for (int[] m : M){
 			long bto = BASE.getBTo(m[5]);
 			if ((all & bto) == 0) {
-				gen.add(m[5]);
+				gen.move(m[5]);
 			} else {
 				if ((enemy & bto) != 0) {
 					int c = gen.ctype(bto);
 					if(c==3 && bto==1L<<IConst.WR_KING_STARTPOS)
-						gen.capture(K);
+						gen.capture(K, 1, c);
 					else if(c==3 && bto==1L<<IConst.WR_QUEEN_STARTPOS)
-						gen.capture(Q);
+						gen.capture(Q, 1, c);
 					else
-						gen.capture(m[c]);
+						gen.capture(m[c], 1, c);
 				}
 			}
 		}

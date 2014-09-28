@@ -34,8 +34,8 @@ public class MBQ extends MSlider{
 	}
 
 	public void genLegal(Movegen gen){
-		bslide(gen,LINE);
-		bslide(gen,DIAG);
+		bslide(gen,LINE, 4);
+		bslide(gen,DIAG, 4);
 	}
 	
 }

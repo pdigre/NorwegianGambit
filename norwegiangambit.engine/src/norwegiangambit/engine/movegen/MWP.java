@@ -121,12 +121,12 @@ public class MWP extends MBase{
 			int from = Long.numberOfTrailingZeros(m1);
 			m1 ^= 1L << from;
 			if(from>47){
-				gen.add(mp[from].P1[0]);
-				gen.add(mp[from].P1[1]);
-				gen.add(mp[from].P1[2]);
-				gen.add(mp[from].P1[3]);
+				gen.promote(mp[from].P1[0],1);
+				gen.promote(mp[from].P1[1],2);
+				gen.promote(mp[from].P1[2],3);
+				gen.promote(mp[from].P1[3],4);
 			} else {
-				gen.add(mp[from].M1);
+				gen.move(mp[from].M1);
 			}
 		}
 
@@ -135,7 +135,7 @@ public class MWP extends MBase{
 		for (int j = 0; j < pop; j++) {
 			int from = Long.numberOfTrailingZeros(m2);
 			m2 ^= 1L << from;
-			gen.add(mp[from].M2);
+			gen.move(mp[from].M2);
 		}
 		
 		final int enp = gen.enpassant;
@@ -149,22 +149,19 @@ public class MWP extends MBase{
 			if (to == enp) {
 				int md=mp[from].EL;
 				if(gen.isSafeMove(md))
-					gen.capture(md);
+					gen.enpassant(md);
 			} else {
 				int ctype=gen.ctype(1L << to);
 				if(from<48){
-					gen.capture(mp[from].CL[ctype]);
+					gen.capture(mp[from].CL[ctype], 0, ctype);
 				} else {
 					if(from+7==BR_QUEEN_STARTPOS && (gen.castling & CANCASTLE_BLACKQUEEN)!=0){
-						gen.capture(MWP.PQ[0]);
-						gen.capture(MWP.PQ[1]);
-						gen.capture(MWP.PQ[2]);
-						gen.capture(MWP.PQ[3]);
+						gen.capturePromote(MWP.PQ[0], 1, ctype);
+						gen.capturePromote(MWP.PQ[1], 2, ctype);
+						gen.capturePromote(MWP.PQ[2], 3, ctype);
+						gen.capturePromote(MWP.PQ[3], 4, ctype);
 					} else {
-						gen.capture(mp[from].PL[ctype]);
-						gen.capture(mp[from].PL[ctype+5]);
-						gen.capture(mp[from].PL[ctype+10]);
-						gen.capture(mp[from].PL[ctype+15]);
+						gen.capturePromote(mp[from].PL, ctype);
 					}
 				}
 			}
@@ -179,22 +176,19 @@ public class MWP extends MBase{
 			if (to == enp) {
 				int md=mp[from].ER;
 				if(gen.isSafeMove(md))
-					gen.capture(md);
+					gen.enpassant(md);
 			} else {
 				int ctype=gen.ctype(1L << to);
 				if(from<48){
-					gen.capture(mp[from].CR[ctype]);
+					gen.capture(mp[from].CR[ctype], 0, ctype);
 				} else {
 					if(from+9==BR_KING_STARTPOS && (gen.castling & CANCASTLE_BLACKKING)!=0){
-						gen.capture(MWP.PK[0]);
-						gen.capture(MWP.PK[1]);
-						gen.capture(MWP.PK[2]);
-						gen.capture(MWP.PK[3]);
+						gen.capturePromote(MWP.PK[0], 1, ctype);
+						gen.capturePromote(MWP.PK[1], 2, ctype);
+						gen.capturePromote(MWP.PK[2], 3, ctype);
+						gen.capturePromote(MWP.PK[3], 4, ctype);
 					} else {
-						gen.capture(mp[from].PR[ctype]);
-						gen.capture(mp[from].PR[ctype+5]);
-						gen.capture(mp[from].PR[ctype+10]);
-						gen.capture(mp[from].PR[ctype+15]);
+						gen.capturePromote(mp[from].PR, ctype);
 					}
 				}
 			}

@@ -7,9 +7,8 @@ public class EvalTester extends Tester{
 	public Evaluate insert(Eval eval, int depth, int level) {
 		if(level == depth - 1)
 			return new LeafGen(eval);
-//		return new PVS();
-		boolean isPVS = depth-level>1;
-		return isPVS ? new PVS():new AlphaBeta();
+		return new PVS();
+//		return depth-level>4 ? new PVS():new AlphaBeta();
 	}
 
 

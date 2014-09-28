@@ -64,7 +64,7 @@ public class MWR extends MSlider{
 	}
 
 	public void genLegal(Movegen gen){
-		wslide(gen,LINE);
+		wslide(gen,LINE, 3);
 	}
 	
 }

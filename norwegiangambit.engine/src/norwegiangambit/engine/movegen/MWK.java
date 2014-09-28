@@ -85,12 +85,7 @@ public class MWK extends MBase {
 
 	final static void add(Movegen gen,int md) {
 		if(gen.isSafeKingMove(md))
-			gen.add(md);
-	}
-	
-	final static void addCapture(Movegen gen,int md) {
-		if(gen.isSafeKingMove(md))
-			gen.capture(md);
+			gen.move(md);
 	}
 	
 	public int[][] getCastlingMoves(Movegen gen) {
@@ -105,13 +100,15 @@ public class MWK extends MBase {
 				&& (castling & IConst.CANCASTLE_WHITEQUEEN) != 0
 				&& gen.isSafePos(IConst.WK_STARTPOS - 1)
 				&& gen.isSafePos(IConst.WK_STARTPOS - 2)) {
-			add(gen,CQ);
+			if(gen.isSafeKingMove(CQ))
+				gen.castling(CQ);
 		}
 		if ((IConst.CWK & gen.bb_piece) == 0
 				&& (castling & IConst.CANCASTLE_WHITEKING) != 0
 				&& gen.isSafePos(IConst.WK_STARTPOS + 1)
 				&& gen.isSafePos(IConst.WK_STARTPOS + 2)) {
-			add(gen,CK);
+			if(gen.isSafeKingMove(CK))
+				gen.castling(CK);
 		}
 	}
 }

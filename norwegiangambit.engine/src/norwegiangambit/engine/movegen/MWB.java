@@ -29,7 +29,7 @@ public class MWB extends MSlider{
 	}
 
 	public void genLegal(Movegen gen){
-		wslide(gen,DIAG);
+		wslide(gen,DIAG, 2);
 	}
 	
 }
