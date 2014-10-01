@@ -8,16 +8,15 @@ import norwegiangambit.util.IConst;
  */
 public class MOVEDATAX extends MOVEDATA {
 
+	final public long castling;
+	
 	public static int capture(long bitmap,int victim){
 		return create((bitmap | ((victim & 7) << IConst._CAPTURE))^findCastling(bitmap));
 	}
 
-	public static int create(long bitmap){
-		return BASE.add(new MOVEDATAX(bitmap));
-	}
-
 	private MOVEDATAX(long bitmap) {
 		super(bitmap);
+		castling=findCastling(bitmap);
 	}
 
 	private static long findCastling(long bitmap) {

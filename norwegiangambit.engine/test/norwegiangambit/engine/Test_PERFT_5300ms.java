@@ -119,6 +119,13 @@ public class Test_PERFT_5300ms extends PerftTest{
 		testPerft(testing, 6,28859283,"8/PPPk4/8/8/8/8/4Kppp/8 w - - 0 1");
 	}
 
+	@Test
+	public void kp7_err_fast() {
+		testPerft(testing, 3,28859283,"r3k2q/p1pp1pb1/bn2Pnp1/4N3/1p2P3/2N5/PPPBBPPP/R3K2R b KQkq - 0 1");
+	}
+
+	
+	
 	@AfterClass
 	public static void finish() {
 		BASE.stats();

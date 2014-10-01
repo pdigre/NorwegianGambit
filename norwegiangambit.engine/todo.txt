@@ -1,0 +1,9 @@
+
+1. ZobristKey in MOVEDATA
+2. Use hashing for PERFT
+    ==key + lvls2leaf + count if level > 1
+    check if then use count
+    record before and after, store diff
+3. Use hashing for EVAl
+    PV ==key + lvls2leaf + score  
+	Kill==key + lvls2leaf + cutoff score

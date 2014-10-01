@@ -48,8 +48,7 @@ public class Evaluate extends Movegen implements IIterate {
 	}
 	
 	public void make(int md) {
-		deeper.set(isWhite, bitmap, wking, bking, bb_black, bb_bit1, bb_bit2, bb_bit3);
-		((Movegen)deeper).set(BASE.ALL[md]);
+		((Movegen)deeper).make(md,isWhite, bitmap, wking, bking, bb_black, bb_bit1, bb_bit2, bb_bit3);
 	}
 
 	@Override
@@ -58,7 +57,8 @@ public class Evaluate extends Movegen implements IIterate {
 		String string2 = parent==null?string:FEN.addHorizontal(string, parent.toString());
 		String string3 = FEN.board2string(pinners);
 		String string4 = FEN.board2string(checkers);
-		return FEN.addHorizontal(FEN.addHorizontal(string2, string3), string4);
+		String addHorizontal = FEN.addHorizontal(FEN.addHorizontal(string2, string3), string4);
+		return addHorizontal+"\n"+ getFen() ;
 	}
 
 	public void evaluate(int i) {

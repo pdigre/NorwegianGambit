@@ -15,10 +15,11 @@ import norwegiangambit.util.IConst;
  */
 public class Movegen implements IConst{
 	public boolean isWhite=false;
-	public long bitmap,bb_black,bb_bit1,bb_bit2,bb_bit3;
-	public long bb_piece;
-	public int wking,bking,enpassant;
-	long castling,bb_white, own, enemy,bb_knights,bb_kings,bb_pawns;
+	public long bb_black,bb_bit1,bb_bit2,bb_bit3;
+	public long bitmap;
+	public long bb_piece,castling;
+	public int wking,bking,epsq;
+	long bb_white, own, enemy,bb_knights,bb_kings,bb_pawns;
 	protected long checkers, pinners, hiders;
 	int king,eking;
 
@@ -35,6 +36,32 @@ public class Movegen implements IConst{
 		iAll=0;
 	}
 
+	public String getFen() {
+		return FEN.board2fen(FEN.boardFrom64(bb_bit1, bb_bit2, bb_bit3, bb_black)) + " " +(isWhite?"w":"b") + " " + FEN.getFenCastling(bitmap) + " "+ FEN.pos2string(epsq);
+	}
+
+	public void make(int md_num,boolean isWhite, long bitmap, int wking, int bking, long bb, long b1, long b2, long b3) {
+		MOVEDATA md 	= BASE.ALL[md_num];
+		this.bitmap 	= bitmap;
+		this.isWhite	= !isWhite;
+		this.bb_black 	= bb^md.b_black;
+		this.bb_bit1 	= b1^md.b_bit1;
+		this.bb_bit2 	= b2^md.b_bit2;
+		this.bb_bit3 	= b3^md.b_bit3;
+		this.wking      = wking;
+		this.bking      = bking;
+		this.bitmap	    = md.bitmap&(~CASTLING_STATE | bitmap);
+//		if(md instanceof MOVEDATAX)
+//		this.castling^=((MOVEDATAX) md).castling;
+		this.castling 	= ~CASTLING_STATE | this.bitmap; // all other are set
+		this.epsq 		= md instanceof MOVEDATA2?((MOVEDATA2)md).epsq:-1;
+		int type  = BITS.getPiece(md.bitmap);
+		if(type==IConst.WK)
+			this.wking=BITS.getTo(md.bitmap);
+		else if(type==IConst.BK)
+			this.bking=BITS.getTo(md.bitmap);
+		init();
+	}
 	public void set(boolean isWhite, long bitmap, int wking, int bking, long bb, long b1, long b2, long b3) {
 		this.bitmap 	= bitmap;
 		this.isWhite	= isWhite;
@@ -44,6 +71,8 @@ public class Movegen implements IConst{
 		this.bb_bit3 	= b3;
 		this.wking      = wking;
 		this.bking      = bking;
+		this.epsq 		= BITS.getEnpassant(bitmap);
+		this.castling 	= ~CASTLING_STATE | bitmap; // all other are set
 		init();
 	}
 
@@ -57,23 +86,25 @@ public class Movegen implements IConst{
 		this.bb_pawns 	= bb_bit1 & ~bb_bit2 & ~bb_bit3;
 		this.own 		= isWhite?bb_white:bb_black;
 		this.enemy 		= isWhite?bb_black:bb_white;
-		this.enpassant 	= BITS.getEnpassant(bitmap);
-		this.castling 	= ~CASTLING_STATE | bitmap; // all other are set
 	}
 
-	public void set(MOVEDATA md){
-		bitmap	  =md.bitmap&(~CASTLING_STATE | bitmap);
-		bb_black ^=md.b_black;
-		bb_bit1  ^=md.b_bit1;
-		bb_bit2  ^=md.b_bit2;
-		bb_bit3  ^=md.b_bit3;
-		isWhite=!isWhite;
+	final public void set(MOVEDATA md){
+		this.bitmap	  =md.bitmap&this.castling;
+		this.bb_black ^=md.b_black;
+		this.bb_bit1  ^=md.b_bit1;
+		this.bb_bit2  ^=md.b_bit2;
+		this.bb_bit3  ^=md.b_bit3;
+		this.isWhite=!isWhite;
+//		if(md instanceof MOVEDATAX)
+//		this.castling^=((MOVEDATAX) md).castling;
+		this.castling 	= ~CASTLING_STATE | this.bitmap; // all other are set
+		this.epsq 		= md instanceof MOVEDATA2?((MOVEDATA2)md).epsq:-1;
 		init();
-		int type  = BITS.getPiece(bitmap);
+		int type  = BITS.getPiece(md.bitmap);
 		if(type==IConst.WK)
-			wking=BITS.getTo(bitmap);
+			this.wking=BITS.getTo(md.bitmap);
 		else if(type==IConst.BK)
-			bking=BITS.getTo(bitmap);
+			this.bking=BITS.getTo(md.bitmap);
 	}
 	
 	public void undo(MOVEDATA md){
@@ -255,6 +286,8 @@ public class Movegen implements IConst{
 	}
 
 	public void capturePromote(int[] mvs, int ctype) {
+		if(mvs==null)
+			return;
 		capturePromote(mvs[ctype], 1, ctype);
 		capturePromote(mvs[ctype+5], 2, ctype);
 		capturePromote(mvs[ctype+10], 3, ctype);

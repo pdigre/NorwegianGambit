@@ -39,8 +39,7 @@ public class PerftTester implements IDivide{
 					m.parent = parent;
 					parent.child = m;
 				}
-				movegen[0].set(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
-				movegen[0].set(BASE.ALL[md]);
+				movegen[0].make(md,root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
 				movegen[0].run();
 				map.add(new Eval(FEN.move2literal(BASE.ALL[md].bitmap),(int)count[i],0));
 			}
@@ -78,8 +77,7 @@ public class PerftTester implements IDivide{
 				m.parent = parent;
 				parent.child = m;
 			}
-			movegen[0].set(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
-			movegen[0].set(BASE.ALL[md]);
+			movegen[0].make(md,root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
 		}
 
 		@Override
@@ -96,8 +94,7 @@ public class PerftTester implements IDivide{
 			generate();
 			for (int i = 0; i < iAll; i++) {
 				int md = moves[i];
-				child.set(isWhite,bitmap,wking,bking,bb_black,bb_bit1,bb_bit2,bb_bit3);
-				child.set(BASE.ALL[md]);
+				child.make(md,isWhite,bitmap,wking,bking,bb_black,bb_bit1,bb_bit2,bb_bit3);
 				child.run();
 			}
 		}

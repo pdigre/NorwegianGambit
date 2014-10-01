@@ -25,7 +25,7 @@ public class MBP  extends MBase{
 			if (from > 15) {
 				M1=move(from - 8);
 				if(from > 47)
-					M2=move(from - 16);
+					M2=move2(from - 16,from - 8);
 			} else {
 				P1=promotes(from - 8);
 			}
@@ -72,6 +72,10 @@ public class MBP  extends MBase{
 
 	private int move(int to) {
 		return MOVEDATA.create(assemble(IConst.BP, from, to, CASTLING_STATE));
+	}
+
+	private int move2(int to,int enp) {
+		return MOVEDATA2.create(assemble(IConst.BP, from, to, CASTLING_STATE),enp);
 	}
 
 	private int enpassant(int to) {
@@ -137,7 +141,7 @@ public class MBP  extends MBase{
 			gen.move(mp[from].M2);
 		}
 
-		final int enp = gen.enpassant;
+		final int enp = gen.epsq;
 		long e=gen.bb_white|(1L<<enp);
 		long cl = (b & IConst.LEFTMASK) &(e<<9);
 		pop = Long.bitCount(cl);

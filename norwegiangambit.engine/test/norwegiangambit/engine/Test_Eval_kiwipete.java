@@ -52,7 +52,7 @@ public class Test_Eval_kiwipete extends EvalTest{
 	}
 
 	@Test
-	@Ignore
+//	@Ignore
 	public void k1_7() {
 		testEval(testing, 7,14963127L,"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
 				"a2a3=50,a2a4=45,b1a3=370,b1c3=370,b2b3=95,b2b4=100,c2c3=370,c2c4=350,d2d3=145,d2d4=180,e2e3=418,e2e4=435,f2f3=0,f2f4=30,g1f3=379,g1h3=379,g2g3=95,g2g4=100,h2h3=50,h2h4=45");

@@ -83,20 +83,29 @@ public class FEN implements IConst {
     }
 
 	public static String board2string(long b1, long b2, long b3, long bb) {
-		StringBuilder fen = new StringBuilder();
-        for (int y = 8; y-- > 0;) {
-            fen.append("\n");
-            fen.append(String.valueOf(y+1)+" ");
-            for (int x = 0; x < 8; x++) {
-                int sq = y * 8 + x;
-				long bit=1L<<sq;
-				int p=((bit&b1)==0?0:1)+((bit&b2)==0?0:2)+((bit&b3)==0?0:4)+((bit&bb)==0?0:8);
-				PieceType type = PieceType.types[p];
-                fen.append(type == null ? (p==0?".":"X"): type.fen);
-            }
-        }
-        fen.append("\n  ABCDEFGH");
-        return fen.toString();
+//		StringBuilder fen = new StringBuilder();
+//        for (int y = 8; y-- > 0;) {
+//            fen.append("\n");
+//            fen.append(String.valueOf(y+1)+" ");
+//            for (int x = 0; x < 8; x++) {
+//                int sq = y * 8 + x;
+//				long bit=1L<<sq;
+//				int p=((bit&b1)==0?0:1)+((bit&b2)==0?0:2)+((bit&b3)==0?0:4)+((bit&bb)==0?0:8);
+//				PieceType type = PieceType.types[p];
+//                fen.append(type == null ? (p==0?".":"X"): type.fen);
+//            }
+//        }
+//        fen.append("\n  ABCDEFGH");
+        return board2string(boardFrom64(b1, b2, b3, bb));
+	}
+
+	public static int[] boardFrom64(long b1, long b2, long b3, long bb) {
+		int[] board=new int[64];
+		for (int i = 0; i < 64; i++) {
+			long bit=1L<<i;
+			board[i]=((bit&b1)==0?0:1)+((bit&b2)==0?0:2)+((bit&b3)==0?0:4)+((bit&bb)==0?0:8);
+		}
+        return board;
 	}
 
 	public static String board2string(long b1) {

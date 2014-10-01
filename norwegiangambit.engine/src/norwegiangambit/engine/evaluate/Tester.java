@@ -57,8 +57,7 @@ public abstract class Tester implements IDivide{
 			parent.deeper = m;
 		}
 		Evaluate start = movegen[0];
-		start.set(root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
-		start.set(BASE.ALL[md]);
+		start.make(md,root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
 		start.evaluate(md);
 		return movegen;
 	}
