@@ -18,7 +18,7 @@ import org.junit.Test;
  * 
  */
 @SuppressWarnings("static-method")
-public class Test_Eval_11000ms extends EvalTest{
+public class Test_Eval_start extends EvalTest{
 
 	@BeforeClass
 	public static void prepare() {
@@ -64,6 +64,22 @@ public class Test_Eval_11000ms extends EvalTest{
 	public static void finish() {
 	}
 /*
+ * Killer moves
+ * l1 1/1               l2 1/1              l2 1/0
+TOT 5787 > 24           5777 > 14           5777 > 14
+TOT 49560 > 109         49515 > 64          49515 > 64
+TOT 380693 > 19373      372544 > 11224      368676 > 7356
+TOT 2420867 > 67937     2378140 > 25210     2360749 > 7819
+TOT 16098274 > 1135147  15546123 > 582996   15106385 > 143258
+TOT 73107695 > -1622161 72403707 > -2326149 72428394 > -2301462
+           
+
+
+ * 
+ * 
+ * 
+ * 
+ * 
 Move   3   4   5   6   7   8    MM3   MM 4  MM 5     MM 6     MM 7         AB3  AB 4  AB 5   AB 6    AB 7     AB 8       PVS3  PVS4  PVS 5  PVS 6    PVS 7   PVS 8                                       
 a2a3   0 -50   0 -40  50  49    380   8457  181046   4463267  106743106    195  2566  18752  184474  1231058  11179114    264  2423  14315  103638   682650  4922955       a2a3 106743106 = 50           
 b2b3 -15 -65  15 -35  95  65    420   9345  215255   5310358  133233975    202  2489  25647  230269  2031761  11920974    277  2515  17248  117509   662647  2435539       b2b3 133233975 = 95              

@@ -101,39 +101,43 @@ public class Movegen implements IConst{
 	 * @param md
 	 */
 	final public void capturePromote(int md, int type, int victim) {
-		moves[iAll++] = moves[lvl3];
-		moves[lvl3++] = moves[lvl2];
-		moves[lvl2++] = moves[lvl1];
-		moves[lvl1++]=md;
+		sort1(md);
 	}
-	
+
 	final public void promote(int md,int type) {
-		moves[iAll++] = moves[lvl3];
-		moves[lvl3++] = moves[lvl2];
-		moves[lvl2++] = moves[lvl1];
-		moves[lvl1++]=md;
+		sort1(md);
 	}
 	
 	final public void capture(int md, int type, int victim) {
 		if(type<victim){ // Good
-			moves[iAll++] = moves[lvl3];
-			moves[lvl3++] = moves[lvl2];
-			moves[lvl2++] = moves[lvl1];
-			moves[lvl1++]=md;
+			sort1(md);
 		} else if(type==victim){ // Equal
-			moves[iAll++] = moves[lvl3];
-			moves[lvl3++] = moves[lvl2];
-			moves[lvl2++]=md;
+			sort2(md);
 		} else { // Bad
-			moves[iAll++] = moves[lvl3];
-			moves[lvl3++]=md;
+			sort3(md);
 		}
 	}
+
+	final private void sort1(int md) {
+		moves[iAll++] = moves[lvl3];
+		moves[lvl3++] = moves[lvl2];
+		moves[lvl2++] = moves[lvl1];
+		moves[lvl1++]=md;
+	}
 	
-	final public void enpassant(int md) {
+	final private void sort2(int md) {
 		moves[iAll++] = moves[lvl3];
 		moves[lvl3++] = moves[lvl2];
 		moves[lvl2++]=md;
+	}
+	
+	final private void sort3(int md) {
+		moves[iAll++] = moves[lvl3];
+		moves[lvl3++]=md;
+	}
+
+	final public void enpassant(int md) {
+		sort2(md);
 	}
 	
 	final public void move(int md) {
@@ -495,4 +499,21 @@ public class Movegen implements IConst{
 			}
 		}
 	}
+	
+    
+    public void sortKiller(int md){
+    	if(md!=-1){
+        	int start = lvl2;
+        	int from  = lvl2;
+			for (int i = start; i < iAll; i++) {
+    			if(moves[i]==md){
+    				for (int j = i; j > from; j--)
+    					moves[j]=moves[j-1];
+    				moves[from]=md;
+    				break;
+    			}
+    		}
+    	}
+    }
+	
 }

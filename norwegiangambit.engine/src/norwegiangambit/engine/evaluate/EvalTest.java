@@ -29,7 +29,7 @@ public class EvalTest {
 		}
 		System.out.println("TOT "+acount+" > "+(acount-ecount));
 		assertEquals("Wrong score", expected, sb.toString());
-		assertTrue("Poor score",acount>=ecount);
+		assertTrue("Poor score",acount<=ecount);
 	}
 
 }

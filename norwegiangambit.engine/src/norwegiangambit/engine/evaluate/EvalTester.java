@@ -60,6 +60,9 @@ public class EvalTester extends Tester{
 
 	class PVS extends Evaluate {
 
+		int killer1=-1;
+		int killer2=-1;
+		
 		@Override
 		public void make(int md) {
 			super.make(md);
@@ -69,11 +72,14 @@ public class EvalTester extends Tester{
 		// PVS
 		public int alphabeta(int alfa,int beta) {
 			generate();
+			sortKillers();
 			make(moves[0]);
 			int bestscore = -deeper.alphabeta(-beta, -alfa);
 			if( bestscore > alfa ) {
-				if( bestscore >= beta )
+				if( bestscore >= beta ){
+					setKiller(moves[0]);
 					return bestscore;
+				}
 				alfa = bestscore;
 			}
 			for (int i = 1; i < iAll; i++) {
@@ -82,16 +88,38 @@ public class EvalTester extends Tester{
 				int score = -deeper.alphabeta(-alfa-1, -alfa);
 				if( score > alfa && score < beta ) {
 					score = -deeper.alphabeta(-beta, -alfa);
-					if( score > alfa )
+					if( score > alfa ){
 						alfa = score;
+					}
 				}
 				if( score > bestscore ) {
-					if( score >= beta )
+					if( score >= beta ){
+						setKiller(moves[0]);
 						return score;
+					}
 					bestscore = score;
 				}
 			}
 			return bestscore;
+		}
+
+		private void sortKillers() {
+//			if(parent instanceof Evaluate){
+//				IIterate pp=((Evaluate)parent).parent;
+//				if(pp instanceof PVS){
+//					sortKiller(((PVS) pp).killer2);
+//					sortKiller(((PVS) pp).killer1);
+//				}
+//			}
+//			sortKiller(killer2);
+			sortKiller(killer1);
+		}
+
+		private void setKiller(int md) {
+			if(killer1!=md){
+				killer2=killer1;
+				killer1=md;
+			}
 		}
 	}
 
