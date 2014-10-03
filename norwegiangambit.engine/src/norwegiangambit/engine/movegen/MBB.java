@@ -9,7 +9,6 @@ import norwegiangambit.util.IConst;
 
 public class MBB extends MSlider{
 
-	final int[] UL,UR,DL,DR;
 	final int[][] DIAG;
 
 	final static MBB[] BB;
@@ -21,14 +20,10 @@ public class MBB extends MSlider{
 
 	public MBB(int from) {
 		super(from);
-		UL=slide(IConst.BB, UP + LEFT);
-		UR=slide(IConst.BB, UP + RIGHT);
-		DL=slide(IConst.BB, DOWN + LEFT);
-		DR=slide(IConst.BB, DOWN + RIGHT);
-		DIAG=new int[][]{UL,UR,DL,DR};
+		DIAG=new int[][]{slide(IConst.BB, UP + LEFT),slide(IConst.BB, UP + RIGHT),slide(IConst.BB, DOWN + LEFT),slide(IConst.BB, DOWN + RIGHT)};
 	}
 
 	public void genLegal(Movegen gen){
-		bslide(gen,DIAG, 2);
+		bslide(gen,DIAG, 2,Q,K);
 	}
 }

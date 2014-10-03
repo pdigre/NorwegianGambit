@@ -11,8 +11,8 @@ import java.util.List;
 import norwegiangambit.util.IConst;
 
 public class MWK extends MBase {
-	final static int CQ,CK;
-	final static int[][] X,XQ,XK;
+	final static int CQ,CK,CQ2,CK2;
+	final static int[][] X,XQ,XK; // Castling breakers
 
 	final int[][] M;
 
@@ -21,26 +21,28 @@ public class MWK extends MBase {
 		WK=new MWK[64];
 		for (int from = 0; from < 64; from++)
 			WK[from] = new MWK(from);
-		int[][] M=WK[IConst.WK_STARTPOS].M;
-		X=castlingKing(M,IConst.CANCASTLE_WHITE);
-		XQ=castlingKing(M,IConst.CANCASTLE_WHITEQUEEN);
-		XK=castlingKing(M,IConst.CANCASTLE_WHITEKING);
-		CK=MOVEDATAX.create(assemble(IConst.WK, IConst.WK_STARTPOS, IConst.WK_STARTPOS + 2, IConst.CANCASTLE_BLACK | IConst.SPECIAL));
-		CQ=MOVEDATAX.create(assemble(IConst.WK, IConst.WK_STARTPOS, IConst.WK_STARTPOS - 2, IConst.CANCASTLE_BLACK | IConst.SPECIAL));
+		int[][] M=WK[WK_STARTPOS].M;
+		X=castlingKing(M,CANCASTLE_WHITE);
+		XQ=castlingKing(M,CANCASTLE_WHITEQUEEN);
+		XK=castlingKing(M,CANCASTLE_WHITEKING);
+		long cq = assemble(IConst.WK, WK_STARTPOS, WK_STARTPOS - 2, CANCASTLE_BLACK | SPECIAL);
+		CQ=MOVEDATAX.create(cq,CANCASTLE_WHITE);
+		CQ2=MOVEDATAX.create(cq,CANCASTLE_WHITEQUEEN);
+		long ck = assemble(IConst.WK, WK_STARTPOS, WK_STARTPOS + 2, CANCASTLE_BLACK | SPECIAL);
+		CK=MOVEDATAX.create(ck,CANCASTLE_WHITE);
+		CK2=MOVEDATAX.create(ck,CANCASTLE_WHITEKING);
 	}
 
 	public MWK(int from) {
 		super(from);			
+		M=addMoves(new int[]{UP,DOWN,LEFT,RIGHT,UP + LEFT,UP + RIGHT,DOWN + LEFT,DOWN + RIGHT});
+	}
+
+	public int[][] addMoves(int[] mvs) {
 		ArrayList<int[]> list=new ArrayList<int[]>();
-		add(UP,list);
-		add(DOWN,list);
-		add(LEFT,list);
-		add(RIGHT,list);
-		add(UP + LEFT,list);
-		add(UP + RIGHT,list);
-		add(DOWN + LEFT,list);
-		add(DOWN + RIGHT,list);
-		M=list.toArray(new int[list.size()][]);
+		for (int i : mvs)
+			add(i,list);
+		return list.toArray(new int[list.size()][]);
 	}
 
 	protected void add(int offset, List<int[]> list) {
@@ -59,7 +61,7 @@ public class MWK extends MBase {
 	}
 
 	public void genLegal(Movegen gen) {
-		kmoves(gen,from==IConst.WK_STARTPOS?getCastlingMoves(gen):M);
+		kmoves(gen,from==WK_STARTPOS?getCastlingMoves(gen):M);
 	}
 	
 	public void kmoves(Movegen gen, int[][] moves) {
@@ -72,9 +74,9 @@ public class MWK extends MBase {
 			} else {
 				if ((enemy & bto) != 0) {
 					int c = gen.ctype(bto);
-					if(c==3 && bto==1L<<IConst.BR_KING_STARTPOS)
+					if(c==3 && bto==1L<<BR_KING_STARTPOS && (gen.castling&CANCASTLE_BLACKKING)!=0)
 						add(gen,K);
-					else if(c==3 && bto==1L<<IConst.BR_QUEEN_STARTPOS)
+					else if(c==3 && bto==1L<<BR_QUEEN_STARTPOS && (gen.castling&CANCASTLE_BLACKQUEEN)!=0)
 						add(gen,Q);
 					else 
 						add(gen,m[c]);
@@ -89,26 +91,26 @@ public class MWK extends MBase {
 	}
 	
 	public int[][] getCastlingMoves(Movegen gen) {
-		final boolean qc=(gen.castling & IConst.CANCASTLE_WHITEQUEEN) != 0;
-		final boolean kc=(gen.castling & IConst.CANCASTLE_WHITEKING) != 0;
+		final boolean qc=(gen.castling & CANCASTLE_WHITEQUEEN) != 0;
+		final boolean kc=(gen.castling & CANCASTLE_WHITEKING) != 0;
 		return qc?(kc?X:XQ):(kc?XK:M);
 	}
 
 	public static void genCastling(Movegen gen) {
-		long castling = gen.castling & IConst.CANCASTLE_WHITE;
-		if ((IConst.CWQ & gen.bb_piece) == 0
-				&& (castling & IConst.CANCASTLE_WHITEQUEEN) != 0
-				&& gen.isSafePos(IConst.WK_STARTPOS - 1)
-				&& gen.isSafePos(IConst.WK_STARTPOS - 2)) {
+		long castling = gen.castling & CANCASTLE_WHITE;
+		if ((CWQ & gen.bb_piece) == 0
+				&& (castling & CANCASTLE_WHITEQUEEN) != 0
+				&& gen.isSafePos(WK_STARTPOS - 1)
+				&& gen.isSafePos(WK_STARTPOS - 2)) {
 			if(gen.isSafeKingMove(CQ))
-				gen.castling(CQ);
+				gen.castling((gen.castling & CANCASTLE_WHITEKING) != 0?CQ:CQ2);
 		}
-		if ((IConst.CWK & gen.bb_piece) == 0
-				&& (castling & IConst.CANCASTLE_WHITEKING) != 0
-				&& gen.isSafePos(IConst.WK_STARTPOS + 1)
-				&& gen.isSafePos(IConst.WK_STARTPOS + 2)) {
+		if ((CWK & gen.bb_piece) == 0
+				&& (castling & CANCASTLE_WHITEKING) != 0
+				&& gen.isSafePos(WK_STARTPOS + 1)
+				&& gen.isSafePos(WK_STARTPOS + 2)) {
 			if(gen.isSafeKingMove(CK))
-				gen.castling(CK);
+				gen.castling((gen.castling & CANCASTLE_WHITEQUEEN) != 0?CK:CK2);
 		}
 	}
 }

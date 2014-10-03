@@ -13,7 +13,7 @@ import norwegiangambit.util.IDivide;
 
 public class PerftTester implements IDivide{
 
-	public static boolean useConcurrency = true;
+	public static boolean useConcurrency = false;
 	
 	@Override
 	public List<Eval> divide(String fen, int levels) {

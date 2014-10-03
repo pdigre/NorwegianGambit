@@ -37,12 +37,11 @@ public class Movegen implements IConst{
 	}
 
 	public String getFen() {
-		return FEN.board2fen(FEN.boardFrom64(bb_bit1, bb_bit2, bb_bit3, bb_black)) + " " +(isWhite?"w":"b") + " " + FEN.getFenCastling(bitmap) + " "+ FEN.pos2string(epsq);
+		return FEN.board2fen(FEN.boardFrom64(bb_bit1, bb_bit2, bb_bit3, bb_black)) + " " +(isWhite?"w":"b") + " " + FEN.getFenCastling(castling) + " "+ FEN.pos2string(epsq);
 	}
 
 	public void make(int md_num,boolean isWhite, long bitmap, int wking, int bking, long bb, long b1, long b2, long b3) {
 		MOVEDATA md 	= BASE.ALL[md_num];
-		this.bitmap 	= bitmap;
 		this.isWhite	= !isWhite;
 		this.bb_black 	= bb^md.b_black;
 		this.bb_bit1 	= b1^md.b_bit1;
@@ -50,16 +49,31 @@ public class Movegen implements IConst{
 		this.bb_bit3 	= b3^md.b_bit3;
 		this.wking      = wking;
 		this.bking      = bking;
-		this.bitmap	    = md.bitmap&(~CASTLING_STATE | bitmap);
-//		if(md instanceof MOVEDATAX)
-//		this.castling^=((MOVEDATAX) md).castling;
-		this.castling 	= ~CASTLING_STATE | this.bitmap; // all other are set
 		this.epsq 		= md instanceof MOVEDATA2?((MOVEDATA2)md).epsq:-1;
 		int type  = BITS.getPiece(md.bitmap);
 		if(type==IConst.WK)
 			this.wking=BITS.getTo(md.bitmap);
 		else if(type==IConst.BK)
 			this.bking=BITS.getTo(md.bitmap);
+
+		this.castling 	= CASTLING_STATE & md.bitmap & bitmap; // all other are set
+		long castling1	= CASTLING_STATE & bitmap;
+		if(md instanceof MOVEDATAX){
+			long castling2=((bitmap^((MOVEDATAX) md).castling)) & CASTLING_STATE;
+			if(castling != castling2){
+				System.out.println(md.id()+"\n"+FEN.addHorizontal(FEN.addHorizontal(FEN.board2string(bitmap),FEN.board2string(castling)),FEN.addHorizontal(FEN.board2string(castling2),FEN.board2string(((MOVEDATAX) md).castling))));
+				System.out.println("castling");
+			}
+		} else {
+			if(castling1!=castling){
+				System.out.println(md.id()+"\n"+FEN.addHorizontal(FEN.board2string(castling),FEN.board2string(castling1)));
+				System.out.println("non");
+			}
+		}
+
+		this.bitmap	    = md.bitmap&(~CASTLING_STATE | bitmap);
+		
+
 		init();
 	}
 	public void set(boolean isWhite, long bitmap, int wking, int bking, long bb, long b1, long b2, long b3) {
@@ -88,25 +102,6 @@ public class Movegen implements IConst{
 		this.enemy 		= isWhite?bb_black:bb_white;
 	}
 
-	final public void set(MOVEDATA md){
-		this.bitmap	  =md.bitmap&this.castling;
-		this.bb_black ^=md.b_black;
-		this.bb_bit1  ^=md.b_bit1;
-		this.bb_bit2  ^=md.b_bit2;
-		this.bb_bit3  ^=md.b_bit3;
-		this.isWhite=!isWhite;
-//		if(md instanceof MOVEDATAX)
-//		this.castling^=((MOVEDATAX) md).castling;
-		this.castling 	= ~CASTLING_STATE | this.bitmap; // all other are set
-		this.epsq 		= md instanceof MOVEDATA2?((MOVEDATA2)md).epsq:-1;
-		init();
-		int type  = BITS.getPiece(md.bitmap);
-		if(type==IConst.WK)
-			this.wking=BITS.getTo(md.bitmap);
-		else if(type==IConst.BK)
-			this.bking=BITS.getTo(md.bitmap);
-	}
-	
 	public void undo(MOVEDATA md){
 		
 	}
@@ -390,16 +385,16 @@ public class Movegen implements IConst{
 					int c = ctype(bto);
 					if(c==3){
 						if(isWhite){
-							if(bto==1L<<IConst.BR_KING_STARTPOS)
+							if(bto==1L<<IConst.BR_KING_STARTPOS && (castling&CANCASTLE_BLACKKING)!=0)
 								capture(b.K, type, c);
-							 else if(bto==1L<<IConst.BR_QUEEN_STARTPOS)
+							 else if(bto==1L<<IConst.BR_QUEEN_STARTPOS && (castling&CANCASTLE_BLACKQUEEN)!=0)
 								capture(b.Q, type, c);
 							 else 
 								capture(m[i + c], type, c);
 						} else {
-							if(bto==1L<<IConst.WR_KING_STARTPOS)
+							if(bto==1L<<IConst.WR_KING_STARTPOS && (castling&CANCASTLE_WHITEKING)!=0)
 								capture(b.K, type, c);
-							 else if(bto==1L<<IConst.WR_QUEEN_STARTPOS)
+							 else if(bto==1L<<IConst.WR_QUEEN_STARTPOS && (castling&CANCASTLE_WHITEQUEEN)!=0)
 								capture(b.Q, type, c);
 							 else 
 								capture(m[i + c], type, c);
@@ -448,12 +443,12 @@ public class Movegen implements IConst{
 			long a = bb_piece  & ~(bb_kings & ~enemy);
 			if ((bb_bit1 & slider & rev.RB) != 0) {
 				long diag=slider & bb_bit1;
-				if(ray(diag, x.UL, a)||ray(diag, x.UR, a)||ray(diag, x.DL, a)||ray(diag, x.DR, a))
+				if(ray(diag, x.DIAG[0], a)||ray(diag, x.DIAG[1], a)||ray(diag, x.DIAG[2], a)||ray(diag, x.DIAG[3], a))
 					return false;
 			}
 			if ((bb_bit2 & slider & rev.RR) != 0) {
 				long line=slider & bb_bit2;
-				if(ray(line, x.U, a)||ray(line, x.D, a)||ray(line, x.L, a)||ray(line, x.R, a))
+				if(ray(line, x.LINE[0], a)||ray(line, x.LINE[1], a)||ray(line, x.LINE[2], a)||ray(line, x.LINE[3], a))
 					return false;
 			}
 		}
@@ -476,12 +471,12 @@ public class Movegen implements IConst{
 			long a = bb_piece  & ~(bb_kings & ~enemy);
 			if ((bb_bit1 & slider & rev.RB) != 0) {
 				long diag=slider & bb_bit1;
-				if(ray(diag, rq.UL, a)||ray(diag, rq.UR, a)||ray(diag, rq.DL, a)||ray(diag, rq.DR, a))
+				if(ray(diag, rq.DIAG[0], a)||ray(diag, rq.DIAG[1], a)||ray(diag, rq.DIAG[2], a)||ray(diag, rq.DIAG[3], a))
 					return false;
 			}
 			if ((bb_bit2 & slider & rev.RR) != 0) {
 				long line=slider & bb_bit2;
-				if(ray(line, rq.U, a)||ray(line, rq.D, a)||ray(line, rq.L, a)||ray(line, rq.R, a))
+				if(ray(line, rq.LINE[0], a)||ray(line, rq.LINE[1], a)||ray(line, rq.LINE[2], a)||ray(line, rq.LINE[3], a))
 					return false;
 			}
 		}

@@ -32,10 +32,10 @@ public abstract class MBase implements IConst{
 		return (((long) score) << 32) | ((int) bitmap);
 	}
 
-	public static int[] castlingRook(int[] M) {
+	public static int[] checkRook(int[] M,long castling) {
 		int[] x=new int[M.length];
 		for (int i = 0; i < M.length; i++)
-			x[i]=MOVEDATAX.create(BASE.ALL[M[i]].bitmap);
+			x[i]=MOVEDATAX.create(BASE.ALL[M[i]].bitmap^castling,castling);
 		return x;
 	}
 
@@ -49,7 +49,7 @@ public abstract class MBase implements IConst{
 	private static int[] castling(int[] m,long mask) {
 		int[] x=new int[m.length];
 		for (int i = 0; i < m.length; i++)
-			x[i]=MOVEDATAX.create(BASE.ALL[m[i]].bitmap^mask);
+			x[i]=MOVEDATAX.create((BASE.ALL[m[i]].bitmap),mask);
 		return x;
 	}
 
@@ -66,19 +66,19 @@ public abstract class MBase implements IConst{
 		}
 	}
 	
-	public void rookCapture(int to, long bitmap, int c) {
-		if (c == IConst.BR) {
+	public void rookCapture(int to, long bitmap, int captured) {
+		if (captured == IConst.BR) {
 			if (to == IConst.BR_KING_STARTPOS){
-				K=MOVEDATAX.capture(bitmap, c);
+				K=MOVEDATAX.capture(bitmap, captured);
 			} else if (to == IConst.BR_QUEEN_STARTPOS){
-				Q=MOVEDATAX.capture(bitmap,c);
+				Q=MOVEDATAX.capture(bitmap,captured);
 			}
 		}
-		if (c == IConst.WR) {
+		if (captured == IConst.WR) {
 			if (to == IConst.WR_KING_STARTPOS){
-				K=MOVEDATAX.capture(bitmap, c);
+				K=MOVEDATAX.capture(bitmap, captured);
 			} else if (to == IConst.WR_QUEEN_STARTPOS){
-				Q=MOVEDATAX.capture(bitmap, c);
+				Q=MOVEDATAX.capture(bitmap, captured);
 			}
 		}
 	}

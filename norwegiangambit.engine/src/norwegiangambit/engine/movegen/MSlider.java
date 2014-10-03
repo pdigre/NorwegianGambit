@@ -18,7 +18,7 @@ public abstract class MSlider extends MBase {
 		while (inside(to, to - offset)) {
 			long bitmap = assemble(type, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
 			for (int i = 0; i < 5; i++) {
-				int c = (type & 8) > 0?WCAPTURES[i]:BCAPTURES[i];
+				int c = (type & 8) > 0?BCAPTURES[i]:WCAPTURES[i];
 				list.add(MOVEDATA.capture(bitmap, c));
 				rookCapture(to, bitmap, c);
 			}
@@ -28,7 +28,7 @@ public abstract class MSlider extends MBase {
 		return makeArray(list);
 	}
 
-	public void bslide(Movegen gen, int[][] mm, int type) {
+	public void bslide(Movegen gen, int[][] mm, int type,int Q, int K) {
 		long occ = gen.bb_piece;
 		long enemy = gen.bb_white;
 		for (int[] m : mm) {
@@ -38,12 +38,13 @@ public abstract class MSlider extends MBase {
 				if ((occ & bto) != 0) {
 					if ((enemy & bto) != 0) {
 						int c = gen.ctype(bto);
-//						if(c==3 && bto==1L<<IConst.WR_KING_STARTPOS)
-//							gen.add(K);
-//						else if(c==3 && bto==1L<<IConst.WR_QUEEN_STARTPOS)
-//							gen.add(Q);
-//						else
+						if(c==3 && bto==1L<<IConst.WR_KING_STARTPOS && (gen.castling&CANCASTLE_WHITEKING)!=0){
+							gen.capture(K,type,c);
+						}else if(c==3 && bto==1L<<IConst.WR_QUEEN_STARTPOS && (gen.castling&CANCASTLE_WHITEQUEEN)!=0){
+							gen.capture(Q,type,c);
+						}else{
 							gen.capture(m[i + c], type, c);
+						}
 					}
 					break;
 				} else {
@@ -54,7 +55,7 @@ public abstract class MSlider extends MBase {
 		}
 	}
 
-	public void wslide(Movegen gen, int[][] mm, int type) {
+	public void wslide(Movegen gen, int[][] mm, int type,int Q, int K) {
 		long occ = gen.bb_piece;
 		long enemy = gen.bb_black;
 		for (int[] m : mm) {
@@ -64,12 +65,13 @@ public abstract class MSlider extends MBase {
 				if ((occ & bto) != 0) {
 					if ((enemy & bto) != 0) {
 						int c = gen.ctype(bto);
-//						if(c==3 && bto==1L<<IConst.BR_KING_STARTPOS)
-//							gen.add(K);
-//						else if(c==3 && bto==1L<<IConst.BR_QUEEN_STARTPOS)
-//							gen.add(Q);
-//						else
+						if(c==3 && bto==1L<<IConst.BR_KING_STARTPOS  && (gen.castling&CANCASTLE_BLACKKING)!=0){
+							gen.capture(K, type, c);
+						}else if(c==3 && bto==1L<<IConst.BR_QUEEN_STARTPOS && (gen.castling&CANCASTLE_BLACKQUEEN)!=0){
+							gen.capture(Q, type, c);
+						}else{
 							gen.capture(m[i + c], type, c);
+						}
 					}
 					break;
 				} else {

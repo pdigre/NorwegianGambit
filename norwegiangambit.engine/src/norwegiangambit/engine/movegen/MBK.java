@@ -13,7 +13,7 @@ import norwegiangambit.util.IConst;
 public class MBK extends MBase {
 
 	final int[][] M;
-	final static int CQ,CK;
+	final static int CQ,CK,CQ2,CK2;
 	final static int[][] X,XQ,XK;
 	
 	final static MBK[] BK;
@@ -21,26 +21,28 @@ public class MBK extends MBase {
 		BK=new MBK[64];
 		for (int from = 0; from < 64; from++)
 			BK[from] = new MBK(from);
-		int[][] M=BK[IConst.BK_STARTPOS].M;
-		X=castlingKing(M,IConst.CANCASTLE_BLACK);
-		XQ=castlingKing(M,IConst.CANCASTLE_BLACKQUEEN);
-		XK=castlingKing(M,IConst.CANCASTLE_BLACKKING);
-		CQ=MOVEDATAX.create(assemble(IConst.BK, IConst.BK_STARTPOS, IConst.BK_STARTPOS - 2, IConst.CANCASTLE_WHITE | IConst.SPECIAL));
-		CK=MOVEDATAX.create(assemble(IConst.BK, IConst.BK_STARTPOS, IConst.BK_STARTPOS + 2, IConst.CANCASTLE_WHITE | IConst.SPECIAL));
+		int[][] M=BK[BK_STARTPOS].M;
+		X=castlingKing(M,CANCASTLE_BLACK);
+		XQ=castlingKing(M,CANCASTLE_BLACKQUEEN);
+		XK=castlingKing(M,CANCASTLE_BLACKKING);
+		long cq = assemble(IConst.BK, BK_STARTPOS, BK_STARTPOS - 2, CANCASTLE_WHITE | SPECIAL);
+		CQ=MOVEDATAX.create(cq,CANCASTLE_BLACK);
+		CQ2=MOVEDATAX.create(cq,CANCASTLE_BLACKQUEEN);
+		long ck = assemble(IConst.BK, BK_STARTPOS, BK_STARTPOS + 2, CANCASTLE_WHITE | SPECIAL);
+		CK=MOVEDATAX.create(ck,CANCASTLE_BLACK);
+		CK2=MOVEDATAX.create(ck,CANCASTLE_BLACKKING);
 	}
 
 	public MBK(int from) {
 		super(from);
+		M=addMoves(new int[]{UP,DOWN,LEFT,RIGHT,UP + LEFT,UP + RIGHT,DOWN + LEFT,DOWN + RIGHT});
+	}
+
+	public int[][] addMoves(int[] mvs) {
 		ArrayList<int[]> list=new ArrayList<int[]>();
-		add(UP,list);
-		add(DOWN,list);
-		add(LEFT,list);
-		add(RIGHT,list);
-		add(UP + LEFT,list);
-		add(UP + RIGHT,list);
-		add(DOWN + LEFT,list);
-		add(DOWN + RIGHT,list);
-		M=list.toArray(new int[list.size()][]);
+		for (int i : mvs)
+			add(i,list);
+		return list.toArray(new int[list.size()][]);
 	}
 
 	protected void add(int offset, List<int[]> list) {
@@ -59,7 +61,7 @@ public class MBK extends MBase {
 	}
 
 	public void genLegal(Movegen gen) {
-		kmoves(gen,from == IConst.BK_STARTPOS?getCastlingMoves(gen):M);
+		kmoves(gen,from == BK_STARTPOS?getCastlingMoves(gen):M);
 	}
 	
 	public void kmoves(Movegen gen, int[][] moves) {
@@ -72,9 +74,9 @@ public class MBK extends MBase {
 			} else {
 				if ((enemy & bto) != 0L) {
 					int c = gen.ctype(bto);
-					if(c==3 && bto==1L<<IConst.WR_KING_STARTPOS)
+					if(c==3 && bto==1L<<WR_KING_STARTPOS && (gen.castling&CANCASTLE_WHITEKING)!=0)
 						add(gen,K);
-					else if(c==3 && bto==1L<<IConst.WR_QUEEN_STARTPOS)
+					else if(c==3 && bto==1L<<WR_QUEEN_STARTPOS && (gen.castling&CANCASTLE_WHITEQUEEN)!=0)
 						add(gen,Q);
 					else 
 						add(gen,m[c]);
@@ -89,24 +91,24 @@ public class MBK extends MBase {
 	}
 	
 	public int[][] getCastlingMoves(Movegen gen) {
-		final boolean qc=(gen.castling & IConst.CANCASTLE_BLACKQUEEN) != 0;
-		final boolean kc=(gen.castling & IConst.CANCASTLE_BLACKKING) != 0;
+		final boolean qc=(gen.castling & CANCASTLE_BLACKQUEEN) != 0;
+		final boolean kc=(gen.castling & CANCASTLE_BLACKKING) != 0;
 		return qc?(kc?X:XQ):(kc?XK:M);
 	}
 
 	public static void genCastling(Movegen gen) {
-		long castling = gen.castling & IConst.CANCASTLE_BLACK;
-		if ((IConst.CBQ & gen.bb_piece) == 0
-				&& (castling & IConst.CANCASTLE_BLACKQUEEN) != 0
-				&& gen.isSafePos(IConst.BK_STARTPOS - 1)
-				&& gen.isSafePos(IConst.BK_STARTPOS - 2)) {
-			add(gen,CQ);
+		long castling = gen.castling & CANCASTLE_BLACK;
+		if ((CBQ & gen.bb_piece) == 0
+				&& (castling & CANCASTLE_BLACKQUEEN) != 0
+				&& gen.isSafePos(BK_STARTPOS - 1)
+				&& gen.isSafePos(BK_STARTPOS - 2)) {
+			add(gen,(gen.castling & CANCASTLE_BLACKKING) != 0?CQ:CQ2);
 		}
-		if ((IConst.CBK & gen.bb_piece) == 0
-				&& (castling & IConst.CANCASTLE_BLACKKING) != 0
-				&& gen.isSafePos(IConst.BK_STARTPOS + 1)
-				&& gen.isSafePos(IConst.BK_STARTPOS + 2)) {
-			add(gen,CK);
+		if ((CBK & gen.bb_piece) == 0
+				&& (castling & CANCASTLE_BLACKKING) != 0
+				&& gen.isSafePos(BK_STARTPOS + 1)
+				&& gen.isSafePos(BK_STARTPOS + 2)) {
+			add(gen,(gen.castling & CANCASTLE_BLACKQUEEN) != 0?CK:CK2);
 		}
 	}
 

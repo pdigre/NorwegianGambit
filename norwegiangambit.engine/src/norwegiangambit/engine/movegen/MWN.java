@@ -54,9 +54,9 @@ public class MWN extends MBase{
 			} else {
 				if ((enemy & bto) != 0) {
 					int c = gen.ctype(bto);
-					if(c==3 && bto==1L<<IConst.BR_KING_STARTPOS)
+					if(c==3 && bto==1L<<IConst.BR_KING_STARTPOS && (gen.castling&CANCASTLE_BLACKKING)!=0)
 						gen.capture(K, 1, c);
-					else if(c==3 && bto==1L<<IConst.BR_QUEEN_STARTPOS)
+					else if(c==3 && bto==1L<<IConst.BR_QUEEN_STARTPOS && (gen.castling&CANCASTLE_BLACKQUEEN)!=0)
 						gen.capture(Q, 1, c);
 					else 
 						gen.capture(m[c], 1, c);

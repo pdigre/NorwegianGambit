@@ -37,6 +37,7 @@ public class Test_PERFT_5300ms extends PerftTest{
 	}
 
 	@Test
+	@Ignore
 	public void ng_1() {
 		testPerft(testing, 5,193690690,"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
 	}
@@ -98,6 +99,7 @@ public class Test_PERFT_5300ms extends PerftTest{
 	}
 
 	@Test
+	@Ignore
 	public void e2_err_fast() {
 		testPerft(testing, 5, 193690690, "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
 	}
@@ -120,6 +122,7 @@ public class Test_PERFT_5300ms extends PerftTest{
 	}
 
 	@Test
+	@Ignore
 	public void kp7_err_fast() {
 		testPerft(testing, 3,28859283,"r3k2q/p1pp1pb1/bn2Pnp1/4N3/1p2P3/2N5/PPPBBPPP/R3K2R b KQkq - 0 1");
 	}

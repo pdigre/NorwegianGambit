@@ -13,34 +13,33 @@ import norwegiangambit.util.IConst;
 
 public class MWR extends MSlider{
 
-	final static int[] XQU,XQD,XQL,XQR,XKU,XKD,XKL,XKR;
-	final int[] U, D, L, R;
+	final static int[][] QLINE,KLINE;
 	final int[][] LINE;
+	final static int Q2, K2;
 
-	final static MWR[] WR;
+	final static MWR[] WR=new MWR[64];
 	static {
-		WR=new MWR[64];
 		for (int from = 0; from < 64; from++)
 			WR[from] = new MWR(from);
-		MWR Q=WR[WR_QUEEN_STARTPOS];
-		XQU=castlingRook(Q.U);
-		XQD=castlingRook(Q.D);
-		XQL=castlingRook(Q.L);
-		XQR=castlingRook(Q.R);
-		MWR K=WR[WR_KING_STARTPOS];
-		XKU=castlingRook(K.U);
-		XKD=castlingRook(K.D);
-		XKL=castlingRook(K.L);
-		XKR=castlingRook(K.R);
+		
+		MWR q = WR[WR_QUEEN_STARTPOS];
+		QLINE=cline(q.LINE,CANCASTLE_WHITEQUEEN);
+		q.Q=q.LINE[0][39];
+		Q2=MOVEDATAX.create(BASE.ALL[q.Q].bitmap^CANCASTLE_WHITEKING,CANCASTLE_BLACKQUEEN|CANCASTLE_WHITEQUEEN);
+
+		MWR k = WR[WR_KING_STARTPOS];
+		KLINE=cline(k.LINE,CANCASTLE_WHITEKING);
+		k.K=k.LINE[0][39];
+		K2=MOVEDATAX.create(BASE.ALL[k.K].bitmap^CANCASTLE_WHITEQUEEN,CANCASTLE_BLACKKING|CANCASTLE_WHITEKING);
+	}
+
+	public static int[][] cline(int[][] l,long castling) {
+		return new int[][]{checkRook(l[0],castling),checkRook(l[1],castling), checkRook(l[2],castling),checkRook(l[3],castling)};
 	}
 
 	public MWR(int from) {
 		super(from);
-		U=slide(UP);
-		D=slide(DOWN);
-		L=slide(LEFT);
-		R=slide(RIGHT);
-		LINE=new int[][]{U,D, L,R};
+		LINE=new int[][]{slide(UP),slide(DOWN), slide(LEFT),slide(RIGHT)};
 	}
 
 	private int[] slide(int offset) {
@@ -48,13 +47,13 @@ public class MWR extends MSlider{
 		int to=from+offset;
 		while(inside(to, to-offset)){
 			long bitmap = assemble(IConst.WR, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
-			if(from==IConst.WR_QUEEN_STARTPOS)
-				bitmap^= IConst.CANCASTLE_WHITEQUEEN;
-			else if(from==IConst.WR_KING_STARTPOS)
-				bitmap^= IConst.CANCASTLE_WHITEKING;
 			for (int i = 0; i < 5; i++) {
 				int c = WCAPTURES[i];
-				list.add(MOVEDATA.capture(bitmap, c));
+				int md = MOVEDATA.capture(bitmap, c);
+				list.add(md);
+//				MOVEDATA m=BASE.ALL[md];
+//				if(from==7 && to==63)
+//					System.out.println("hi");
 				rookCapture(to, bitmap, c);
 			}
 			list.add(MOVEDATA.create(bitmap));
@@ -64,7 +63,50 @@ public class MWR extends MSlider{
 	}
 
 	public void genLegal(Movegen gen){
-		wslide(gen,LINE, 3);
+		if(from==IConst.WR_QUEEN_STARTPOS){
+			if((gen.castling & IConst.CANCASTLE_WHITEQUEEN) != 0 ){
+				wslide2(gen,QLINE);
+				return;
+			}
+		} else if(from==IConst.WR_KING_STARTPOS){
+			if((gen.castling & IConst.CANCASTLE_WHITEKING) != 0 ){
+				wslide2(gen,KLINE);
+				return;
+			}
+		}
+		wslide(gen,LINE, 3,Q,K);
 	}
 	
+	public void wslide2(Movegen gen, int[][] moves) {
+		long occ = gen.bb_piece;
+		long enemy = gen.bb_black;
+		for (int[] m : moves) {
+			int i = 0;
+			while (i < m.length) {
+				long bto = BASE.getBTo(m[i + 5]);
+				if ((occ & bto) != 0) {
+					if ((enemy & bto) != 0) {
+						int c = gen.ctype(bto);
+						if(c==3 && bto==1L<<IConst.BR_KING_STARTPOS  && (gen.castling&CANCASTLE_BLACKKING)!=0)
+							gen.capture(K2, 3, c);
+						else if(c==3 && bto==1L<<IConst.BR_QUEEN_STARTPOS && (gen.castling&CANCASTLE_BLACKQUEEN)!=0)
+							gen.capture(Q2, 3, c);
+						else {
+//							MOVEDATA md = BASE.ALL[m[i + c]];
+//							if(from==7 && BITS.getTo(md.bitmap)==63)
+//								System.out.println("hi");
+							gen.capture(m[i + c], 3, c);
+						}
+					}
+					break;
+				} else {
+//					MOVEDATA md = BASE.ALL[m[i + 5]];
+//					if(from==7 && BITS.getTo(md.bitmap)==63)
+//						System.out.println("hi");
+					gen.move(m[i + 5]);
+					i += 6;
+				}
+			}
+		}
+	}
 }

@@ -6,7 +6,6 @@ import norwegiangambit.engine.movegen.BASE;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**

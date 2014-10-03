@@ -9,8 +9,8 @@ import norwegiangambit.util.IConst;
 
 public class MBQ extends MSlider{
 
-	final int[] U,D, L,R,UL,UR,DL,DR;
 	final int[][] DIAG,LINE;
+	final int QD,KD;
 
 	final static MBQ[] BQ;
 	static {
@@ -21,21 +21,15 @@ public class MBQ extends MSlider{
 
 	public MBQ(int from) {
 		super(from);
-		U=slide(IConst.BQ, UP);
-		D=slide(IConst.BQ, DOWN);
-		L=slide(IConst.BQ, LEFT);
-		R=slide(IConst.BQ, RIGHT);
-		UL=slide(IConst.BQ, UP + LEFT);
-		UR=slide(IConst.BQ, UP + RIGHT);
-		DL=slide(IConst.BQ, DOWN + LEFT);
-		DR=slide(IConst.BQ, DOWN + RIGHT);
-		DIAG=new int[][]{UL,UR,DL,DR};
-		LINE=new int[][]{U,D, L,R};
+		DIAG=new int[][]{slide(IConst.BQ, UP + LEFT),slide(IConst.BQ, UP + RIGHT),slide(IConst.BQ, DOWN + LEFT),slide(IConst.BQ, DOWN + RIGHT)};
+		QD=Q;
+		KD=K;
+		LINE=new int[][]{slide(IConst.BQ, UP),slide(IConst.BQ, DOWN), slide(IConst.BQ, LEFT),slide(IConst.BQ, RIGHT)};
 	}
 
 	public void genLegal(Movegen gen){
-		bslide(gen,LINE, 4);
-		bslide(gen,DIAG, 4);
+		bslide(gen,DIAG, 4,QD,KD);
+		bslide(gen,LINE, 4,Q,K);
 	}
 	
 }

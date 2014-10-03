@@ -7,11 +7,7 @@ public class BASE implements IConst {
 
 	static class SQATK {
 		// Reverse lookup for in-check
-		public final long RN;
-		public final long RB;
-		public final long RR;
-		public final long RQ;
-		public final long RK;
+		public final long RN,RB,RR,RQ,RK;
 
 		public SQATK(long rN, long rB, long rR, long rQ, long rK) {
 			RN = rN;
@@ -24,7 +20,7 @@ public class BASE implements IConst {
 
 	final public static MOVEDATA[] ALL = new MOVEDATA[50000];
 
-	public static int allw = 0, allb = 0;
+	public static int allw = 1, allb = 1;
 
 	public static int cw = 0, cb = 0, mw = 0, mb = 0, mhw = 0, mhb = 0, ew = 0, eb = 0, cpw = 0, cpb = 0, mpw = 0, mpb = 0,mcw=0,mcb=0;
 	public static int cww = 0, cwb = 0,cew = 0, ceb = 0,clw = 0, clb = 0;
@@ -50,8 +46,8 @@ public class BASE implements IConst {
 		System.out.println("CEW:"+cew+",CEB:"+ceb);
 		System.out.println("CLW:"+clw+",CLB:"+clb);
 
-		System.out.println("XMW:"+xmw+",XMB:"+xmb+" = 1/"+(mb/xmb));
-		System.out.println("XCW:"+xcw+",XCB:"+xcb+" = 1/"+(cb/xcb));
+//		System.out.println("XMW:"+xmw+",XMB:"+xmb+" = 1/"+(mb/xmb));
+//		System.out.println("XCW:"+xcw+",XCB:"+xcb+" = 1/"+(cb/xcb));
 	}
 
 	public static int add(MOVEDATA md) {
@@ -119,6 +115,8 @@ public class BASE implements IConst {
 
 		}
 		if (isWhite) {
+//			if(allw==20434)
+//				System.out.println("hi");
 			ALL[allw++] = md;
 			return allw-1;
 		} else {
