@@ -7,6 +7,7 @@ import norwegiangambit.util.IConst;
 /**
  * Use Polyglot Zobrist hashkey format as in
  * http://hardy.uhasselt.be/Toga/book_format.html
+ * http://hgm.nubati.net/book_format.html
  * 
  * @author Per Digre
  */
@@ -184,10 +185,7 @@ public class ZobristKey implements IConst {
 	}
 
 
-	/**
-     * 
-     */
-	public final static int getKindOfPiece(int piece) {
+	private final static int getKindOfPiece(int piece) {
 		switch (piece) {
 		case IConst.BP:
 			return 0;
@@ -223,5 +221,50 @@ public class ZobristKey implements IConst {
 	public final static long ZOBRIST_CBQ = random64[771];
 	public final static long ZOBRIST_NXT = random64[780];
 	public final static long[] ZOBRIST_ENP = Arrays.copyOfRange(random64, 772, 780);
+
+	public static long getKey(boolean isWhite, long castling, int enpassant, int[] brd) {
+		// Castling
+		long key = keyCastling(castling);
+
+		for (int i = 0; i < 64; i++) {
+			int piece = brd[i];
+			if(piece!=0)
+				key ^= ZobristKey.KEYS[piece][i];
+		}
+
+		// passant flags only when pawn can capture
+		if (enpassant != -1) {
+			int file = enpassant & 7;
+			if (isWhite) {
+				if (file != 0 && brd[enpassant - 7] == WP) {
+					key ^= ZobristKey.ZOBRIST_ENP[file];
+				} else if (file != 7 && brd[enpassant - 9] == WP) {
+					key ^= ZobristKey.ZOBRIST_ENP[file];
+				}
+			} else {
+				if (file != 0 && brd[enpassant + 7] == BP) {
+					key ^= ZobristKey.ZOBRIST_ENP[file];
+				} else if (file != 7 && brd[enpassant + 9] == BP) {
+					key ^= ZobristKey.ZOBRIST_ENP[file];
+				}
+			}
+		}
+		if (isWhite)
+			key ^= ZobristKey.ZOBRIST_NXT;
+		return key;
+	}
+
+	public static long keyCastling(long castling) {
+		long key = 0;
+		if ((castling & CANCASTLE_WHITEKING) != 0)
+			key ^= ZobristKey.ZOBRIST_CWK;
+		if ((castling & CANCASTLE_WHITEQUEEN) != 0)
+			key ^= ZobristKey.ZOBRIST_CWQ;
+		if ((castling & CANCASTLE_BLACKKING) != 0)
+			key ^= ZobristKey.ZOBRIST_CBK;
+		if ((castling & CANCASTLE_BLACKQUEEN) != 0)
+			key ^= ZobristKey.ZOBRIST_CBQ;
+		return key;
+	}
 
 }

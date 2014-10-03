@@ -5,16 +5,20 @@ import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 import norwegiangambit.util.PSQT_SEF;
+import norwegiangambit.util.polyglot.ZobristKey;
 
 public class MOVEDATA {
 	final public long bitmap,b_black,b_bit1,b_bit2,b_bit3;
 	final public long bto;
 	final public int mscore,escore;
+	final public long zobrist;
+	final public long pawnhash;
 
 	protected MOVEDATA(long bits) {
 		int score[]=new int[2];
 		this.bitmap = bits;
 		int piece = BITS.getPiece(bits);
+		int type = BITS.getType(bits);
 		int from = BITS.getFrom(bits);
 		int to = BITS.getTo(bits);
 		bto = 1L << to;
@@ -24,21 +28,32 @@ public class MOVEDATA {
 		long b_bit2 = ((piece & 2) == 0 ? 0 : bfromto);
 		long b_bit3 = ((piece & 4) == 0 ? 0 : bfromto);
 		long b_black = (white(piece) ? 0 : bfromto);
+		long zobrist=ZobristKey.ZOBRIST_NXT^ZobristKey.KEYS[piece][to];
+		long pawnhash=type==IConst.WP?ZobristKey.KEYS[piece][to]:0L;
+		int pawn = white(piece)?IConst.WP:IConst.BP;
 		if(BITS.isPromotion(bits)){
 			b_bit1 ^= ((piece & 1) != 0 ? 0 : bfrom);
 			b_bit2 ^= ((piece & 2) == 0 ? 0 : bfrom);
 			b_bit3 ^= ((piece & 4) == 0 ? 0 : bfrom);
-			sub(white(piece)?IConst.WP:IConst.BP,from,score);
+			sub(pawn,from,score);
+			zobrist^=ZobristKey.KEYS[pawn][from];
+			pawnhash^=ZobristKey.KEYS[pawn][from];
 		} else {
 			sub(piece,from,score);
+			zobrist^=ZobristKey.KEYS[piece][from];
+			if(type==IConst.WP)
+				pawnhash^=ZobristKey.KEYS[piece][from];
 		}
 		add(piece,to,score);
 	    if (BITS.isEnpassant(bits)) {
+			int victim=BITS.getCaptured(bits);
 			int enp = to + (to > from ? -8 : 8);
 			long e = 1L << enp;
 			b_bit1 ^= ((piece & 1) == 0 ? 0 : e);
 			b_black ^= ((piece & 8) != 0 ? 0 : e);
-			sub(white(piece)?IConst.WP:IConst.BP,enp,score);
+			sub(pawn,enp,score);
+			zobrist^=ZobristKey.KEYS[victim][enp];
+			pawnhash^=ZobristKey.KEYS[victim][enp];
 	    } else if(BITS.isCapture(bits)){
 			int victim=BITS.getCaptured(bits);
 			b_bit1 ^= ((victim & 1) == 0 ? 0 : bto);
@@ -46,6 +61,9 @@ public class MOVEDATA {
 			b_bit3 ^= ((victim & 4) == 0 ? 0 : bto);
 			b_black ^= (white(victim) ? 0 : bto);
 			sub(white(victim)?victim|8:victim,to,score);
+			zobrist^=ZobristKey.KEYS[victim][to];
+			if(victim%8==IConst.WP)
+				pawnhash^=ZobristKey.KEYS[victim][to];
 		} else if (BITS.isCastling(bits)) {
 			if (from > to) {
 				to = from - 1;
@@ -63,13 +81,20 @@ public class MOVEDATA {
 			int rook=white(piece)?IConst.WR:IConst.BR;
 			sub(rook,from,score);
 			add(rook,to,score);
+			zobrist^=ZobristKey.KEYS[rook][from];
+			zobrist^=ZobristKey.KEYS[rook][to];
 		}
+	    if(this instanceof MOVEDATAX){
+	    	zobrist^=ZobristKey.keyCastling((IConst.CASTLING_STATE&bitmap)^IConst.CASTLING_STATE);
+	    }
 		this.b_bit1=b_bit1;
 		this.b_bit2=b_bit2;
 		this.b_bit3=b_bit3;
 		this.b_black=b_black;
 		this.mscore=score[0];
 		this.escore=score[1];
+		this.zobrist=zobrist;
+		this.pawnhash=pawnhash;
 	}
 
 	public boolean white(int piece) {

@@ -1,25 +1,113 @@
 package norwegiangambit.engine;
 
 import static org.junit.Assert.assertEquals;
+import norwegiangambit.engine.evaluate.Evaluate;
 import norwegiangambit.engine.fen.StartGame;
+import norwegiangambit.engine.movegen.BASE;
+import norwegiangambit.engine.movegen.MOVEDATA;
+import norwegiangambit.util.FEN;
 import norwegiangambit.util.polyglot.Polyglot;
+import norwegiangambit.util.polyglot.ZobristKey;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+@SuppressWarnings("static-method")
 public class Test_Zobrist_Polyglot {
 
-//	@BeforeClass
-//	public static void prepare() {
-//		EBase ebase=EBase.WHITE_BISHOP;
-//	}
-
-    @SuppressWarnings("static-method")
+	@BeforeClass
+	public static void prepare() {
+		new BASE();
+	}
+	
     @Test
     public void zobringKeyStraight_0() {
         _assertZobrist("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "463b96181691fc9c");
+        // e2e4
+        _assertZobrist("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1", "823c9b50fd114196");
+        // e2e4 d75
+        _assertZobrist("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2", "756b94461c50fb0");
+        // e2e4 d7d5 e4e5
         _assertZobrist("rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2", "662fafb965db29d4");
+        // e2e4 d7d5 e4e5 f7f5
+        _assertZobrist("rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3", "22a48b5a8e47ff78");
+        // e2e4 d7d5 e4e5 f7f5 e1e2
+        _assertZobrist("rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPPKPPP/RNBQ1BNR b kq - 0 3", "652a607ca3f242c1");
+        // e2e4 d7d5 e4e5 f7f5 e1e2 e8f7
+        _assertZobrist("rnbq1bnr/ppp1pkpp/8/3pPp2/8/8/PPPPKPPP/RNBQ1BNR w - - 0 4", "fdd303c946bdd9");
+        // a2a4 b7b5 h2h4 b5b4 c2c4
+        _assertZobrist("rnbqkbnr/p1pppppp/8/8/PpP4P/8/1P1PPPP1/RNBQKBNR b KQkq c3 0 3", "3c8123ea7b067637");
+        // a2a4 b7b5 h2h4 b5b4 c2c4 b4c3 a1a3
+        _assertZobrist("rnbqkbnr/p1pppppp/8/8/P6P/R1p5/1P1PPPP1/1NBQKBNR b Kkq - 0 4", "5c3f9b829b279560");
     }
 
-    @SuppressWarnings("static-method")
+    @Test
+    public void zobringKeyMove_0() {
+        // e2e4 d7d5 e4e5 f7f5 e1e2 e8f7
+        Evaluate e1 = start("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+		Evaluate e2 = next(e1, "e2e4");
+		assertEquals("823c9b50fd114196", Long.toHexString(e2.getZobrist()));
+		Evaluate e3 = next(e2, "d7d5");
+		assertEquals("756b94461c50fb0", Long.toHexString(e3.getZobrist()));
+		Evaluate e4 = next(e3, "e4e5");
+		assertEquals("662fafb965db29d4", Long.toHexString(e4.getZobrist()));
+		Evaluate e5 = next(e4, "f7f5");
+		assertEquals("22a48b5a8e47ff78", Long.toHexString(e5.getZobrist()));
+		Evaluate e6 = next(e5, "e1e2");
+		assertEquals("652a607ca3f242c1", Long.toHexString(e6.getZobrist()));
+		Evaluate e7 = next(e6, "e8f7");
+		assertEquals("fdd303c946bdd9", Long.toHexString(e7.getZobrist()));
+    }
+
+    @Test
+    public void zobringKeyMove_1() {
+        Evaluate e1 = start("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        // a2a4 b7b5 h2h4 b5b4 c2c4
+		Evaluate e6 = next(next(next(next(next(e1, "a2a4"), "b7b5"), "h2h4"), "b5b4"), "c2c4");
+		assertEquals("3c8123ea7b067637", Long.toHexString(e6.getZobrist()));
+        // a2a4 b7b5 h2h4 b5b4 c2c4 b4c3 a1a3
+		Evaluate e8 = next(next(e6, "b4c3"), "a1a3");
+		assertEquals("5c3f9b829b279560", Long.toHexString(e8.getZobrist()));
+    }
+
+
+	public long getKey(Evaluate eval) {
+		return ZobristKey.getKey(eval.isWhite, eval.castling, eval.epsq, FEN.boardFrom64(eval.bb_bit1, eval.bb_bit2, eval.bb_bit3, eval.bb_black));
+	}
+
+
+	public Evaluate start(String fen) {
+		StartGame pos = new StartGame(fen);
+		Evaluate e1 = new Evaluate();
+		e1.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), 
+				pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		e1.evaluate();
+		return e1;
+	}
+
+
+	public Evaluate next(Evaluate e1, String mm) {
+		int md = getMove(mm, e1);
+		Evaluate e2 = new Evaluate();
+		e1.setChild(e2);
+		e2.setParent(e1);
+		e1.make(md);
+		e2.evaluate(md);
+		return e2;
+	}
+
+	public int getMove(String id, Evaluate eval) {
+		eval.generate();
+		for (int m : eval.moves) {
+			MOVEDATA md=BASE.ALL[m];
+			String id2 = md.id();
+			if(id.equals(id2)){
+				return m;
+			}
+		}
+		return 0;
+	}
+
     @Test
     public void zobringKeyEnpassant_0() {
         _assertZobrist("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2", "756b94461c50fb0");
@@ -28,7 +116,6 @@ public class Test_Zobrist_Polyglot {
         _assertZobrist("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1", "823c9b50fd114196");
     }
 
-    @SuppressWarnings("static-method")
     @Test
     public void zobringKeyCastling_0() {
         _assertZobrist("rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPPKPPP/RNBQ1BNR b kq - 0 3", "652a607ca3f242c1");
@@ -36,7 +123,6 @@ public class Test_Zobrist_Polyglot {
         _assertZobrist("rnbq1bnr/ppp1pkpp/8/3pPp2/8/8/PPPPKPPP/RNBQ1BNR w - - 0 4", "fdd303c946bdd9");
     }
 
-    @SuppressWarnings("static-method")
     @Test
     public void polyglot_77() {
         _assertMoves("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "11712(d2d4) 11476(e2e4) 2824(g1f3) 2071(c2c4) 83(g2g3) 52(b2b3) 20(f2f4) 4(b1c3) 3(b2b4) 3(c2c3) 3(d2d3)");

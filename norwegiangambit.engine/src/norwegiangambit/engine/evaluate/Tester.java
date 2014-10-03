@@ -49,15 +49,18 @@ public abstract class Tester implements IDivide{
 
 	public Evaluate[] init(int md, Evaluate root, int levels, Eval eval) {
 		Evaluate[] movegen = new Evaluate[levels];
-		for (int i1 = 0; i1 < movegen.length; i1++) {
-			Evaluate m = insert(eval, movegen.length, i1);
-			movegen[i1] = m;
-			Evaluate parent = i1>0?movegen[i1 - 1]:root;
+		int totdepth = movegen.length;
+		for (int ply = 0; ply < totdepth; ply++) {
+			Evaluate m = insert(eval, totdepth, ply);
+			movegen[ply] = m;
+			Evaluate parent = ply>0?movegen[ply - 1]:root;
 			m.parent = parent;
 			parent.deeper = m;
+			m.depth=totdepth-ply;
+			m.ply=ply;
 		}
 		Evaluate start = movegen[0];
-		start.make(md,root.isWhite,root.bitmap,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
+		start.make(md,root.isWhite,root.castling,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
 		start.evaluate(md);
 		return movegen;
 	}

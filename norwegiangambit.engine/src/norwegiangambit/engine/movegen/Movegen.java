@@ -40,7 +40,7 @@ public class Movegen implements IConst{
 		return FEN.board2fen(FEN.boardFrom64(bb_bit1, bb_bit2, bb_bit3, bb_black)) + " " +(isWhite?"w":"b") + " " + FEN.getFenCastling(castling) + " "+ FEN.pos2string(epsq);
 	}
 
-	public void make(int md_num,boolean isWhite, long bitmap, int wking, int bking, long bb, long b1, long b2, long b3) {
+	public void make(int md_num,boolean isWhite, long castling, int wking, int bking, long bb, long b1, long b2, long b3) {
 		MOVEDATA md 	= BASE.ALL[md_num];
 		this.isWhite	= !isWhite;
 		this.bb_black 	= bb^md.b_black;
@@ -50,34 +50,17 @@ public class Movegen implements IConst{
 		this.wking      = wking;
 		this.bking      = bking;
 		this.epsq 		= md instanceof MOVEDATA2?((MOVEDATA2)md).epsq:-1;
+		this.castling	= castling;
 		int type  = BITS.getPiece(md.bitmap);
 		if(type==IConst.WK)
 			this.wking=BITS.getTo(md.bitmap);
 		else if(type==IConst.BK)
 			this.bking=BITS.getTo(md.bitmap);
-
-		this.castling 	= CASTLING_STATE & md.bitmap & bitmap; // all other are set
-		long castling1	= CASTLING_STATE & bitmap;
-		if(md instanceof MOVEDATAX){
-			long castling2=((bitmap^((MOVEDATAX) md).castling)) & CASTLING_STATE;
-			if(castling != castling2){
-				System.out.println(md.id()+"\n"+FEN.addHorizontal(FEN.addHorizontal(FEN.board2string(bitmap),FEN.board2string(castling)),FEN.addHorizontal(FEN.board2string(castling2),FEN.board2string(((MOVEDATAX) md).castling))));
-				System.out.println("castling");
-			}
-		} else {
-			if(castling1!=castling){
-				System.out.println(md.id()+"\n"+FEN.addHorizontal(FEN.board2string(castling),FEN.board2string(castling1)));
-				System.out.println("non");
-			}
-		}
-
-		this.bitmap	    = md.bitmap&(~CASTLING_STATE | bitmap);
-		
-
+		if(md instanceof MOVEDATAX)
+			this.castling^=((MOVEDATAX) md).castling;
 		init();
 	}
 	public void set(boolean isWhite, long bitmap, int wking, int bking, long bb, long b1, long b2, long b3) {
-		this.bitmap 	= bitmap;
 		this.isWhite	= isWhite;
 		this.bb_black 	= bb;
 		this.bb_bit1 	= b1;
@@ -281,7 +264,7 @@ public class Movegen implements IConst{
 	}
 
 	public void capturePromote(int[] mvs, int ctype) {
-		if(mvs==null)
+		if(mvs==null || ctype==-1)
 			return;
 		capturePromote(mvs[ctype], 1, ctype);
 		capturePromote(mvs[ctype+5], 2, ctype);
@@ -412,7 +395,7 @@ public class Movegen implements IConst{
 	@Override
 	public String toString() {
 		String string = FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black) + "\n " 
-				+(" << "+FEN.move2literal(bitmap)+"              ").substring(0,10) + "\n";
+				+(" << "+"              ").substring(0,10) + "\n";
 		return string;
 	}
 
@@ -531,8 +514,8 @@ public class Movegen implements IConst{
     
     public void sortKiller(int md){
     	if(md!=-1){
-        	int start = lvl2;
-        	int from  = lvl2;
+        	int start = lvl1;
+        	int from  = lvl1;
 			for (int i = start; i < iAll; i++) {
     			if(moves[i]==md){
     				for (int j = i; j > from; j--)

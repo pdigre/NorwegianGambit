@@ -140,47 +140,17 @@ public class Position implements IConst, Comparable<Position> {
 	}
 
 	public long getZobristKey() {
-		if(zobrist!=0L)
-			return zobrist;
-		long key = 0;
-		long bitmap = getBitmap();
-		for (int i = 0; i < 64; i++) {
-			int piece = getPiece(i);
-			if(piece!=0)
-				key ^= ZobristKey.KEYS[piece][i];
+		if(zobrist==0L){
+			long bitmap = getBitmap();
+			boolean isWhite = BITS.whiteNext(bitmap);
+			long castling=bitmap&CASTLING_STATE;
+			int enpassant = BITS.getEnpassant(bitmap);
+			int[] brd = FEN.boardFrom64(bb_bit1, bb_bit2, bb_bit3, bb_black);
+			zobrist=ZobristKey.getKey(isWhite, castling, enpassant, brd);
 		}
-		if ((bitmap & CANCASTLE_WHITEKING) != 0)
-			key ^= ZobristKey.ZOBRIST_CWK;
-		if ((bitmap & CANCASTLE_WHITEQUEEN) != 0)
-			key ^= ZobristKey.ZOBRIST_CWQ;
-		if ((bitmap & CANCASTLE_BLACKKING) != 0)
-			key ^= ZobristKey.ZOBRIST_CBK;
-		if ((bitmap & CANCASTLE_BLACKQUEEN) != 0)
-			key ^= ZobristKey.ZOBRIST_CBQ;
-
-		// passant flags only when pawn can capture
-		int enpassant = BITS.getEnpassant(bitmap);
-		if (enpassant != -1) {
-			int file = enpassant & 7;
-			if (BITS.whiteNext(bitmap)) {
-				if (file != 0 && getPiece(enpassant - 7) == WP) {
-					key ^= ZobristKey.ZOBRIST_ENP[file];
-				} else if (file != 7 && getPiece(enpassant - 9) == WP) {
-					key ^= ZobristKey.ZOBRIST_ENP[file];
-				}
-			} else {
-				if (file != 0 && getPiece(enpassant + 7) == BP) {
-					key ^= ZobristKey.ZOBRIST_ENP[file];
-				} else if (file != 7 && getPiece(enpassant + 9) == BP) {
-					key ^= ZobristKey.ZOBRIST_ENP[file];
-				}
-			}
-		}
-		if (BITS.whiteNext(bitmap))
-			key ^= ZobristKey.ZOBRIST_NXT;
-		zobrist=key;
-		return key;
+		return zobrist;
 	}
+
 
 	public int getScore() {
 		return score;

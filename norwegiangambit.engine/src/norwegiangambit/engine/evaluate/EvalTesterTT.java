@@ -1,61 +1,16 @@
 package norwegiangambit.engine.evaluate;
 
+import norwegiangambit.engine.evaluate.EvalTester.PVS;
+import norwegiangambit.engine.evaluate.TranspositionTable.TTEntry;
 
-public class EvalTester extends Tester{
+
+public class EvalTesterTT extends Tester{
 
 	@Override
-	public Evaluate insert(Eval eval, int depth, int level) {
-		if(level == depth - 1)
+	public Evaluate insert(Eval eval, int depth, int ply) {
+		if(ply == depth - 1)
 			return new LeafGen(eval);
 		return new PVS();
-//		return depth-level>4 ? new PVS():new AlphaBeta();
-	}
-
-
-	class MiniMax extends Evaluate {
-
-		@Override
-		public void make(int md) {
-			super.make(md);
-			((Evaluate)deeper).evaluate(md);
-		}
-
-		// Minimax
-		public int alphabeta(int alpha, int beta) {
-			generate();
-			for (int i = 0; i < iAll; i++) {
-				int md = moves[i];
-				make(md);
-				int score = -deeper.alphabeta(-beta, -alpha);
-				if (score > alpha)
-					alpha = score; // alpha acts like max in MiniMax
-			}
-			return alpha;
-		}
-	}
-
-	class AlphaBeta extends Evaluate {
-
-		@Override
-		public void make(int md) {
-			super.make(md);
-			((Evaluate)deeper).evaluate(md);
-		}
-
-		// Alphabeta
-		public int alphabeta(int alpha, int beta) {
-			generate();
-			for (int i = 0; i < iAll; i++) {
-				int md = moves[i];
-				make(md);
-				int score = -deeper.alphabeta(-beta, -alpha);
-				if (score >= beta)
-					return beta; // fail hard beta-cutoff
-				if (score > alpha)
-					alpha = score; // alpha acts like max in MiniMax
-			}
-			return alpha;
-		}
 	}
 
 	class PVS extends Evaluate {
@@ -74,6 +29,7 @@ public class EvalTester extends Tester{
 			generate();
 			if(iAll==0)
 				return -20000;  // MATE
+			TTEntry ent=getTT();
 			sortKillers();
 			int md0 = moves[0];
 			make(md0);
@@ -81,6 +37,7 @@ public class EvalTester extends Tester{
 			if( bestscore > alfa ) {
 				if( bestscore >= beta ){
 					setKiller(md0);
+					setTT(md0);
 					return bestscore;
 				}
 				alfa = bestscore;
@@ -98,6 +55,7 @@ public class EvalTester extends Tester{
 				if( score > bestscore ) {
 					if( score >= beta ){
 						setKiller(md);
+						setTT(md);
 						return score;
 					}
 					bestscore = score;
@@ -124,6 +82,14 @@ public class EvalTester extends Tester{
 				killer1=md;
 			}
 		}
+
+		private TTEntry getTT() {
+			return null;
+		}
+
+		public void setTT(int i) {
+			
+		}
 	}
 
 	class LeafGen extends Evaluate {
@@ -138,4 +104,5 @@ public class EvalTester extends Tester{
 			return score();
 		}
 	}
+
 }
