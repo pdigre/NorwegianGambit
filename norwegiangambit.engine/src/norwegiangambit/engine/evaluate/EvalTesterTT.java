@@ -1,7 +1,5 @@
 package norwegiangambit.engine.evaluate;
 
-import norwegiangambit.engine.evaluate.EvalTester.PVS;
-import norwegiangambit.engine.evaluate.TranspositionTable.TTEntry;
 
 
 public class EvalTesterTT extends Tester{
@@ -26,18 +24,22 @@ public class EvalTesterTT extends Tester{
 
 		// PVS
 		public int alphabeta(int alfa,int beta) {
+			TTEntry ent=getTT();
+			if(ent!=null && ent.getDepth()==depth && ent.isExact())
+					return ent.score;
 			generate();
 			if(iAll==0)
 				return -20000;  // MATE
-			TTEntry ent=getTT();
+			if(ent!=null)
+				sortHash(ent.move);
 			sortKillers();
-			int md0 = moves[0];
-			make(md0);
+			int best = moves[0];
+			make(best);
 			int bestscore = -deeper.alphabeta(-beta, -alfa);
 			if( bestscore > alfa ) {
 				if( bestscore >= beta ){
-					setKiller(md0);
-					setTT(md0);
+					setKiller(best);
+					setTT(best,bestscore,TranspositionTable.T_EXACT);
 					return bestscore;
 				}
 				alfa = bestscore;
@@ -55,18 +57,20 @@ public class EvalTesterTT extends Tester{
 				if( score > bestscore ) {
 					if( score >= beta ){
 						setKiller(md);
-						setTT(md);
+						setTT(md,score,TranspositionTable.T_EXACT);
 						return score;
 					}
 					bestscore = score;
+					best=md;
 				}
 			}
+			setTT(best,bestscore,TranspositionTable.T_EXACT);
 			return bestscore;
 		}
 
 		private void sortKillers() {
 			if(parent instanceof Evaluate){
-				IIterate pp=((Evaluate)parent).parent;
+				Evaluate pp=parent.parent;
 				if(pp instanceof PVS){
 					sortKiller(((PVS) pp).killer2);
 					sortKiller(((PVS) pp).killer1);
@@ -83,12 +87,33 @@ public class EvalTesterTT extends Tester{
 			}
 		}
 
-		private TTEntry getTT() {
-			return null;
+		public TTEntry getTT() {
+			long zob = getZobrist();
+			long i=zob&TranspositionTable.TTMASK;
+			TTEntry ent=TranspositionTable.ALL[(int)i];
+			if(ent==null)
+				return null;
+			if(ent.zobrist!=zob)
+				return null;
+			if(ent.validate!=bb_bit1)
+				return null;
+			return ent;
 		}
 
-		public void setTT(int i) {
-			
+		public void setTT(int md,int score,int type) {
+			long zob = getZobrist();
+			int i=(int)(zob&TranspositionTable.TTMASK);
+			TTEntry ent=TranspositionTable.ALL[i];
+			if(ent==null){
+				ent = new TTEntry();
+				TranspositionTable.ALL[i]=ent;
+			}
+			ent.setDepth(depth);
+			ent.score=score;
+			ent.move=md;
+			ent.zobrist=zob;
+			ent.validate=bb_bit1;
+			ent.setType(type);
 		}
 	}
 

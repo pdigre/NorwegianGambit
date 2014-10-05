@@ -7,21 +7,22 @@ import java.util.concurrent.RecursiveTask;
 
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.movegen.BASE;
-import norwegiangambit.engine.movegen.Movegen;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
 
 public class PerftTester implements IDivide{
 
-	public static boolean useConcurrency = false;
+	public static boolean useConcurrency = true;
+	public static boolean useTransposition = true;
 	
 	@Override
 	public List<Eval> divide(String fen, int levels) {
 		StartGame pos = new StartGame(fen);
-		NodeGen root = new NodeGen();
+		NodeGen root = new NodeGen(null,0);
 		root.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
-		ArrayList<Eval> map=new ArrayList<Eval>();
+		root.evaluate();
 		root.generate();
+		ArrayList<Eval> map=new ArrayList<Eval>();
 		long[] count=new long[root.iAll];
 		if(levels<4 || !useConcurrency){
 			if(levels==1){
@@ -32,14 +33,18 @@ public class PerftTester implements IDivide{
 		    for (int i = 0; i < root.iAll; i++) {
 		    	int md = root.moves[i];
 				NodeGen[] movegen = new NodeGen[levels-1];
-				for (int i1 = 0; i1 < movegen.length; i1++) {
-					NodeGen m = i1 < movegen.length - 1 ? new NodeGen() : new LeafGen(count,i);
-					movegen[i1] = m;
-					NodeGen parent = i1>0?movegen[i1 - 1]:root;
+				int totdepth = movegen.length;
+				for (int ply = 0; ply < totdepth; ply++) {
+					NodeGen m = ply < totdepth - 1 ? new NodeGen(count,i) : new LeafGen(count,i);
+					movegen[ply] = m;
+					NodeGen parent = ply>0?movegen[ply - 1]:root;
 					m.parent = parent;
-					parent.child = m;
+					parent.deeper = m;
+					m.ply=ply;
+					m.depth=totdepth-ply;
 				}
 				movegen[0].make(md,root.isWhite,root.castling,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
+				movegen[0].evaluate(md);
 				movegen[0].run();
 				map.add(new Eval(FEN.move2literal(BASE.ALL[md].bitmap),(int)count[i],0));
 			}
@@ -70,14 +75,18 @@ public class PerftTester implements IDivide{
 
 		public CountTask(int md,long[] count,int i,int levels,NodeGen root) {
 			movegen = new NodeGen[levels-1];
-			for (int i1 = 0; i1 < movegen.length; i1++) {
-				NodeGen m = i1 < movegen.length - 1 ? new NodeGen() : new LeafGen(count,i);
-				movegen[i1] = m;
-				NodeGen parent = i1>0?movegen[i1 - 1]:root;
+			int totdepth = movegen.length;
+			for (int ply = 0; ply < totdepth; ply++) {
+				NodeGen m = ply < totdepth - 1 ? new NodeGen(count,i) : new LeafGen(count,i);
+				movegen[ply] = m;
+				NodeGen parent = ply>0?movegen[ply - 1]:root;
 				m.parent = parent;
-				parent.child = m;
+				parent.deeper = m;
+				m.ply=ply;
+				m.depth=totdepth-ply;
 			}
 			movegen[0].make(md,root.isWhite,root.castling,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
+			movegen[0].evaluate(md);
 		}
 
 		@Override
@@ -87,25 +96,73 @@ public class PerftTester implements IDivide{
 		}
 	}
 
-	class NodeGen extends Movegen {
-		NodeGen parent = null, child = null;
+	class NodeGen extends Evaluate {
+		final long[] count;
+		final int inum;
+		public NodeGen(long[] count, int inum) {
+			this.count=count;
+			this.inum=inum;
+		}
 
 		public void run() {
-			generate();
-			for (int i = 0; i < iAll; i++) {
-				int md = moves[i];
-				child.make(md,isWhite,castling,wking,bking,bb_black,bb_bit1,bb_bit2,bb_bit3);
-				child.run();
+			if(useTransposition && depth>0){
+				TTEntry tt = getTT();
+				if(tt!=null && tt.getDepth()==depth){
+					count[inum]+=tt.score;
+					return;
+				}
+				long t=count[inum];
+				generate();
+				for (int i = 0; i < iAll; i++) {
+					int md = moves[i];
+					deeper.make(md,isWhite,castling,wking,bking,bb_black,bb_bit1,bb_bit2,bb_bit3);
+					deeper.evaluate(md);
+					((NodeGen)deeper).run();
+				}
+				long cnt = count[inum]-t;
+				setTT((int)cnt);
+			} else {
+				generate();
+				for (int i = 0; i < iAll; i++) {
+					int md = moves[i];
+					deeper.make(md,isWhite,castling,wking,bking,bb_black,bb_bit1,bb_bit2,bb_bit3);
+					deeper.evaluate(md);
+					((NodeGen)deeper).run();
+				}
 			}
+		}
+
+		public TTEntry getTT() {
+			long zob = getZobrist();
+			long i=zob&TranspositionTable.TTMASK;
+			TTEntry ent=TranspositionTable.ALL[(int)i];
+			if(ent==null)
+				return null;
+			if(ent.zobrist!=zob)
+				return null;
+			if(ent.validate!=bb_bit1)
+				return null;
+			return ent;
+		}
+
+		public void setTT(long count) {
+			long zob = getZobrist();
+			int i=(int)(zob&TranspositionTable.TTMASK);
+			TTEntry ent=TranspositionTable.ALL[i];
+			if(ent==null){
+				ent = new TTEntry();
+				TranspositionTable.ALL[i]=ent;
+			}
+			ent.setDepth(depth);
+			ent.score=(int) count;
+			ent.zobrist=zob;
+			ent.validate=bb_bit1;
 		}
 	}
 
 	class LeafGen extends NodeGen {
-		final long[] count;
-		final int inum;
 		public LeafGen(long[] count, int inum) {
-			this.count=count;
-			this.inum=inum;
+			super(count,inum);
 		}
 
 		@Override

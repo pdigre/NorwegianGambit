@@ -8,9 +8,9 @@ import norwegiangambit.util.FEN;
 import norwegiangambit.util.PSQT_SEF;
 import norwegiangambit.util.polyglot.ZobristKey;
 
-public class Evaluate extends Movegen implements IIterate {
+public class Evaluate extends Movegen {
 
-	IIterate parent,deeper;
+	Evaluate parent,deeper;
 
 	protected int midscore;
 	protected int endscore;
@@ -22,17 +22,14 @@ public class Evaluate extends Movegen implements IIterate {
 	public int depth;
 	
 	
-	@Override
 	public int midScore(){
 		return midscore;
 	}
 
-	@Override
 	public int endScore(){
 		return endscore;
 	}
 
-	@Override
 	public int score(){
 		int score = whiteScore();
 		return isWhite?score:-score;
@@ -43,13 +40,11 @@ public class Evaluate extends Movegen implements IIterate {
 		return ((popcnt)*midscore+(32-popcnt)*endscore)/32;
 	}
 
-	@Override
-	public void setParent(IIterate parent){
+	public void setParent(Evaluate parent){
 		this.parent=parent;
 	}
 	
-	@Override
-	public void setChild(IIterate child){
+	public void setChild(Evaluate child){
 		this.deeper=child;
 	}
 	
@@ -98,8 +93,6 @@ public class Evaluate extends Movegen implements IIterate {
 	}
 
 	public long getZobrist() {
-		if(epsq>=0){
-		}
 		return zobrist;
 	}
 

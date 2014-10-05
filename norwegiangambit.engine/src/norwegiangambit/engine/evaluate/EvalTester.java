@@ -108,7 +108,7 @@ public class EvalTester extends Tester{
 
 		private void sortKillers() {
 			if(parent instanceof Evaluate){
-				IIterate pp=((Evaluate)parent).parent;
+				Evaluate pp=parent.parent;
 				if(pp instanceof PVS){
 					sortKiller(((PVS) pp).killer2);
 					sortKiller(((PVS) pp).killer1);

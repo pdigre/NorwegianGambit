@@ -511,6 +511,17 @@ public class Movegen implements IConst{
 		}
 	}
 	
+	public void sortHash(int md) {
+		for (int i = 0; i < iAll; i++) {
+			if(moves[i]==md){
+				for (int j = i; j > 0; j--)
+					moves[j]=moves[j-1];
+				moves[0]=md;
+				break;
+			}
+		}
+	}
+
     
     public void sortKiller(int md){
     	if(md!=-1){
