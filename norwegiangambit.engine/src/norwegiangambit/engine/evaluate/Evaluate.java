@@ -21,6 +21,9 @@ public class Evaluate extends Movegen {
 	public int ply;
 	public int depth;
 	
+	public void notifyPV(Evaluate next, int lowerBound, int upperBound, int score){
+		parent.notifyPV(this, lowerBound, upperBound, score);
+	}
 	
 	public int midScore(){
 		return midscore;

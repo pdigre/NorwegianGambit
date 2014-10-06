@@ -8,6 +8,8 @@ public interface IDivide {
 		public String move;
 		public int count=0;
 		public int value=0;
+		public int[] bestPV;
+		public int bestV=-20000;
 
 		public Eval(String move,int count, int value) {
 			this.move=move;
@@ -23,4 +25,5 @@ public interface IDivide {
 
 	List<Eval> divide(String fen, int depth);
 
+	
 }

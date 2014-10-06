@@ -18,7 +18,26 @@ public abstract class Tester implements IDivide{
 	public List<Eval> divide(String fen, int levels) {
 		boolean isConcurrent = levels>2 && useConcurrency;
 		StartGame pos = new StartGame(fen);
-		Evaluate root = new Evaluate();
+		Evaluate root = new Evaluate(){
+			
+			@Override
+			public void notifyPV(Evaluate deeper, int lowerBound, int upperBound, int score) {
+				int[] pvs = new int[levels];
+				Eval eval=record(pvs,deeper);
+					eval.bestPV=pvs;
+					eval.bestV=score;
+			}
+
+			private Eval record(int[] moves, Evaluate deeper) {
+				moves[deeper.ply]=deeper.pv;
+				if(deeper instanceof ILeafEval){
+					return ((ILeafEval)deeper).getEval();
+				} else {
+					return record(moves,deeper.deeper);
+				}
+			}
+			
+		};
 		root.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
 		ArrayList<Eval> map=new ArrayList<Eval>();
 		root.generate();
@@ -26,7 +45,7 @@ public abstract class Tester implements IDivide{
 		CountTask[] tasks = new CountTask[root.iAll];
 		for (int i1 = 0; i1 < root.iAll; i1++) {
 			int md = root.moves[i1];
-        	Eval eval = new Eval(FEN.move2literal(BASE.ALL[md].bitmap),0,0);
+        	RootEval eval = new RootEval(FEN.move2literal(BASE.ALL[md].bitmap),0,0);
         	map.add(eval);
 			CountTask task=new CountTask(md,eval,levels,root);
 			tasks[i1]=task;
@@ -47,7 +66,7 @@ public abstract class Tester implements IDivide{
 		return map;
 	}
 
-	public Evaluate[] init(int md, Evaluate root, int levels, Eval eval) {
+	public Evaluate[] init(int md, Evaluate root, int levels, RootEval eval) {
 		Evaluate[] movegen = new Evaluate[levels];
 		int totdepth = movegen.length;
 		for (int ply = 0; ply < totdepth; ply++) {
@@ -70,7 +89,7 @@ public abstract class Tester implements IDivide{
 		Evaluate start;
 		Eval eval;
 
-		public CountTask(int md,Eval eval,int levels,Evaluate root) {
+		public CountTask(int md,RootEval eval,int levels,Evaluate root) {
 			this.eval=eval;
 			start=init(md, root, levels,eval )[0];
 		}
@@ -82,5 +101,5 @@ public abstract class Tester implements IDivide{
 		}
 	}
 
-	public abstract Evaluate insert(Eval eval, int depth, int level);
+	public abstract Evaluate insert(RootEval eval, int depth, int level);
 }

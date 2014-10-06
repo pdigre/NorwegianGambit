@@ -6,7 +6,7 @@ public class EvalTesterTT extends Tester{
 
 	public static boolean useTransposition=true;
 	@Override
-	public Evaluate insert(Eval eval, int depth, int ply) {
+	public Evaluate insert(RootEval eval, int depth, int ply) {
 		if(ply == depth - 1)
 			return new LeafGen(eval);
 		return new PVS();
@@ -26,14 +26,20 @@ public class EvalTesterTT extends Tester{
 		// PVS
 		public int alphabeta(int alfa,int beta) {
 			if(useTransposition){
-				TTEntry ent=getTT();
-				if(ent!=null && ent.getDepth()==depth && ent.isExact())
-						return ent.getScore();
+				int tt = getTT();
+				if(tt!=-1){
+					long data=TranspositionTable.data[tt];
+					if(TranspositionTable.getDepth(data)==depth && TranspositionTable.isExact(data)){
+						return TranspositionTable.getScore(data);
+					}
+				}
 				generate();
 				if(iAll==0)
 					return -20000;  // MATE
-				if(ent!=null)
-					sortHash(ent.getMove());
+				if(tt!=-1){
+					long data=TranspositionTable.data[tt];
+					sortHash(TranspositionTable.getMove(data));
+				}
 			} else {
 				generate();
 				if(iAll==0)
@@ -94,30 +100,23 @@ public class EvalTesterTT extends Tester{
 			}
 		}
 
-		public TTEntry getTT() {
+		public int getTT() {
 			long zob = getZobrist();
-			long i=zob&TranspositionTable.TTMASK;
-			TTEntry ent=TranspositionTable.ALL[(int)i];
-			if(ent==null)
-				return null;
-			if(ent.hash!=(zob^bb_bit1))
-				return null;
-			if(ent.validate!=bb_bit1){
+			int i=(int)zob&TranspositionTable.TTMASK;
+			long key=zob^bb_bit1;
+			long hash=TranspositionTable.hash[i];
+			if(hash!=key)
+				return -1;
+			long validate=TranspositionTable.hash[i];
+			if(validate!=bb_bit1){
 				System.out.println("Key collision:"+getFen());
-				return null;
+				return -1;
 			}
-			return ent;
+			return i;
 		}
 
 		public void setTT(int md,int score,int type) {
-			long zob = getZobrist();
-			int i=(int)(zob&TranspositionTable.TTMASK);
-			TTEntry ent=TranspositionTable.ALL[i];
-			if(ent==null){
-				ent = new TTEntry();
-				TranspositionTable.ALL[i]=ent;
-			}
-			ent.set(depth,type,md,score,zob^bb_bit1,bb_bit1);
+			TranspositionTable.set(getZobrist(),depth,type,md,score,bb_bit1);
 		}
 	}
 

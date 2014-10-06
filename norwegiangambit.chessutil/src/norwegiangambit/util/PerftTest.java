@@ -71,6 +71,7 @@ public class PerftTest {
 						return; 
 					}
 				}
+				System.out.println("Error no longer??");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

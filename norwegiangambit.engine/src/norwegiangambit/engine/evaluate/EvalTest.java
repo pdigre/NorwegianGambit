@@ -21,14 +21,13 @@ public class EvalTest {
 		long acount=0;
 		StringBuilder sb=new StringBuilder();
 		for (Eval eval : new TreeSet<Eval>(divide)){
-//			System.out.println(eval.move+" "+eval.count+" = "+eval.value);
 			acount+=eval.count;
 			if(sb.length()>0)
 				sb.append(",");
-			sb.append(eval.move+"="+eval.value);
+			sb.append(eval.toString()+"="+eval.bestV);
 		}
 		System.out.println("TOT "+acount+" > "+(acount-ecount));
-		assertEquals("Wrong score", expected, sb.toString());
+		assertEquals("Wrong score", expected.replace(",", "\n"), sb.toString().replace(",", "\n"));
 		assertTrue("Poor score",acount<=ecount);
 	}
 

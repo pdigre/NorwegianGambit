@@ -10,10 +10,11 @@ import norwegiangambit.engine.movegen.BASE;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
 
-public class PerftTester implements IDivide{
+public class FastPerft implements IDivide{
 
-	public static boolean useConcurrency = true;
+	public static boolean useConcurrency = false;
 	public static boolean useTransposition = true;
+	public static boolean testTransposition = true;
 	
 	@Override
 	public List<Eval> divide(String fen, int levels) {
@@ -106,10 +107,13 @@ public class PerftTester implements IDivide{
 
 		public void run() {
 			if(useTransposition && depth>0){
-				TTEntry tt = getTT();
-				if(tt!=null && tt.getDepth()==depth){
-					count[inum]+=tt.getCount();
-					return;
+				int tt = getTT();
+				if(tt!=-1 && !testTransposition){
+					long data=TranspositionTable.data[tt];
+					if(TranspositionTable.getDepth(data)==depth){
+						count[inum]+=TranspositionTable.getCount(data);
+						return;
+					}
 				}
 				long t=count[inum];
 				generate();
@@ -120,7 +124,17 @@ public class PerftTester implements IDivide{
 					((NodeGen)deeper).run();
 				}
 				long cnt = count[inum]-t;
-				setTT((int)cnt);
+				if(testTransposition){
+					if(tt!=-1){ 
+						long data=TranspositionTable.data[tt];
+						if(TranspositionTable.getDepth(data)==depth){
+							long cnt2 = TranspositionTable.getCount(data);
+							if(cnt!=cnt2)
+								System.out.println("Error in Count:"+cnt2+"/"+cnt+" "+getFen());
+						}
+					}
+				}
+				setTT(cnt);
 			} else {
 				generate();
 				for (int i = 0; i < iAll; i++) {
@@ -132,33 +146,22 @@ public class PerftTester implements IDivide{
 			}
 		}
 
-		public TTEntry getTT() {
+		public int getTT() {
 			long zob = getZobrist();
-			long i=zob&TranspositionTable.TTMASK;
-			TTEntry ent=TranspositionTable.ALL[(int)i];
-			if(ent==null)
-				return null;
-			if(ent.hash!=(zob^bb_bit1))
-				return null;
-			if(ent.validate!=bb_bit1){
-				System.out.println("Key collision: "+getFen());
-				return null;
+			int i=(int)zob&TranspositionTable.TTMASK;
+			long hash=TranspositionTable.hash[i];
+			if(hash!=(zob^bb_bit1))
+				return -1;
+			long validate=TranspositionTable.validate[i];
+			if(validate!=bb_bit1){
+				System.out.println("Key collision:"+getFen());
+				return -1;
 			}
-			return ent;
+			return i;
 		}
 
-		public void setTT(long count) {
-			long zob = getZobrist();
-			int i=(int)(zob&TranspositionTable.TTMASK);
-			TTEntry ent=TranspositionTable.ALL[i];
-			if(ent==null){
-				ent = new TTEntry();
-				TranspositionTable.ALL[i]=ent;
-			}
-			ent.setDepth(depth);
-			ent.setCount(count);
-			ent.hash=zob^bb_bit1;
-			ent.validate=bb_bit1;
+		public int setTT(long count) {
+			return TranspositionTable.set(getZobrist(),depth,count,bb_bit1);
 		}
 	}
 

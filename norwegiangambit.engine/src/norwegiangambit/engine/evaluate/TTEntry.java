@@ -40,21 +40,6 @@ public class TTEntry{
 //	public int depthSlot;  // Search depth (bit 0-14) and hash slot (bit 15).
 	public long validate;
     
-    /** Return true if this object is more valuable than the other, false otherwise. */
-    public final boolean betterThan(TTEntry other, int currGen) {
-        int gen = getGeneration();
-		if ((gen < currGen) != (other.getGeneration() == currGen)) {
-            return gen == currGen;   // Old entries are less valuable
-        }
-        if ((getType() == T_EXACT) != (other.getType() == T_EXACT)) {
-            return getType() == T_EXACT;         // Exact score more valuable than lower/upper bound
-        }
-        if (getDepth() != other.getDepth()) {
-            return getDepth() > other.getDepth();     // Larger depth is more valuable
-        }
-        return false;   // Otherwise, pretty much equally valuable
-    }
-
     public final int getType(){
     	return ((int)data)&T_TYPEMASK;
     }
