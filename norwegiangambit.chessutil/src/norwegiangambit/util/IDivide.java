@@ -6,7 +6,7 @@ public interface IDivide {
 
 	public class Eval implements Comparable<Eval>{
 		public String move;
-		public int count=0;
+		public long count=0;
 		public int value=0;
 
 		public Eval(String move,int count, int value) {
@@ -19,8 +19,10 @@ public interface IDivide {
 		public int compareTo(Eval e2) {
 			return move.compareTo(e2.move);
 		}
+		
 	}
 
 	List<Eval> divide(String fen, int depth);
 
+	
 }

@@ -12,7 +12,7 @@ import norwegiangambit.util.IDivide;
 
 public abstract class Tester implements IDivide{
 
-	public static boolean useConcurrency = true;
+	public static boolean useConcurrency = false;
 	
 	@Override
 	public List<Eval> divide(String fen, int levels) {
@@ -26,7 +26,7 @@ public abstract class Tester implements IDivide{
 		CountTask[] tasks = new CountTask[root.iAll];
 		for (int i1 = 0; i1 < root.iAll; i1++) {
 			int md = root.moves[i1];
-        	Eval eval = new Eval(FEN.move2literal(BASE.ALL[md].bitmap),0,0);
+        	RootEval eval = new RootEval(FEN.move2literal(BASE.ALL[md].bitmap),0,0);
         	map.add(eval);
 			CountTask task=new CountTask(md,eval,levels,root);
 			tasks[i1]=task;
@@ -47,7 +47,7 @@ public abstract class Tester implements IDivide{
 		return map;
 	}
 
-	public Evaluate[] init(int md, Evaluate root, int levels, Eval eval) {
+	public Evaluate[] init(int md, Evaluate root, int levels, RootEval eval) {
 		Evaluate[] movegen = new Evaluate[levels];
 		int totdepth = movegen.length;
 		for (int ply = 0; ply < totdepth; ply++) {
@@ -69,18 +69,30 @@ public abstract class Tester implements IDivide{
 		private static final long serialVersionUID = -2743566188067414328L;
 		Evaluate start;
 		Eval eval;
+		int[] path;
 
-		public CountTask(int md,Eval eval,int levels,Evaluate root) {
+		public CountTask(int md,RootEval eval,int levels,Evaluate root) {
 			this.eval=eval;
+			path=new int[levels];
+			((RootEval)eval).path=path;
+			path[0]=md;
 			start=init(md, root, levels,eval )[0];
 		}
 
 		@Override
 		protected Long compute() {
 			eval.value=-start.alphabeta(-20000, 20000);
+			setPath(start, path);
 			return 0L;
+		}
+
+		public void setPath(Evaluate evaluate, int[] mm) {
+			if(evaluate.deeper!=null){
+				mm[evaluate.ply+1]=evaluate.best_move;
+				setPath(evaluate.deeper, mm);
+			}
 		}
 	}
 
-	public abstract Evaluate insert(Eval eval, int depth, int level);
+	public abstract Evaluate insert(RootEval eval, int depth, int level);
 }

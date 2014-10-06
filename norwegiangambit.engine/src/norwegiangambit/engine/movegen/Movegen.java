@@ -22,6 +22,7 @@ public class Movegen implements IConst{
 	long bb_white, own, enemy,bb_knights,bb_kings,bb_pawns;
 	protected long checkers, pinners, hiders;
 	int king,eking;
+	public int pv;
 
 	public final int[] moves = new int[99];
 	public int iAll = 0, lvl1=0,lvl2=0;
@@ -42,6 +43,7 @@ public class Movegen implements IConst{
 
 	public void make(int md_num,boolean isWhite, long castling, int wking, int bking, long bb, long b1, long b2, long b3) {
 		MOVEDATA md 	= BASE.ALL[md_num];
+		this.pv			= md_num;
 		this.isWhite	= !isWhite;
 		this.bb_black 	= bb^md.b_black;
 		this.bb_bit1 	= b1^md.b_bit1;

@@ -1,6 +1,6 @@
 package norwegiangambit.engine;
 
-import norwegiangambit.engine.evaluate.PerftTester;
+import norwegiangambit.engine.evaluate.FastPerft;
 import norwegiangambit.engine.movegen.BASE;
 import norwegiangambit.util.EngineStockfish;
 import norwegiangambit.util.PerftTest;
@@ -25,7 +25,7 @@ public class Test_PERFT_5300ms extends PerftTest{
 	@BeforeClass
 	public static void prepare() {
 		new BASE();
-		setTesting(new PerftTester());
+		setTesting(new FastPerft());
 		setValidator(new EngineStockfish(EngineStockfish.DEFAULT_EXEPATH));
 	}
 	
@@ -49,8 +49,25 @@ public class Test_PERFT_5300ms extends PerftTest{
 
 	@Test
 	@Ignore
+	public void m1_FULL6() {
+		testPerft(testing, 6,119060324,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+	}
+
+	@Test
+	public void m1_FULL7() {
+		testPerft(testing, 7,3195901860L,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+	}
+
+	@Test
+	@Ignore
+	public void m1_FULL8() {
+		testPerft(testing, 8,84998978956L,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+	}
+
+	@Test
+	@Ignore
 	public void m1_FULL9() {
-		testPerft(testing, 9,3195901860L,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+		testPerft(testing, 9,2439530234167L,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 	}
 
 	@Test
@@ -99,7 +116,7 @@ public class Test_PERFT_5300ms extends PerftTest{
 	}
 
 	@Test
-	@Ignore
+//	@Ignore
 	public void e2_err_fast() {
 		testPerft(testing, 5, 193690690, "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
 	}
@@ -127,6 +144,12 @@ public class Test_PERFT_5300ms extends PerftTest{
 		testPerft(testing, 3,28859283,"r3k2q/p1pp1pb1/bn2Pnp1/4N3/1p2P3/2N5/PPPBBPPP/R3K2R b KQkq - 0 1");
 	}
 
+	@Test
+	public void e1_m6_fast() {
+		testPerft(testing, 6,119060324,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+	}
+
+	 
 	
 	
 	@AfterClass

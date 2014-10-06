@@ -30,8 +30,8 @@ public class MOVEDATA {
 		long b_black = (white(piece) ? 0 : bfromto);
 		long zobrist=ZobristKey.ZOBRIST_NXT^ZobristKey.KEYS[piece][to];
 		long pawnhash=type==IConst.WP?ZobristKey.KEYS[piece][to]:0L;
-		int pawn = white(piece)?IConst.WP:IConst.BP;
 		if(BITS.isPromotion(bits)){
+			int pawn = white(piece)?IConst.WP:IConst.BP;
 			b_bit1 ^= ((piece & 1) != 0 ? 0 : bfrom);
 			b_bit2 ^= ((piece & 2) == 0 ? 0 : bfrom);
 			b_bit3 ^= ((piece & 4) == 0 ? 0 : bfrom);
@@ -51,7 +51,7 @@ public class MOVEDATA {
 			long e = 1L << enp;
 			b_bit1 ^= ((piece & 1) == 0 ? 0 : e);
 			b_black ^= ((piece & 8) != 0 ? 0 : e);
-			sub(pawn,enp,score);
+			sub(victim,enp,score);
 			zobrist^=ZobristKey.KEYS[victim][enp];
 			pawnhash^=ZobristKey.KEYS[victim][enp];
 	    } else if(BITS.isCapture(bits)){
@@ -60,7 +60,7 @@ public class MOVEDATA {
 			b_bit2 ^= ((victim & 2) == 0 ? 0 : bto);
 			b_bit3 ^= ((victim & 4) == 0 ? 0 : bto);
 			b_black ^= (white(victim) ? 0 : bto);
-			sub(white(victim)?victim|8:victim,to,score);
+			sub(victim,to,score);
 			zobrist^=ZobristKey.KEYS[victim][to];
 			if(victim%8==IConst.WP)
 				pawnhash^=ZobristKey.KEYS[victim][to];

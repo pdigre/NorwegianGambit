@@ -6,7 +6,7 @@ public class EvalTesterTT extends Tester{
 
 	public static boolean useTransposition=true;
 	@Override
-	public Evaluate insert(Eval eval, int depth, int ply) {
+	public Evaluate insert(RootEval eval, int depth, int ply) {
 		if(ply == depth - 1)
 			return new LeafGen(eval);
 		return new PVS();
@@ -26,30 +26,37 @@ public class EvalTesterTT extends Tester{
 		// PVS
 		public int alphabeta(int alfa,int beta) {
 			if(useTransposition){
-				TTEntry ent=getTT();
-				if(ent!=null && ent.getDepth()==depth && ent.isExact())
-						return ent.getScore();
+				int tt = getTT();
+//				if(tt!=-1){
+//					long data=TranspositionTable.data[tt];
+//					if(TranspositionTable.getDepth(data)==depth && TranspositionTable.isExact(data)){
+//						return TranspositionTable.getScore(data);
+//					}
+//				}
 				generate();
 				if(iAll==0)
 					return -20000;  // MATE
-				if(ent!=null)
-					sortHash(ent.getMove());
+				if(tt!=-1){
+					long data=TranspositionTable.data[tt];
+					sortHash(TranspositionTable.getMove(data));
+				}
 			} else {
 				generate();
 				if(iAll==0)
 					return -20000;  // MATE
 			}
 			sortKillers();
-			int best = moves[0];
-			make(best);
+			int md0 = moves[0];
+			make(md0);
 			int bestscore = -deeper.alphabeta(-beta, -alfa);
 			if( bestscore > alfa ) {
 				if( bestscore >= beta ){
-					setKiller(best);
-					setTT(best,bestscore,TTEntry.T_EXACT);
+					setKiller(md0);
+					setTT(md0,bestscore,TTEntry.T_EXACT);
 					return bestscore;
 				}
 				alfa = bestscore;
+				best_move=md0;
 			}
 			for (int i = 1; i < iAll; i++) {
 				int md = moves[i];
@@ -59,6 +66,7 @@ public class EvalTesterTT extends Tester{
 					score = -deeper.alphabeta(-beta, -alfa);
 					if( score > alfa ){
 						alfa = score;
+						best_move=md;
 					}
 				}
 				if( score > bestscore ) {
@@ -68,10 +76,9 @@ public class EvalTesterTT extends Tester{
 						return score;
 					}
 					bestscore = score;
-					best=md;
 				}
 			}
-			setTT(best,bestscore,TTEntry.T_EXACT);
+			setTT(md0,bestscore,TTEntry.T_EXACT);
 			return bestscore;
 		}
 
@@ -94,30 +101,12 @@ public class EvalTesterTT extends Tester{
 			}
 		}
 
-		public TTEntry getTT() {
-			long zob = getZobrist();
-			long i=zob&TranspositionTable.TTMASK;
-			TTEntry ent=TranspositionTable.ALL[(int)i];
-			if(ent==null)
-				return null;
-			if(ent.hash!=(zob^bb_bit1))
-				return null;
-			if(ent.validate!=bb_bit1){
-				System.out.println("Key collision:"+getFen());
-				return null;
-			}
-			return ent;
+		public int getTT() {
+			return TranspositionTable.get(getZobrist(), bb_bit1);
 		}
 
 		public void setTT(int md,int score,int type) {
-			long zob = getZobrist();
-			int i=(int)(zob&TranspositionTable.TTMASK);
-			TTEntry ent=TranspositionTable.ALL[i];
-			if(ent==null){
-				ent = new TTEntry();
-				TranspositionTable.ALL[i]=ent;
-			}
-			ent.set(depth,type,md,score,zob^bb_bit1,bb_bit1);
+			TranspositionTable.set(getZobrist(),bb_bit1,depth,type,md,score);
 		}
 	}
 

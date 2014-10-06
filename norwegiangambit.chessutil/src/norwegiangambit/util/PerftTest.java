@@ -45,8 +45,8 @@ public class PerftTest {
 	
 	public static void findError(String fen, int levels,String append) {
 		try {
-			Map<String, Integer> actual = getMoves(testing.divide(fen,levels));
-			Map<String, Integer> expected = getMoves(validator.divide(fen, levels));
+			Map<String, Long> actual = getMoves(testing.divide(fen,levels));
+			Map<String, Long> expected = getMoves(validator.divide(fen, levels));
 			Set<String> kactual = new HashSet<String>(actual.keySet());
 			Set<String> kexpected = new HashSet<String>(expected.keySet());
 			if(!kactual.equals(kexpected)){
@@ -61,8 +61,8 @@ public class PerftTest {
 				String[] keys = kexpected.toArray(new String[expected.size()]);
 				for (int i = 0; i < keys.length; i++) {
 					String move=keys[i];
-					int e = expected.get(move);
-					int a = actual.get(move);
+					long e = expected.get(move);
+					long a = actual.get(move);
 					if(a!=e){
 						String fen2=FEN.make(fen,move);
 						System.out.println(move+" > "+fen2);
@@ -71,6 +71,7 @@ public class PerftTest {
 						return; 
 					}
 				}
+				System.out.println("Error no longer??");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -79,8 +80,8 @@ public class PerftTest {
 		}
 	}
 
-	private static Map<String,Integer> getMoves(Collection<Eval> actual) {
-		TreeMap<String,Integer> map = new TreeMap<String,Integer>();
+	private static Map<String,Long> getMoves(Collection<Eval> actual) {
+		TreeMap<String,Long> map = new TreeMap<String,Long>();
 		for (Eval eval : actual)
 			map.put(eval.move,eval.count);
 		return map;
@@ -125,8 +126,8 @@ public class PerftTest {
 			int levels = score.count.length;
 			long actual=0;
 			try {
-				Map<String, Integer> divide = getMoves(testing.divide(score.fen, levels));
-				for (Integer div : divide.values())
+				Map<String, Long> divide = getMoves(testing.divide(score.fen, levels));
+				for (Long div : divide.values())
 					actual+=div;
 			} catch (Exception e) {
 				e.printStackTrace();

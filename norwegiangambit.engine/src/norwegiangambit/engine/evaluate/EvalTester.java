@@ -4,7 +4,7 @@ package norwegiangambit.engine.evaluate;
 public class EvalTester extends Tester{
 
 	@Override
-	public Evaluate insert(Eval eval, int depth, int level) {
+	public Evaluate insert(RootEval eval, int depth, int level) {
 		if(level == depth - 1)
 			return new LeafGen(eval);
 		return new PVS();
@@ -70,29 +70,31 @@ public class EvalTester extends Tester{
 		}
 
 		// PVS
-		public int alphabeta(int alfa,int beta) {
+		public int alphabeta(int alpha,int beta) {
 			generate();
 			if(iAll==0)
 				return -20000;  // MATE
 			sortKillers();
 			int md0 = moves[0];
 			make(md0);
-			int bestscore = -deeper.alphabeta(-beta, -alfa);
-			if( bestscore > alfa ) {
+			int bestscore = -deeper.alphabeta(-beta, -alpha);
+			if( bestscore > alpha ) {
 				if( bestscore >= beta ){
 					setKiller(md0);
 					return bestscore;
 				}
-				alfa = bestscore;
+				alpha = bestscore;
+				best_move=md0;
 			}
 			for (int i = 1; i < iAll; i++) {
 				int md = moves[i];
 				make(md);
-				int score = -deeper.alphabeta(-alfa-1, -alfa);
-				if( score > alfa && score < beta ) {
-					score = -deeper.alphabeta(-beta, -alfa);
-					if( score > alfa ){
-						alfa = score;
+				int score = -deeper.alphabeta(-alpha-1, -alpha);
+				if( score > alpha && score < beta ) {
+					score = -deeper.alphabeta(-beta, -alpha);
+					if( score > alpha ){
+						alpha = score;
+						best_move=md;
 					}
 				}
 				if( score > bestscore ) {
@@ -126,9 +128,9 @@ public class EvalTester extends Tester{
 		}
 	}
 
-	class LeafGen extends Evaluate {
-		final Eval eval;
-		public LeafGen(Eval eval) {
+	class LeafGen extends Evaluate implements ILeafEval {
+		final RootEval eval;
+		public LeafGen(RootEval eval) {
 			this.eval=eval;
 		}
 		
@@ -137,5 +139,16 @@ public class EvalTester extends Tester{
 			eval.count++;
 			return score();
 		}
+		
+		@Override
+		public void notifyPV(Evaluate child, int depth, boolean lowerBound, boolean upperBound, int score) {
+			parent.notifyPV(this, ply, lowerBound, upperBound, score);
+		}
+
+		@Override
+		public Eval getEval() {
+			return eval;
+		}
 	}
+
 }
