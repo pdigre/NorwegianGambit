@@ -25,7 +25,7 @@ public class Test_TT_start extends EvalTest{
 	public static void prepare() {
 		new BASE();
 		EvalTesterTT engine = new EvalTesterTT();
-		Tester.useConcurrency=true;
+		Tester.useConcurrency=false;
 		setTesting(engine);
 	}
 	

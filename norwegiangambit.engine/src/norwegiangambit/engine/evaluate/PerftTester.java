@@ -108,7 +108,7 @@ public class PerftTester implements IDivide{
 			if(useTransposition && depth>0){
 				TTEntry tt = getTT();
 				if(tt!=null && tt.getDepth()==depth){
-					count[inum]+=tt.score;
+					count[inum]+=tt.getCount();
 					return;
 				}
 				long t=count[inum];
@@ -138,10 +138,12 @@ public class PerftTester implements IDivide{
 			TTEntry ent=TranspositionTable.ALL[(int)i];
 			if(ent==null)
 				return null;
-			if(ent.zobrist!=zob)
+			if(ent.hash!=(zob^bb_bit1))
 				return null;
-			if(ent.validate!=bb_bit1)
+			if(ent.validate!=bb_bit1){
+				System.out.println("Key collision: "+getFen());
 				return null;
+			}
 			return ent;
 		}
 
@@ -154,8 +156,8 @@ public class PerftTester implements IDivide{
 				TranspositionTable.ALL[i]=ent;
 			}
 			ent.setDepth(depth);
-			ent.score=(int) count;
-			ent.zobrist=zob;
+			ent.setCount(count);
+			ent.hash=zob^bb_bit1;
 			ent.validate=bb_bit1;
 		}
 	}

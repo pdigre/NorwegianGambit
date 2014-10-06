@@ -4,6 +4,7 @@ package norwegiangambit.engine.evaluate;
 
 public class EvalTesterTT extends Tester{
 
+	public static boolean useTransposition=true;
 	@Override
 	public Evaluate insert(Eval eval, int depth, int ply) {
 		if(ply == depth - 1)
@@ -24,14 +25,20 @@ public class EvalTesterTT extends Tester{
 
 		// PVS
 		public int alphabeta(int alfa,int beta) {
-			TTEntry ent=getTT();
-			if(ent!=null && ent.getDepth()==depth && ent.isExact())
-					return ent.score;
-			generate();
-			if(iAll==0)
-				return -20000;  // MATE
-			if(ent!=null)
-				sortHash(ent.move);
+			if(useTransposition){
+				TTEntry ent=getTT();
+				if(ent!=null && ent.getDepth()==depth && ent.isExact())
+						return ent.getScore();
+				generate();
+				if(iAll==0)
+					return -20000;  // MATE
+				if(ent!=null)
+					sortHash(ent.getMove());
+			} else {
+				generate();
+				if(iAll==0)
+					return -20000;  // MATE
+			}
 			sortKillers();
 			int best = moves[0];
 			make(best);
@@ -39,7 +46,7 @@ public class EvalTesterTT extends Tester{
 			if( bestscore > alfa ) {
 				if( bestscore >= beta ){
 					setKiller(best);
-					setTT(best,bestscore,TranspositionTable.T_EXACT);
+					setTT(best,bestscore,TTEntry.T_EXACT);
 					return bestscore;
 				}
 				alfa = bestscore;
@@ -57,14 +64,14 @@ public class EvalTesterTT extends Tester{
 				if( score > bestscore ) {
 					if( score >= beta ){
 						setKiller(md);
-						setTT(md,score,TranspositionTable.T_EXACT);
+						setTT(md,score,TTEntry.T_EXACT);
 						return score;
 					}
 					bestscore = score;
 					best=md;
 				}
 			}
-			setTT(best,bestscore,TranspositionTable.T_EXACT);
+			setTT(best,bestscore,TTEntry.T_EXACT);
 			return bestscore;
 		}
 
@@ -93,10 +100,12 @@ public class EvalTesterTT extends Tester{
 			TTEntry ent=TranspositionTable.ALL[(int)i];
 			if(ent==null)
 				return null;
-			if(ent.zobrist!=zob)
+			if(ent.hash!=(zob^bb_bit1))
 				return null;
-			if(ent.validate!=bb_bit1)
+			if(ent.validate!=bb_bit1){
+				System.out.println("Key collision:"+getFen());
 				return null;
+			}
 			return ent;
 		}
 
@@ -108,12 +117,7 @@ public class EvalTesterTT extends Tester{
 				ent = new TTEntry();
 				TranspositionTable.ALL[i]=ent;
 			}
-			ent.setDepth(depth);
-			ent.score=score;
-			ent.move=md;
-			ent.zobrist=zob;
-			ent.validate=bb_bit1;
-			ent.setType(type);
+			ent.set(depth,type,md,score,zob^bb_bit1,bb_bit1);
 		}
 	}
 
