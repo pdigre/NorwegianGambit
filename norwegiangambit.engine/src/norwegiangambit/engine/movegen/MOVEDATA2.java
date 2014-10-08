@@ -11,7 +11,7 @@ public class MOVEDATA2 extends MOVEDATA {
 	protected MOVEDATA2(long bits,int epsq) {
 		super(bits);
 		this.epsq=epsq;
-		this.zobrist_ep=(epsq&7)==0?0L:ZobristKey.ZOBRIST_ENP[epsq&7];
+		this.zobrist_ep=ZobristKey.ZOBRIST_ENP[epsq&7];
 	}
 
 	public static int create(long bitmap,int epsq){

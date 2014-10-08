@@ -57,37 +57,59 @@ public class Evaluate extends Movegen {
 	}
 	
 	public void make(int md) {
-		((Movegen)deeper).make(md,isWhite, castling, wking, bking, bb_black, bb_bit1, bb_bit2, bb_bit3);
+		((Movegen)deeper).make(md,isWhite, castling, wking, bking, bb_bit1, bb_bit2, bb_bit3, bb_black);
 	}
 
+	public String getHistory1(){
+		String text=getFen()+"\n";
+		if(parent instanceof Evaluate)
+			return parent.getHistory1()+text;
+		return text;
+	}
+	
+	public String getHistory2(){
+		String id = curr_move>0?BASE.ALL[curr_move].id():"??";
+		String text=FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black) + "\n" 
+				+(" << "+id+"              ").substring(0,10) + "\n";
+		if(parent instanceof Evaluate)
+			return FEN.addHorizontal(text,parent.getHistory2());
+		return text;
+	}
+	
 	@Override
 	public String toString() {
-		String string = super.toString();
-		String string2 = parent==null?string:FEN.addHorizontal(string, parent.toString());
-		String string3 = FEN.board2string(pinners);
-		String string4 = FEN.board2string(checkers);
-		String addHorizontal = FEN.addHorizontal(FEN.addHorizontal(string2, string3), string4);
-		return addHorizontal+"\n"+ getFen() ;
+		return getHistory1()+getHistory2();
 	}
 
 	public void evaluate(int i) {
+		curr_move=i;
 		MOVEDATA md = BASE.ALL[i];
 		midscore=parent.midScore()+md.mscore;
 		endscore=parent.endScore()+md.escore;
 		if(parent instanceof Evaluate){
-			Evaluate eval=(Evaluate) parent;
-			zobrist_fwd=eval.zobrist_fwd^md.zobrist;
+			zobrist_fwd=((Evaluate) parent).zobrist_fwd^md.zobrist;
+			zobrist=zobrist_fwd;
 			if(md instanceof MOVEDATA2){
 				final long ep=1L<<epsq;
-				final long epl = ep&IConst.LEFTMASK;
-				final long epr = ep&IConst.RIGHTMASK;
-				final long epb = isWhite?(epl>>7) | (epr>>9):(epr<<7) | (epl<<9);
+				final long epb = isWhite
+						?((ep&IConst.RIGHTMASK)>>7) | ((ep&IConst.LEFTMASK)>>9)
+						:((ep&IConst.LEFTMASK)<<7) | ((ep&IConst.RIGHTMASK)<<9);
 				final long cmask = isWhite ? ~bb_black:bb_black;
-				if((epb & cmask & bb_bit1&~bb_bit2&~bb_bit3) !=0L)
-					zobrist=zobrist_fwd^((MOVEDATA2)md).zobrist_ep;
-			} else 
-				zobrist=zobrist_fwd;
+				long enemy = cmask & bb_bit1&~bb_bit2&~bb_bit3;
+//				String b1=FEN.board2string(enemy);
+//				String b2=FEN.board2string(epb);
+//				if(epsq==40 && (epb & enemy) !=0L)
+//					System.out.println("here");
+				if((epb & enemy) !=0L)
+					zobrist^=((MOVEDATA2)md).zobrist_ep;
+			}
 //			pawnhash^=md.pawnhash;
+//			long z1=getZobrist();
+//			long z2=ZobristKey.getKey(isWhite, castling, epsq, FEN.boardFrom64(bb_bit1,bb_bit2,bb_bit3, bb_black));
+//			if(z1!=z2){
+//				System.out.print("Zobrist:"+md.id()+" "+(zobrist!=zobrist_fwd?epsq:"") + getFen());
+//				System.out.println("");
+//			}
 		}
 	}
 
@@ -119,4 +141,10 @@ public class Evaluate extends Movegen {
 		return score;
 	}
 
+	public void setPath(int[] mm) {
+		if(deeper!=null){
+			mm[ply+1]=best_move;
+			deeper.setPath(mm);
+		}
+	}
 }

@@ -85,7 +85,8 @@ public class MOVEDATA {
 			zobrist^=ZobristKey.KEYS[rook][to];
 		}
 	    if(this instanceof MOVEDATAX){
-	    	zobrist^=ZobristKey.keyCastling((IConst.CASTLING_STATE&bitmap)^IConst.CASTLING_STATE);
+	    	long castling = (IConst.CASTLING_STATE&bitmap)^IConst.CASTLING_STATE;
+			zobrist^=ZobristKey.keyCastling(castling);
 	    }
 		this.b_bit1=b_bit1;
 		this.b_bit2=b_bit2;

@@ -17,13 +17,13 @@ public class MOVEDATAX extends MOVEDATA implements IConst{
 		return create((bm | CASTLING_STATE) ^cstl,cstl);
 	}
 
-	private MOVEDATAX(long bitmap,long castling) {
-		super(bitmap);
-		this.castling=castling;
+	private MOVEDATAX(long bitmap,long cstl) {
+		super((bitmap | CASTLING_STATE) ^cstl);
+		this.castling=cstl;
 	}
 
-	public static int create(long bitmap,long castling){
-		return BASE.add(new MOVEDATAX(bitmap,castling));
+	public static int create(long bitmap,long cstl){
+		return BASE.add(new MOVEDATAX(bitmap,cstl));
 	}
 	
 	public static int createRook(long bitmap){

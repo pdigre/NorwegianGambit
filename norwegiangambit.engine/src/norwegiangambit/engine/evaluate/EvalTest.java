@@ -24,10 +24,12 @@ public class EvalTest {
 			return "null";
 		StringBuilder sb=new StringBuilder();
 		for (int i : m) {
-			MOVEDATA md=BASE.ALL[i];
-			if(sb.length()!=0)
-				sb.append(" ");
-			sb.append(md.id());
+			if(i>0){
+				MOVEDATA md=BASE.ALL[i];
+				if(sb.length()!=0)
+					sb.append(" ");
+				sb.append(md.id());
+			}
 		}
 		return sb.toString();
 	}

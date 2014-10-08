@@ -25,7 +25,7 @@ public class Movegen implements IConst{
 	public int pv;
 
 	public final int[] moves = new int[99];
-	public int iAll = 0, lvl1=0,lvl2=0;
+	public int iAll = 0, lvl1=0,lvl2=0, chks=0;
 	int iLegal = 0, iTested = 0, lvl3=0;
 
 	final void clear(){
@@ -41,7 +41,7 @@ public class Movegen implements IConst{
 		return FEN.board2fen(FEN.boardFrom64(bb_bit1, bb_bit2, bb_bit3, bb_black)) + " " +(isWhite?"w":"b") + " " + FEN.getFenCastling(castling) + " "+ FEN.pos2string(epsq);
 	}
 
-	public void make(int md_num,boolean isWhite, long castling, int wking, int bking, long bb, long b1, long b2, long b3) {
+	public void make(int md_num,boolean isWhite, long castling, int wking, int bking, long b1, long b2, long b3, long bb) {
 		MOVEDATA md 	= BASE.ALL[md_num];
 		this.pv			= md_num;
 		this.isWhite	= !isWhite;
@@ -396,9 +396,7 @@ public class Movegen implements IConst{
 
 	@Override
 	public String toString() {
-		String string = FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black) + "\n " 
-				+(" << "+"              ").substring(0,10) + "\n";
-		return string;
+		return FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black) + "\n";
 	}
 
 	public boolean isSafeMove(int md) {
@@ -523,7 +521,6 @@ public class Movegen implements IConst{
 			}
 		}
 	}
-
     
     public void sortKiller(int md){
     	if(md!=-1){
@@ -540,4 +537,7 @@ public class Movegen implements IConst{
     	}
     }
 	
+    public void sortCheckers(){
+    	chks=lvl2;
+    }
 }

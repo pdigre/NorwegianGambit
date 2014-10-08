@@ -1,7 +1,7 @@
 package norwegiangambit.engine;
 
 import norwegiangambit.engine.evaluate.EvalTest;
-import norwegiangambit.engine.evaluate.EvalTesterTT;
+import norwegiangambit.engine.evaluate.QuiesceTester;
 import norwegiangambit.engine.evaluate.Tester;
 import norwegiangambit.engine.movegen.BASE;
 
@@ -19,13 +19,14 @@ import org.junit.Test;
  * 
  */
 @SuppressWarnings("static-method")
-public class Test_TT_start extends EvalTest{
+public class Test_Quiesce_start extends EvalTest{
 
 	@BeforeClass
 	public static void prepare() {
 		new BASE();
-		EvalTesterTT engine = new EvalTesterTT();
+		QuiesceTester engine = new QuiesceTester();
 		Tester.useConcurrency=true;
+		QuiesceTester.useTransposition=true;
 		setTesting(engine);
 	}
 	

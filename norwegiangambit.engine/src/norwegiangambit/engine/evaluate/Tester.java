@@ -12,7 +12,7 @@ import norwegiangambit.util.IDivide;
 
 public abstract class Tester implements IDivide{
 
-	public static boolean useConcurrency = false;
+	public static boolean useConcurrency = true;
 	
 	@Override
 	public List<Eval> divide(String fen, int levels) {
@@ -60,7 +60,7 @@ public abstract class Tester implements IDivide{
 			m.ply=ply;
 		}
 		Evaluate start = movegen[0];
-		start.make(md,root.isWhite,root.castling,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
+		start.make(md,root.isWhite,root.castling,root.wking,root.bking,root.bb_bit1,root.bb_bit2,root.bb_bit3,root.bb_black);
 		start.evaluate(md);
 		return movegen;
 	}
@@ -82,15 +82,8 @@ public abstract class Tester implements IDivide{
 		@Override
 		protected Long compute() {
 			eval.value=-start.alphabeta(-20000, 20000);
-			setPath(start, path);
+			start.setPath(path);
 			return 0L;
-		}
-
-		public void setPath(Evaluate evaluate, int[] mm) {
-			if(evaluate.deeper!=null){
-				mm[evaluate.ply+1]=evaluate.best_move;
-				setPath(evaluate.deeper, mm);
-			}
 		}
 	}
 

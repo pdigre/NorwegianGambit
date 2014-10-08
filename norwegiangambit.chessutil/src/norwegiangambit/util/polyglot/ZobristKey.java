@@ -233,12 +233,12 @@ public class ZobristKey implements IConst {
 		}
 
 		// passant flags only when pawn can capture
-		if (enpassant != -1) {
+		if (enpassant > 0) {
 			int file = enpassant & 7;
 			if (isWhite) {
-				if (file != 0 && brd[enpassant - 7] == WP) {
+				if (file != 0 && brd[enpassant - 9] == WP) {
 					key ^= ZobristKey.ZOBRIST_ENP[file];
-				} else if (file != 7 && brd[enpassant - 9] == WP) {
+				} else if (file != 7 && brd[enpassant - 7] == WP) {
 					key ^= ZobristKey.ZOBRIST_ENP[file];
 				}
 			} else {

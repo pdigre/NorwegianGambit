@@ -14,7 +14,7 @@ public class FastPerft implements IDivide{
 
 	public static boolean useConcurrency = true;
 	public static boolean useTransposition = true;
-	public static boolean testTransposition = true;
+	public static boolean testTransposition = false;
 	
 	@Override
 	public List<Eval> divide(String fen, int levels) {
@@ -44,7 +44,7 @@ public class FastPerft implements IDivide{
 					m.ply=ply;
 					m.depth=totdepth-ply;
 				}
-				movegen[0].make(md,root.isWhite,root.castling,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
+				movegen[0].make(md,root.isWhite,root.castling,root.wking,root.bking,root.bb_bit1,root.bb_bit2,root.bb_bit3,root.bb_black);
 				movegen[0].evaluate(md);
 				movegen[0].run();
 				map.add(new Eval(FEN.move2literal(BASE.ALL[md].bitmap),(int)count[i],0));
@@ -86,7 +86,7 @@ public class FastPerft implements IDivide{
 				m.ply=ply;
 				m.depth=totdepth-ply;
 			}
-			movegen[0].make(md,root.isWhite,root.castling,root.wking,root.bking,root.bb_black,root.bb_bit1,root.bb_bit2,root.bb_bit3);
+			movegen[0].make(md,root.isWhite,root.castling,root.wking,root.bking,root.bb_bit1,root.bb_bit2,root.bb_bit3,root.bb_black);
 			movegen[0].evaluate(md);
 		}
 
@@ -106,51 +106,50 @@ public class FastPerft implements IDivide{
 		}
 
 		public void run() {
-			if(useTransposition && depth>0){
-				int tt = getTT();
-				if(tt!=-1 && !testTransposition){
-					long data=TranspositionTable.data[tt];
-					if(TranspositionTable.getDepth(data)==depth){
-						count[inum]+=TranspositionTable.getCount(data);
-						return;
+			if(useTransposition){
+				if(!testTransposition){
+					int tt = TranspositionTable.get(getZobrist(),bb_bit1);
+					if(tt!=-1){
+						long data=TranspositionTable.data[tt];
+						if(TranspositionTable.getDepth(data)==depth){
+							count[inum]+=TranspositionTable.getCount(data);
+							return;
+						}
 					}
 				}
 				long t=count[inum];
 				generate();
 				for (int i = 0; i < iAll; i++) {
 					int md = moves[i];
-					deeper.make(md,isWhite,castling,wking,bking,bb_black,bb_bit1,bb_bit2,bb_bit3);
+					deeper.make(md,isWhite,castling,wking,bking,bb_bit1,bb_bit2,bb_bit3,bb_black);
 					deeper.evaluate(md);
 					((NodeGen)deeper).run();
 				}
 				long cnt = count[inum]-t;
-				if(tt!=-1 && testTransposition){
-					long data=TranspositionTable.data[tt];
-					if(TranspositionTable.getDepth(data)==depth){
-						long cnt2 = TranspositionTable.getCount(data);
-						if(cnt!=cnt2)
-							System.out.println("Error in Count:"+cnt2+"/"+cnt+" "+getFen());
+				if(testTransposition){
+					int tt = TranspositionTable.get(getZobrist(),bb_bit1);
+					if(tt!=-1){
+						long data=TranspositionTable.data[tt];
+						if(TranspositionTable.getDepth(data)==depth){
+							long cnt2 = TranspositionTable.getCount(data);
+							if(cnt!=cnt2){
+								System.out.println("Error in Count:"+cnt2+"/"+cnt+" "+getFen());
+							}
+						}
 					}
 				}
-				setTT(cnt);
+				TranspositionTable.set(getZobrist(),bb_bit1,depth,cnt);
 			} else {
 				generate();
 				for (int i = 0; i < iAll; i++) {
 					int md = moves[i];
-					deeper.make(md,isWhite,castling,wking,bking,bb_black,bb_bit1,bb_bit2,bb_bit3);
+					deeper.make(md,isWhite,castling,wking,bking,bb_bit1,bb_bit2,bb_bit3,bb_black);
 					deeper.evaluate(md);
 					((NodeGen)deeper).run();
 				}
 			}
 		}
 
-		public int getTT() {
-			return TranspositionTable.get(getZobrist(),bb_bit1);
-		}
-
-		public int setTT(long count) {
-			return TranspositionTable.set(getZobrist(),bb_bit1,depth,count);
-		}
 	}
 
 	class LeafGen extends NodeGen {

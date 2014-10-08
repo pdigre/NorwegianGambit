@@ -54,6 +54,7 @@ public class Test_PERFT_5300ms extends PerftTest{
 	}
 
 	@Test
+	@Ignore
 	public void m1_FULL7() {
 		testPerft(testing, 7,3195901860L,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 	}
@@ -114,9 +115,15 @@ public class Test_PERFT_5300ms extends PerftTest{
 	public void e3_err_fast() {
 		testPerft(testing, 6,179869,"8/8/8/8/8/8/6k1/4K2R b K - 0 1");
 	}
-
+	
 	@Test
 //	@Ignore
+	public void e1_err_fast() {
+		testPerft(testing, 6, 119060324, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+	}
+
+	@Test
+	@Ignore
 	public void e2_err_fast() {
 		testPerft(testing, 5, 193690690, "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
 	}
