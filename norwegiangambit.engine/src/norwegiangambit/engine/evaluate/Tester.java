@@ -12,7 +12,7 @@ import norwegiangambit.util.IDivide;
 
 public abstract class Tester implements IDivide{
 
-	public static boolean useConcurrency = true;
+	public static boolean useConcurrency = false;
 	
 	@Override
 	public List<Eval> divide(String fen, int levels) {

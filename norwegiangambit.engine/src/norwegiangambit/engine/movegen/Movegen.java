@@ -20,12 +20,12 @@ public class Movegen implements IConst{
 	public long bb_piece,castling;
 	public int wking,bking,epsq;
 	long bb_white, own, enemy,bb_knights,bb_kings,bb_pawns;
-	protected long checkers, pinners, hiders;
+	protected long checkers, pinners;
 	int king,eking;
 	public int pv;
 
 	public final int[] moves = new int[99];
-	public int iAll = 0, lvl1=0,lvl2=0, chks=0;
+	public int iAll = 0, lvl1=0,lvl2=0;
 	int iLegal = 0, iTested = 0, lvl3=0;
 
 	final void clear(){
@@ -205,7 +205,6 @@ public class Movegen implements IConst{
 			clear(); // not interested in pinned moves for evasive moves
 			evasive(own);
 		}
-		order();
 	}
 
 	final private  void diagPinners(long atks) {
@@ -475,42 +474,6 @@ public class Movegen implements IConst{
 		return false;
 	}
 	
-	void order(){
-		findDiscoveredCheckCandidates();
-	}
-
-	private void findDiscoveredCheckCandidates() {
-		SQATK rev = BASE.REV[eking];
-		hiders=0L;
-		long sliders=own & bb_bit3 & rev.RQ;
-		if(sliders !=0L){
-			long diagatks = sliders & bb_bit1 & rev.RB;
-			if (diagatks != 0L) {
-				int bits = Long.bitCount(diagatks);
-				for (int j = 0; j < bits; j++) {
-					int asq = Long.numberOfTrailingZeros(diagatks);
-					long attacker = 1L << asq;
-					diagatks ^= attacker;
-					long between = BASE.BETWEEN[asq+64*eking];
-					if(Long.bitCount(between&bb_piece)==1)
-						hiders|=between&own;
-				}
-			}
-			long lineatks = sliders & bb_bit2 & rev.RR;
-			if (lineatks != 0L) {
-				int bits = Long.bitCount(lineatks);
-				for (int j = 0; j < bits; j++) {
-					int asq = Long.numberOfTrailingZeros(lineatks);
-					long attacker = 1L << asq;
-					lineatks ^= attacker;
-					long between = BASE.BETWEEN[asq+64*eking];
-					if(Long.bitCount(between&bb_piece)==1)
-						hiders|=between&own;
-				}
-			}
-		}
-	}
-	
 	public void sortHash(int md) {
 		for (int i = 0; i < iAll; i++) {
 			if(moves[i]==md){
@@ -537,7 +500,107 @@ public class Movegen implements IConst{
     	}
     }
 	
-    public void sortCheckers(){
-    	chks=lvl2;
+	public void sortCheckers(){
+		lvl2=lvl1;
+
+    	// findDiscoveredCheckCandidates
+    	SQATK rev = BASE.REV[eking];
+		long sliders=own & bb_bit3 & rev.RQ;
+		long hiders=0L;
+		long diagsqrs = bb_bit1 & rev.RB;
+		long linesqrs = bb_bit2 & rev.RR;
+		if(sliders==0L){
+			long diagatks = sliders & diagsqrs;
+			if (diagatks != 0L) {
+				int bits = Long.bitCount(diagatks);
+				for (int j = 0; j < bits; j++) {
+					int asq = Long.numberOfTrailingZeros(diagatks);
+					long attacker = 1L << asq;
+					diagatks ^= attacker;
+					long between = BASE.BETWEEN[asq+64*eking];
+					if(Long.bitCount(between&bb_piece)==1)
+						hiders|=between&own;
+				}
+			}
+			long lineatks = sliders & linesqrs;
+			if (lineatks != 0L) {
+				int bits = Long.bitCount(lineatks);
+				for (int j = 0; j < bits; j++) {
+					int asq = Long.numberOfTrailingZeros(lineatks);
+					long attacker = 1L << asq;
+					lineatks ^= attacker;
+					long between = BASE.BETWEEN[asq+64*eking];
+					if(Long.bitCount(between&bb_piece)==1)
+						hiders|=between&own;
+				}
+			}
+		}
+    	for (int i = lvl1; i < iAll; i++) {
+    		MOVEDATA md = BASE.ALL[moves[i]];
+    		// Hiders
+    		int from = BITS.getFrom(md.bitmap);
+    		long bfrom=1L<<from;
+    		if((bfrom&hiders)!=0L){
+				addChecker(i);
+    			continue;
+    		}
+    		int piece = BITS.getPiece(md.bitmap);
+    		long bto=md.bto;
+    		if((piece&4)==4){
+        		// Diag
+        		if((piece&1)==1){  
+        			if((bto & diagsqrs)!=0L){
+        	    		if(isClear(md)){
+        					addChecker(i);
+        					continue;
+        				}
+        			}
+        		}
+        		// Line
+        		if((piece&2)==2){  
+        			if((bto & linesqrs)!=0L){
+        				if(isClear(md)){
+        					addChecker(i);
+        					continue;
+        				}
+        			}
+        		}
+    		} else {
+    			switch(piece){
+    			case IConst.WN:
+    			case IConst.BN:
+    				if((bto & BASE.REV[eking].RN)!=0L){
+    					addChecker(i);
+    					continue;
+    				}
+    				break;
+				case IConst.WP:
+					if((bto & MWP.REV[eking])!=0L){
+						addChecker(i);
+						continue;
+					}
+					break;
+				case IConst.BP:
+					if((bto & MBP.REV[eking])!=0L){
+						addChecker(i);
+						continue;
+					}
+					break;
+				}
+    		}
+		}
     }
+
+	public boolean isClear(MOVEDATA md) {
+		int to = BITS.getTo(md.bitmap);
+		long between = BASE.BETWEEN[to+64*eking];
+		return Long.bitCount(between&bb_piece)==0;
+	}
+
+	public void addChecker(int i) {
+		int sw=moves[lvl2];
+		moves[lvl2++]=moves[i];
+		moves[i]=sw;
+	}
+
 }

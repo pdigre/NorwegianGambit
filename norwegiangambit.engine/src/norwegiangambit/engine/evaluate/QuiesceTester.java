@@ -4,7 +4,7 @@ package norwegiangambit.engine.evaluate;
 
 public class QuiesceTester extends Tester{
 
-	public static boolean useTransposition=false;
+	public static boolean useTransposition=true;
 	@Override
 	public Evaluate insert(RootEval eval, int depth, int ply) {
 		if(ply == depth - 1)
@@ -125,17 +125,19 @@ public class QuiesceTester extends Tester{
 		final Eval eval;
 
 		public LeafGen(Eval eval) {
+			super(eval);
 			this.eval=eval;
 			Quiesce[] movegen = new Quiesce[20];
 			int totdepth = movegen.length;
 			for (int ply = 0; ply < totdepth; ply++) {
-				Quiesce m = new Quiesce();
+				Quiesce m = new Quiesce(eval);
 				movegen[ply] = m;
 				Evaluate parent = ply>0?movegen[ply - 1]:this;
 				m.parent = parent;
 				parent.deeper = m;
 				m.depth=totdepth-ply;
 				m.ply=ply;
+				m.testCheckers=ply<6;
 			}
 		}
 		
@@ -163,6 +165,17 @@ public class QuiesceTester extends Tester{
 	}
 
 	class Quiesce extends Evaluate {
+		Eval eval;
+		boolean testCheckers=false;
+		
+		public Quiesce(Eval eval){
+			this.eval=eval;
+		}
+		
+		@Override
+		public void evaluate(int i) {
+			super.evaluate(i);
+		}
 
 		@Override
 		public void make(int md) {
@@ -172,29 +185,49 @@ public class QuiesceTester extends Tester{
 
 		public int alphabeta(int alpha, int beta) {
 			generate();
-			for (int i = 0; i < lvl1; i++) {
-				int md = moves[i];
-				make(md);
-				int score = -deeper.alphabeta(-beta, -alpha);
-				if (score >= beta)
-					return beta; // fail hard beta-cutoff
-				if (score > alpha){
-					alpha = score; // alpha acts like max in MiniMax
-					best_move=md;
+			if(checkers!=0L){
+				for (int i = 0; i < iAll; i++) {
+					eval.quiesce++;
+					int md = moves[i];
+					make(md);
+					int score = -deeper.alphabeta(-beta, -alpha);
+					if (score >= beta)
+						return beta; // fail hard beta-cutoff
+					if (score > alpha){
+						alpha = score; // alpha acts like max in MiniMax
+						best_move=md;
+					}
+				}
+			} else {
+				for (int i = 0; i < lvl1; i++) {
+					eval.quiesce++;
+					int md = moves[i];
+					make(md);
+					int score = -deeper.alphabeta(-beta, -alpha);
+					if (score >= beta)
+						return beta; // fail hard beta-cutoff
+					if (score > alpha){
+						alpha = score; // alpha acts like max in MiniMax
+						best_move=md;
+					}
+				}
+				if(testCheckers){
+					sortCheckers();
+//					if(lvl2>lvl1)
+//						System.out.println("Checkers:"+(lvl2-lvl1));
+					for (int i = lvl1; i < lvl2; i++) {
+						int md = moves[i];
+						make(md);
+						int score = -deeper.alphabeta(-beta, -alpha);
+						if (score >= beta)
+							return beta; // fail hard beta-cutoff
+						if (score > alpha){
+							alpha = score; // alpha acts like max in MiniMax
+							best_move=md;
+						}
+					}
 				}
 			}
-//			sortCheckers();
-//			for (int i = lvl1; i < chks; i++) {
-//				int md = moves[i];
-//				make(md);
-//				int score = -deeper.alphabeta(-beta, -alpha);
-//				if (score >= beta)
-//					return beta; // fail hard beta-cutoff
-//				if (score > alpha){
-//					alpha = score; // alpha acts like max in MiniMax
-//					best_move=md;
-//				}
-//			}
 			return alpha;
 		}
 	}
