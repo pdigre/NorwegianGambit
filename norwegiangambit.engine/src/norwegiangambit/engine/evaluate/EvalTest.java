@@ -58,6 +58,31 @@ public class EvalTest {
 		assertTrue("Poor score "+acount,acount<=ecount);
 	}
 
+	public static void testQuiesce(IDivide inst, int depth, long ecount,String fen,String[] expected) {
+		List<Eval> divide = inst.divide(fen, depth);
+		long acount=0,quiesce=0;
+		StringBuilder sb=new StringBuilder();
+		for (Eval eval : new TreeSet<Eval>(divide)){
+			acount+=eval.count;
+			quiesce+=eval.quiesce;
+			if(sb.length()>0)
+				sb.append(",");
+			sb.append(movepath2string(((RootEval)eval).path)+"="+eval.value);
+		}
+		System.out.println("TOT "+acount+" > "+(acount-ecount)+" "+quiesce);
+		String expected2 = String.join("\n", expected);
+		String actual = sb.toString();
+		String actual2 = actual.replace(",", "\n");
+		assertEquals("Wrong score", expected2, actual2);
+		for (String res : expected) {
+			String[] split = res.split("=");
+			int score=Integer.parseInt(split[1]);
+			String[] moves=split[0].split(" ");
+			assertScore(fen,moves,score);
+		}
+		assertTrue("Poor score "+acount,acount<=ecount);
+	}
+
 	private static void assertScore(String fen, String[] moves, int expected) {
 		Evaluate gen = new Evaluate();
 		gen.setChild(gen);

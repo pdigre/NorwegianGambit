@@ -7,6 +7,7 @@ public interface IDivide {
 	public class Eval implements Comparable<Eval>{
 		public String move;
 		public long count=0;
+		public long quiesce=0;
 		public int value=0;
 
 		public Eval(String move,int count, int value) {
