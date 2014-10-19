@@ -7,3 +7,11 @@
 3. Use hashing for EVAl
     PV ==key + lvls2leaf + score  
 	Kill==key + lvls2leaf + cutoff score
+4. Expire & Better TT
+
+5. Iterative deepening & concurrency
+6. UCI
+
+7. Run Bayeselo
+8. Magic numbers?? How
+9. Improve evasions

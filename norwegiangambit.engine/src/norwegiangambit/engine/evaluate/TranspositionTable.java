@@ -96,27 +96,70 @@ Zobrist ^ bit1
     }
 
 	final public static int get(long zobrist, long key2) {
-		int i=(int)zobrist&TTMASK;
-		if(hash[i]!=(zobrist^key2))
-			return -1;
-		if(validate[i]!=key2){
-			System.out.println("Key collision:");
-			return -1;
+		int i1=(int)zobrist&TTMASK;
+		if(hash[i1]==(zobrist^key2)){
+			if(validate[i1]!=key2){
+				System.out.println("Key collision:");
+				return -1;
+			}
+			return i1;
 		}
-		return i;
+		i1=(int)((zobrist>>TTLog2SIZE)&TTMASK);
+		if(hash[i1]==(zobrist^key2)){
+			if(validate[i1]!=key2){
+				System.out.println("Key collision:");
+				return -1;
+			}
+			return i1;
+		}
+		return -1;
 	}
 
 	final public static int set(long zobrist,long key2, int depth, int type, int md, int score) {
-		int i=(int)(zobrist&TTMASK);
-		hash[i]=zobrist^key2;
-		validate[i]=key2;
+		int i1=(int)(zobrist&TTMASK);
 		long s=((long)(score + 32000))<<32;
 		long m=((long)md) << 16;
-		data[i]=((long)(depth | type)) | m | s;
-		return i;
+		long val = ((long)(depth | type)) | m | s;
+		long hash0 = zobrist^key2;
+		int i2=(int)((zobrist>>TTLog2SIZE)&TTMASK);
+		boolean better = isBetter(data[i1],type,depth);
+		if(better){
+			// Add to best slot
+			if(hash[i1]!=hash0){
+				// Push 1 down
+				long data1=data[i1];
+				if(isBetter(data[i2],getType(data1),getDepth(data1))){
+					validate[i2]=validate[i1];
+					hash[i2]=hash[i1];
+					data[i2]=data1;
+				}
+			}
+			validate[i1]=key2;
+			hash[i1]=hash0;
+			data[i1]=val;
+			return i1;
+		} else {
+			if(hash[i1]==hash0)
+				return i1;
+			if(isBetter(data[i2],type,depth)){
+				validate[i2]=key2;
+				hash[i2]=hash0;
+				data[i2]=val;
+			}
+			return i2;
+		}
 	}
 	
-    final public static int set(long zobrist,long key2, int depth, long count) {
+    private static boolean isBetter(long other,int type,int depth) {
+    	if(getGeneration(other)!=currGen)
+    		return true;
+    	int type2 = getType(other);
+    	if((type==T_EXACT) !=(type2==T_EXACT))
+    		return type==T_EXACT;
+		return depth>=getDepth(other);
+	}
+
+	final public static int set(long zobrist,long key2, int depth, long count) {
 		int i=(int)(zobrist&TTMASK);
 		hash[i]=zobrist^key2;
 		validate[i]=key2;
