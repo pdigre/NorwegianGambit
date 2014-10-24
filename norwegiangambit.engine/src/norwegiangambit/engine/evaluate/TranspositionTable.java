@@ -107,7 +107,7 @@ Zobrist ^ bit1
 		i1=(int)((zobrist>>TTLog2SIZE)&TTMASK);
 		if(hash[i1]==(zobrist^key2)){
 			if(validate[i1]!=key2){
-				System.out.println("Key collision:");
+//				System.out.println("Key collision:");
 				return -1;
 			}
 			return i1;

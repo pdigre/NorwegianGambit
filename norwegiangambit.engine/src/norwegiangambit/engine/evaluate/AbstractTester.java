@@ -5,15 +5,16 @@ import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
+import norwegiangambit.engine.evaluate.EloTester.RootGen;
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.movegen.BASE;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
 
-public abstract class Tester implements IDivide{
+public abstract class AbstractTester implements IDivide, IThinker{
 
 	public static boolean useConcurrency = false;
-	
+
 	@Override
 	public List<Eval> divide(String fen, int levels) {
 		boolean isConcurrent = levels>2 && useConcurrency;
@@ -65,7 +66,7 @@ public abstract class Tester implements IDivide{
 		return movegen;
 	}
 
-	final private class CountTask extends RecursiveTask<Long> {
+	final class CountTask extends RecursiveTask<Long> implements Comparable<CountTask>{
 		private static final long serialVersionUID = -2743566188067414328L;
 		Evaluate start;
 		Eval eval;
@@ -85,7 +86,49 @@ public abstract class Tester implements IDivide{
 			start.setPath(path);
 			return 0L;
 		}
+
+		@Override
+		public int compareTo(CountTask other) {
+			if(start instanceof RootGen){
+				RootGen start1 = (RootGen) start;
+				RootGen start2 = (RootGen) other.start;
+				return Integer.compare(start1.bestscore, start2.bestscore);
+			}
+			return 0;
+		}
 	}
 
 	public abstract Evaluate insert(RootEval eval, int depth, int level);
+	
+
+	
+	protected boolean isRunning=false;
+
+	protected Runnable listener=new Runnable() {
+		
+		@Override
+		public void run() {
+			//
+		}
+	};
+	
+	@Override
+	public void start(String fen) {
+		this.isRunning=true;
+	}
+
+	@Override
+	public void stop() {
+		this.isRunning=false;
+	}
+
+	@Override
+	public String bestPath() {
+		return null;
+	}
+
+	@Override
+	public void foundBetter(Runnable runnable) {
+		this.listener=runnable;
+	}
 }

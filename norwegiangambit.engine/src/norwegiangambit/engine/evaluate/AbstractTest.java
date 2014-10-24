@@ -2,7 +2,10 @@ package norwegiangambit.engine.evaluate;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeSet;
 
 import norwegiangambit.engine.fen.StartGame;
@@ -11,7 +14,7 @@ import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.IDivide;
 import norwegiangambit.util.IDivide.Eval;
 
-public class EvalTest {
+public abstract class AbstractTest {
 
 	protected static IDivide testing;
 
@@ -49,13 +52,11 @@ public class EvalTest {
 		String actual = sb.toString();
 		String actual2 = actual.replace(",", "\n");
 		assertEquals("Wrong score", expected2, actual2);
-		for (String res : expected) {
-			String[] split = res.split("=");
-			int score=Integer.parseInt(split[1]);
-			String[] moves=split[0].split(" ");
-			assertScore(fen,moves,score);
-		}
-		assertTrue("Poor score "+acount,acount<=ecount);
+	}
+
+	public static void testEval(IDivide inst, int depth, long ecount,String input) {
+		String[] in=input.replace("\r","").split("\n");
+		testEval(inst, depth, ecount, in[0], Arrays.copyOfRange(in, 1, in.length));
 	}
 
 	public static void testQuiesce(IDivide inst, int depth, long ecount,String fen,String[] expected) {
@@ -106,5 +107,27 @@ public class EvalTest {
 		}
 		assertEquals("Wrong score "+String.join(" ",moves),expected, gen.whiteScore());
 	}
+
+	public static void testElo(IThinker inst, String fen,long time) {
+		long time0 = System.currentTimeMillis();
+		Timer timer=new Timer("Test");
+		timer.schedule(new TimerTask() {
+			
+			@Override
+			public void run() {
+				inst.stop();
+			}
+		}, time);
+		inst.foundBetter(new Runnable() {
+			
+			@Override
+			public void run() {
+				long time1 = System.currentTimeMillis();
+				System.out.println((time1-time0)+"ms "+inst.bestPath());
+			}
+		});
+		inst.start(fen);
+	}
+
 
 }

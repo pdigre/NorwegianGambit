@@ -2,7 +2,7 @@ package norwegiangambit.engine.evaluate;
 
 
 
-public class EvalTesterTT extends Tester{
+public class EvalTesterTT extends AbstractTester{
 
 	public static boolean useTransposition=true;
 	@Override
@@ -46,7 +46,7 @@ public class EvalTesterTT extends Tester{
 				}
 				generate();
 				if(iAll==0)
-					return -20000;  // MATE
+					return checkers==0L?STALE:MATE;  // (STALE)MATE
 				if(tt!=-1){
 					long data=TranspositionTable.data[tt];
 					sortHash(TranspositionTable.getMove(data));
@@ -54,7 +54,7 @@ public class EvalTesterTT extends Tester{
 			} else {
 				generate();
 				if(iAll==0)
-					return -20000;  // MATE
+					return checkers==0L?STALE:MATE;  // (STALE)MATE
 			}
 			sortKillers();
 			int md0 = moves[0];
@@ -67,7 +67,7 @@ public class EvalTesterTT extends Tester{
 					return bestscore;
 				}
 				alfa = bestscore;
-				best_move=md0;
+				setBest(md0, alfa);
 			}
 			for (int i = 1; i < iAll; i++) {
 				int md = moves[i];
@@ -77,7 +77,7 @@ public class EvalTesterTT extends Tester{
 					score = -deeper.alphabeta(-beta, -alfa);
 					if( score > alfa ){
 						alfa = score;
-						best_move=md;
+						setBest(md, alfa);
 					}
 				}
 				if( score > bestscore ) {
@@ -129,14 +129,14 @@ public class EvalTesterTT extends Tester{
 		@Override
 		public int alphabeta(int alpha, int beta) {
 			eval.count++;
-			int score = score();
+			int score2 = score();
 			int type=TranspositionTable.T_EXACT;
-			if(score<=alpha)
+			if(score2<=alpha)
 				type=TranspositionTable.T_LE;
-			else if(score>=beta)
+			else if(score2>=beta)
 				type=TranspositionTable.T_GE;
-			TranspositionTable.set(getZobrist(),bb_bit1,depth,type,curr_move,score);
-			return score;
+			TranspositionTable.set(getZobrist(),bb_bit1,depth,type,curr_move,score2);
+			return score2;
 		}
 	}
 

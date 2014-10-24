@@ -11,15 +11,23 @@ import norwegiangambit.util.polyglot.ZobristKey;
 
 public class Evaluate extends Movegen {
 
+	final public static int MATE = -32000; 
+	final public static int STALE = 0; 
+	
 	Evaluate parent,deeper;
 
 	protected int midscore;
 	protected int endscore;
 	protected int pawnscore;
+	protected int score;
 	protected long zobrist;
 	protected long zobrist_fwd;
 	protected long pawnhash;
-	public int ply, depth, best_move, curr_move;
+	public int ply, depth;
+
+	private int best_move;
+
+	public int curr_move;
 	
 	
 	public void notifyPV(Evaluate next, int depth, boolean lowerBound, boolean upperBound, int score){
@@ -146,5 +154,14 @@ public class Evaluate extends Movegen {
 			mm[ply+1]=best_move;
 			deeper.setPath(mm);
 		}
+	}
+
+	public int getBest() {
+		return best_move;
+	}
+
+	public void setBest(int best_move, int score) {
+		this.best_move = best_move;
+		this.score=score;
 	}
 }

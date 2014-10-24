@@ -16,7 +16,7 @@ public class RootEval extends Eval {
 		return pv2string(path);
 	}
 
-	public String pv2string(int[] m) {
+	public static String pv2string(int[] m) {
 		if(m==null)
 			return "null";
 		StringBuilder sb=new StringBuilder();

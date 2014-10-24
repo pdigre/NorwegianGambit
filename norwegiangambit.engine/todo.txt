@@ -9,9 +9,15 @@
 	Kill==key + lvls2leaf + cutoff score
 4. Expire & Better TT
 
-5. Iterative deepening & concurrency
-6. UCI
 
+5. Solve MATE and Stalemate score
+5. BT 2450
+5. Iterative deepening & concurrency
+5. Eval - Stockfish
+6. Pawn hash / Pawn eval
+7. King push, etc
+
+6. UCI
 7. Run Bayeselo
 8. Magic numbers?? How
 9. Improve evasions

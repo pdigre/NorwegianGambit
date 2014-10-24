@@ -1,7 +1,7 @@
 package norwegiangambit.engine.evaluate;
 
 
-public class EvalTester extends Tester{
+public class EvalTester extends AbstractTester{
 
 	@Override
 	public Evaluate insert(RootEval eval, int depth, int level) {
@@ -23,6 +23,8 @@ public class EvalTester extends Tester{
 		// Minimax
 		public int alphabeta(int alpha, int beta) {
 			generate();
+			if(iAll==0)
+				return checkers==0L?STALE:MATE;  // (STALE)MATE
 			for (int i = 0; i < iAll; i++) {
 				int md = moves[i];
 				make(md);
@@ -45,6 +47,8 @@ public class EvalTester extends Tester{
 		// Alphabeta
 		public int alphabeta(int alpha, int beta) {
 			generate();
+			if(iAll==0)
+				return checkers==0L?STALE:MATE;  // (STALE)MATE
 			for (int i = 0; i < iAll; i++) {
 				int md = moves[i];
 				make(md);
@@ -70,31 +74,31 @@ public class EvalTester extends Tester{
 		}
 
 		// PVS
-		public int alphabeta(int alpha,int beta) {
+		public int alphabeta(int alfa,int beta) {
 			generate();
 			if(iAll==0)
-				return -20000;  // MATE
+				return checkers==0L?STALE:MATE;  // (STALE)MATE
 			sortKillers();
 			int md0 = moves[0];
 			make(md0);
-			int bestscore = -deeper.alphabeta(-beta, -alpha);
-			if( bestscore > alpha ) {
+			int bestscore = -deeper.alphabeta(-beta, -alfa);
+			if( bestscore > alfa ) {
 				if( bestscore >= beta ){
 					setKiller(md0);
 					return bestscore;
 				}
-				alpha = bestscore;
-				best_move=md0;
+				alfa = bestscore;
+				setBest(md0, alfa);
 			}
 			for (int i = 1; i < iAll; i++) {
 				int md = moves[i];
 				make(md);
-				int score = -deeper.alphabeta(-alpha-1, -alpha);
-				if( score > alpha && score < beta ) {
-					score = -deeper.alphabeta(-beta, -alpha);
-					if( score > alpha ){
-						alpha = score;
-						best_move=md;
+				int score = -deeper.alphabeta(-alfa-1, -alfa);
+				if( score > alfa && score < beta ) {
+					score = -deeper.alphabeta(-beta, -alfa);
+					if( score > alfa ){
+						alfa = score;
+						setBest(md, alfa);
 					}
 				}
 				if( score > bestscore ) {
