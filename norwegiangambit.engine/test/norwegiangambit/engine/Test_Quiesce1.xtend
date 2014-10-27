@@ -3,7 +3,6 @@ package norwegiangambit.engine
 import norwegiangambit.engine.evaluate.AbstractTest
 import norwegiangambit.engine.evaluate.AbstractTester
 import norwegiangambit.engine.evaluate.QuiesceTester
-import norwegiangambit.engine.movegen.BASE
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Ignore
@@ -16,7 +15,6 @@ class Test_Quiesce1 extends AbstractTest {
 
 	@BeforeClass
 	def static void prepare() {
-		new BASE();
 		val engine = new QuiesceTester();
 		AbstractTester.useConcurrency=true;
 		QuiesceTester.useTransposition=true;

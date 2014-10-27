@@ -1,8 +1,5 @@
 package norwegiangambit.engine.movegen;
 
-import static norwegiangambit.engine.movegen.BASE.KNIGHT_MOVES;
-import static norwegiangambit.engine.movegen.BASE.inside;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +45,7 @@ public class MWN extends MBase{
 		long all = gen.bb_piece;
 		long enemy = gen.bb_black;
 		for (int[] m : M){
-			long bto = BASE.getBTo(m[5]);
+			long bto = getBTo(m[5]);
 			if ((all & bto) == 0) {
 				gen.move(m[5]);
 			} else {

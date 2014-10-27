@@ -1,7 +1,5 @@
 package norwegiangambit.engine.movegen;
 
-import static norwegiangambit.engine.movegen.BASE.inside;
-
 import java.util.ArrayList;
 
 import norwegiangambit.util.IConst;
@@ -34,7 +32,7 @@ public abstract class MSlider extends MBase {
 		for (int[] m : mm) {
 			int i = 0;
 			while (i < m.length) {
-				long bto = BASE.getBTo(m[i + 5]);
+				long bto = getBTo(m[i + 5]);
 				if ((occ & bto) != 0) {
 					if ((enemy & bto) != 0) {
 						int c = gen.ctype(bto);
@@ -61,7 +59,7 @@ public abstract class MSlider extends MBase {
 		for (int[] m : mm) {
 			int i = 0;
 			while (i < m.length) {
-				long bto = BASE.getBTo(m[i + 5]);
+				long bto = getBTo(m[i + 5]);
 				if ((occ & bto) != 0) {
 					if ((enemy & bto) != 0) {
 						int c = gen.ctype(bto);

@@ -8,12 +8,11 @@ public class EvalTesterTT extends AbstractTester{
 	@Override
 	public Evaluate insert(RootEval eval, int depth, int ply) {
 		if(ply == depth - 1)
-			return new LeafGen(eval);
+			return new HorizonGen(eval);
 		return new PVS();
 	}
 
 	class PVS extends Evaluate {
-
 		int killer1=-1;
 		int killer2=-1;
 		
@@ -24,7 +23,7 @@ public class EvalTesterTT extends AbstractTester{
 		}
 
 		// PVS
-		public int alphabeta(int alfa,int beta) {
+		public int search(int alfa,int beta) {
 			if(useTransposition){
 				int tt = getTT();
 				if(tt!=-1){
@@ -59,7 +58,7 @@ public class EvalTesterTT extends AbstractTester{
 			sortKillers();
 			int md0 = moves[0];
 			make(md0);
-			int bestscore = -deeper.alphabeta(-beta, -alfa);
+			int bestscore = -deeper.search(-beta, -alfa);
 			if( bestscore > alfa ) {
 				if( bestscore >= beta ){
 					setKiller(md0);
@@ -72,9 +71,9 @@ public class EvalTesterTT extends AbstractTester{
 			for (int i = 1; i < iAll; i++) {
 				int md = moves[i];
 				make(md);
-				int score = -deeper.alphabeta(-alfa-1, -alfa);
+				int score = -deeper.search(-alfa-1, -alfa);
 				if( score > alfa && score < beta ) {
-					score = -deeper.alphabeta(-beta, -alfa);
+					score = -deeper.search(-beta, -alfa);
 					if( score > alfa ){
 						alfa = score;
 						setBest(md, alfa);
@@ -120,14 +119,14 @@ public class EvalTesterTT extends AbstractTester{
 		}
 	}
 
-	class LeafGen extends Evaluate {
+	class HorizonGen extends Evaluate {
 		final Eval eval;
-		public LeafGen(Eval eval) {
+		public HorizonGen(Eval eval) {
 			this.eval=eval;
 		}
 		
 		@Override
-		public int alphabeta(int alpha, int beta) {
+		public int search(int alpha, int beta) {
 			eval.count++;
 			int score2 = score();
 			int type=TranspositionTable.T_EXACT;

@@ -1,6 +1,6 @@
 package norwegiangambit.engine.evaluate;
 
-import norwegiangambit.engine.movegen.BASE;
+import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.IDivide.Eval;
 
@@ -21,7 +21,7 @@ public class RootEval extends Eval {
 			return "null";
 		StringBuilder sb=new StringBuilder();
 		for (int i : m) {
-			MOVEDATA md=BASE.ALL[i];
+			MOVEDATA md=MBase.ALL[i];
 			if(sb.length()!=0)
 				sb.append(" ");
 			sb.append(md.id());

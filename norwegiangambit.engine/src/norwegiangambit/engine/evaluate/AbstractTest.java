@@ -1,6 +1,7 @@
 package norwegiangambit.engine.evaluate;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.TimerTask;
 import java.util.TreeSet;
 
 import norwegiangambit.engine.fen.StartGame;
-import norwegiangambit.engine.movegen.BASE;
+import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.IDivide;
 import norwegiangambit.util.IDivide.Eval;
@@ -28,7 +29,7 @@ public abstract class AbstractTest {
 		StringBuilder sb=new StringBuilder();
 		for (int i : m) {
 			if(i>0){
-				MOVEDATA md=BASE.ALL[i];
+				MOVEDATA md=MBase.ALL[i];
 				if(sb.length()!=0)
 					sb.append(" ");
 				sb.append(md.id());
@@ -95,7 +96,7 @@ public abstract class AbstractTest {
 				gen.generate();
 				for (int i = 0; i < gen.iAll; i++) {
 					int m = gen.moves[i];
-					MOVEDATA md2 = BASE.ALL[m];
+					MOVEDATA md2 = MBase.ALL[m];
 					if(md2.id().equals(move))
 						mv=m;
 				}

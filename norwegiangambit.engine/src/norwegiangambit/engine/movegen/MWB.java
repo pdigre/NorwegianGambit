@@ -1,9 +1,5 @@
 package norwegiangambit.engine.movegen;
 
-import static norwegiangambit.engine.movegen.BASE.DOWN;
-import static norwegiangambit.engine.movegen.BASE.LEFT;
-import static norwegiangambit.engine.movegen.BASE.RIGHT;
-import static norwegiangambit.engine.movegen.BASE.UP;
 import norwegiangambit.util.IConst;
 
 

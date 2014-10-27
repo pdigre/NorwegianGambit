@@ -4,7 +4,6 @@ import norwegiangambit.engine.evaluate.AbstractTest
 import norwegiangambit.engine.evaluate.AbstractTester
 import norwegiangambit.engine.evaluate.EvalTester
 import norwegiangambit.engine.evaluate.QuiesceTester
-import norwegiangambit.engine.movegen.BASE
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
@@ -16,7 +15,6 @@ class Test_Eval2_kiwipete extends AbstractTest {
 
 	@BeforeClass
 	def static void prepare() {
-		new BASE();
 		val engine = new EvalTester();
 		AbstractTester.useConcurrency=true;
 		QuiesceTester.useTransposition=true;

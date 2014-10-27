@@ -1,10 +1,5 @@
 package norwegiangambit.engine.movegen;
 
-import static norwegiangambit.engine.movegen.BASE.DOWN;
-import static norwegiangambit.engine.movegen.BASE.LEFT;
-import static norwegiangambit.engine.movegen.BASE.RIGHT;
-import static norwegiangambit.engine.movegen.BASE.UP;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +42,7 @@ public class MWK extends MBase {
 
 	protected void add(int offset, List<int[]> list) {
 		int to = from + offset;
-		if (BASE.inside(to, from)){
+		if (inside(to, from)){
 			int[] m=new int[6];
 			list.add(m);
 			long bitmap = assemble(IConst.WK, from, to, CANCASTLE_BLACK | HALFMOVES);
@@ -68,7 +63,7 @@ public class MWK extends MBase {
 		long enemy = gen.bb_black;
 		long all = gen.bb_piece;
 		for (int[] m : moves){
-			long bto = BASE.getBTo(m[5]);
+			long bto = getBTo(m[5]);
 			if ((all & bto) == 0) {
 				add(gen,m[5]);
 			} else {

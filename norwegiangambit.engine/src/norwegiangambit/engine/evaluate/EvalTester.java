@@ -6,7 +6,7 @@ public class EvalTester extends AbstractTester{
 	@Override
 	public Evaluate insert(RootEval eval, int depth, int level) {
 		if(level == depth - 1)
-			return new LeafGen(eval);
+			return new HorizonGen(eval);
 		return new PVS();
 //		return depth-level>4 ? new PVS():new AlphaBeta();
 	}
@@ -21,14 +21,14 @@ public class EvalTester extends AbstractTester{
 		}
 
 		// Minimax
-		public int alphabeta(int alpha, int beta) {
+		public int search(int alpha, int beta) {
 			generate();
 			if(iAll==0)
 				return checkers==0L?STALE:MATE;  // (STALE)MATE
 			for (int i = 0; i < iAll; i++) {
 				int md = moves[i];
 				make(md);
-				int score = -deeper.alphabeta(-beta, -alpha);
+				int score = -deeper.search(-beta, -alpha);
 				if (score > alpha)
 					alpha = score; // alpha acts like max in MiniMax
 			}
@@ -45,14 +45,14 @@ public class EvalTester extends AbstractTester{
 		}
 
 		// Alphabeta
-		public int alphabeta(int alpha, int beta) {
+		public int search(int alpha, int beta) {
 			generate();
 			if(iAll==0)
 				return checkers==0L?STALE:MATE;  // (STALE)MATE
 			for (int i = 0; i < iAll; i++) {
 				int md = moves[i];
 				make(md);
-				int score = -deeper.alphabeta(-beta, -alpha);
+				int score = -deeper.search(-beta, -alpha);
 				if (score >= beta)
 					return beta; // fail hard beta-cutoff
 				if (score > alpha)
@@ -74,14 +74,14 @@ public class EvalTester extends AbstractTester{
 		}
 
 		// PVS
-		public int alphabeta(int alfa,int beta) {
+		public int search(int alfa,int beta) {
 			generate();
 			if(iAll==0)
 				return checkers==0L?STALE:MATE;  // (STALE)MATE
 			sortKillers();
 			int md0 = moves[0];
 			make(md0);
-			int bestscore = -deeper.alphabeta(-beta, -alfa);
+			int bestscore = -deeper.search(-beta, -alfa);
 			if( bestscore > alfa ) {
 				if( bestscore >= beta ){
 					setKiller(md0);
@@ -93,9 +93,9 @@ public class EvalTester extends AbstractTester{
 			for (int i = 1; i < iAll; i++) {
 				int md = moves[i];
 				make(md);
-				int score = -deeper.alphabeta(-alfa-1, -alfa);
+				int score = -deeper.search(-alfa-1, -alfa);
 				if( score > alfa && score < beta ) {
-					score = -deeper.alphabeta(-beta, -alfa);
+					score = -deeper.search(-beta, -alfa);
 					if( score > alfa ){
 						alfa = score;
 						setBest(md, alfa);
@@ -132,14 +132,14 @@ public class EvalTester extends AbstractTester{
 		}
 	}
 
-	class LeafGen extends Evaluate implements ILeafEval {
+	class HorizonGen extends Evaluate {
 		final RootEval eval;
-		public LeafGen(RootEval eval) {
+		public HorizonGen(RootEval eval) {
 			this.eval=eval;
 		}
 		
 		@Override
-		public int alphabeta(int alpha, int beta) {
+		public int search(int alpha, int beta) {
 			eval.count++;
 			return score();
 		}
@@ -147,11 +147,6 @@ public class EvalTester extends AbstractTester{
 		@Override
 		public void notifyPV(Evaluate child, int depth, boolean lowerBound, boolean upperBound, int score) {
 			parent.notifyPV(this, ply, lowerBound, upperBound, score);
-		}
-
-		@Override
-		public Eval getEval() {
-			return eval;
 		}
 	}
 

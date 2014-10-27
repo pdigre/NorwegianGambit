@@ -4,13 +4,12 @@
     ==key + lvls2leaf + count if level > 1
     check if then use count
     record before and after, store diff
-3. Use hashing for EVAl
+3. Use hashing for EVAL
     PV ==key + lvls2leaf + score  
 	Kill==key + lvls2leaf + cutoff score
 4. Expire & Better TT
-
-
 5. Solve MATE and Stalemate score
+
 5. BT 2450
 5. Iterative deepening & concurrency
 5. Eval - Stockfish
@@ -21,3 +20,7 @@
 7. Run Bayeselo
 8. Magic numbers?? How
 9. Improve evasions
+
+
+Toolset:
+Add display long as chess-board

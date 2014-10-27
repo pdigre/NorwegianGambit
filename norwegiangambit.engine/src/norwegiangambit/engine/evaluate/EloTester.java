@@ -1,11 +1,10 @@
 package norwegiangambit.engine.evaluate;
 
 import java.util.Arrays;
-import java.util.TreeSet;
 import java.util.concurrent.ForkJoinPool;
 
 import norwegiangambit.engine.fen.StartGame;
-import norwegiangambit.engine.movegen.BASE;
+import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.FEN;
 
 public class EloTester extends EvalTesterTT {
@@ -22,9 +21,9 @@ public class EloTester extends EvalTesterTT {
 		RootEval eval;
 		
 		@Override
-		public int alphabeta(int alfa, int beta) {
+		public int search(int alfa, int beta) {
 			if (isRunning) {
-				bestscore = - super.alphabeta(alfa, beta);
+				bestscore = - super.search(alfa, beta);
 				if(bestscore>bscore){
 					bscore=bestscore;
 					bestpath=eval.path;
@@ -56,7 +55,7 @@ public class EloTester extends EvalTesterTT {
 		evals = new RootEval[rooteval.iAll];
 		tasks = new CountTask[evals.length];
 		for (int i = 0; i < evals.length; i++) {
-			evals[i]=new RootEval(FEN.move2literal(BASE.ALL[rooteval.moves[i]].bitmap), 0, 0);
+			evals[i]=new RootEval(FEN.move2literal(MBase.ALL[rooteval.moves[i]].bitmap), 0, 0);
 		}
 		int depth=6;
 		while(isRunning){

@@ -2,8 +2,8 @@ package norwegiangambit.engine
 
 import norwegiangambit.engine.evaluate.AbstractTest
 import norwegiangambit.engine.evaluate.AbstractTester
+import norwegiangambit.engine.evaluate.EvalTester
 import norwegiangambit.engine.evaluate.QuiesceTester
-import norwegiangambit.engine.movegen.BASE
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Ignore
@@ -11,13 +11,11 @@ import org.junit.Test
 
 import static norwegiangambit.engine.evaluate.AbstractTester.*
 import static norwegiangambit.engine.evaluate.QuiesceTester.*
-import norwegiangambit.engine.evaluate.EvalTester
 
 class Test_Eval1 extends AbstractTest {
 
 	@BeforeClass
 	def static void prepare() {
-		new BASE();
 		val engine = new EvalTester();
 		AbstractTester.useConcurrency=true;
 		QuiesceTester.useTransposition=true;

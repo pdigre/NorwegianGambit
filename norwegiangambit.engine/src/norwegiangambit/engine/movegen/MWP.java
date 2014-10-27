@@ -144,7 +144,7 @@ public class MWP extends MBase{
 		
 		final int enp = gen.epsq;
 		long e=gen.bb_black|(1L<<enp);
-		long cl = (b & IConst.LEFTMASK) &(e>>7);
+		long cl = (b & IConst.MaskBToHFiles) &(e>>7);
 		pop = Long.bitCount(cl);
 		for (int j = 0; j < pop; j++) {
 			int from = Long.numberOfTrailingZeros(cl);
@@ -171,7 +171,7 @@ public class MWP extends MBase{
 			}
 		}
 
-		long cr = (b & IConst.RIGHTMASK) &(e>>9);
+		long cr = (b & IConst.MaskAToGFiles) &(e>>9);
 		pop = Long.bitCount(cr);
 		for (int j = 0; j < pop; j++) {
 			int from = Long.numberOfTrailingZeros(cr);

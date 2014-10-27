@@ -8,7 +8,7 @@ public class QuiesceTester extends AbstractTester{
 	@Override
 	public Evaluate insert(RootEval eval, int depth, int ply) {
 		if(ply == depth - 1)
-			return new LeafGen(eval);
+			return new HorizonGen(eval);
 		return new PVS();
 	}
 
@@ -24,7 +24,7 @@ public class QuiesceTester extends AbstractTester{
 		}
 
 		// PVS
-		public int alphabeta(int alfa,int beta) {
+		public int search(int alfa,int beta) {
 			if(useTransposition){
 				int tt = getTT();
 				if(tt!=-1){
@@ -59,7 +59,7 @@ public class QuiesceTester extends AbstractTester{
 			sortKillers();
 			int md0 = moves[0];
 			make(md0);
-			int bestscore = -deeper.alphabeta(-beta, -alfa);
+			int bestscore = -deeper.search(-beta, -alfa);
 			if( bestscore > alfa ) {
 				if( bestscore >= beta ){
 					setKiller(md0);
@@ -72,9 +72,9 @@ public class QuiesceTester extends AbstractTester{
 			for (int i = 1; i < iAll; i++) {
 				int md = moves[i];
 				make(md);
-				int score = -deeper.alphabeta(-alfa-1, -alfa);
+				int score = -deeper.search(-alfa-1, -alfa);
 				if( score > alfa && score < beta ) {
-					score = -deeper.alphabeta(-beta, -alfa);
+					score = -deeper.search(-beta, -alfa);
 					if( score > alfa ){
 						alfa = score;
 						setBest(md, alfa);
@@ -120,11 +120,11 @@ public class QuiesceTester extends AbstractTester{
 		}
 	}
 
-	class LeafGen extends Quiesce {
+	class HorizonGen extends Quiesce {
 
 		final Eval eval;
 
-		public LeafGen(Eval eval) {
+		public HorizonGen(Eval eval) {
 			super(eval);
 			this.eval=eval;
 			Quiesce[] movegen = new Quiesce[20];
@@ -142,10 +142,10 @@ public class QuiesceTester extends AbstractTester{
 		}
 		
 		@Override
-		public int alphabeta(int alfa, int beta) {
+		public int search(int alfa, int beta) {
 			eval.count++;
 			int score2 = score();
-			int quiesce=super.alphabeta(alfa, beta);
+			int quiesce=super.search(alfa, beta);
 			if(quiesce>beta)
 				return beta;
 //			if(quiesce>score2)
@@ -183,7 +183,7 @@ public class QuiesceTester extends AbstractTester{
 			((Evaluate)deeper).evaluate(md);
 		}
 
-		public int alphabeta(int alpha, int beta) {
+		public int search(int alpha, int beta) {
 			generate();
 			if(iAll==0)
 				return checkers==0L?STALE:MATE;  // (STALE)MATE
@@ -192,7 +192,7 @@ public class QuiesceTester extends AbstractTester{
 					eval.quiesce++;
 					int md = moves[i];
 					make(md);
-					int score = -deeper.alphabeta(-beta, -alpha);
+					int score = -deeper.search(-beta, -alpha);
 					if (score >= beta)
 						return beta; // fail hard beta-cutoff
 					if (score > alpha){
@@ -204,7 +204,7 @@ public class QuiesceTester extends AbstractTester{
 					eval.quiesce++;
 					int md = moves[i];
 					make(md);
-					int score = -deeper.alphabeta(-beta, -alpha);
+					int score = -deeper.search(-beta, -alpha);
 					if (score >= beta)
 						return beta; // fail hard beta-cutoff
 					if (score > alpha){
@@ -218,7 +218,7 @@ public class QuiesceTester extends AbstractTester{
 					for (int i = lvl1; i < lvl2; i++) {
 						int md = moves[i];
 						make(md);
-						int score = -deeper.alphabeta(-beta, -alpha);
+						int score = -deeper.search(-beta, -alpha);
 						if (score >= beta)
 							return beta; // fail hard beta-cutoff
 						if (score > alpha){

@@ -115,7 +115,6 @@ public class MOVEDATA {
 	}
 
 	public static void main(String[] args) {
-		new BASE();
 		StartGame pos = new StartGame("n1R5/PP1k4/1n6/8/8/8/4Kppp/5N1N b - - 2 3");
 		System.out.println(pos);
 		pos.make(MOVEDATAX.cpromote(14,7, IConst.BB, IConst.BP, IConst.WN),pos.bitmap);
@@ -123,11 +122,11 @@ public class MOVEDATA {
 	}
 
 	public static int create(long bitmap){
-		return BASE.add(new MOVEDATA(bitmap));
+		return MBase.add(new MOVEDATA(bitmap));
 	}
 	
 	public static int capture(long bitmap,int victim){
-		return BASE.add(new MOVEDATA(bitmap | ((victim & 7) << IConst._CAPTURE)));
+		return MBase.add(new MOVEDATA(bitmap | ((victim & 7) << IConst._CAPTURE)));
 	}
 
 	@Override

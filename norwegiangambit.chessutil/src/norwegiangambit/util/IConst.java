@@ -11,32 +11,18 @@ package norwegiangambit.util;
  */
 public interface IConst {
 
-	int BITS1 = 1;
-
-	int BITS2 = 3;
-
-	int BITS3 = 7;
-
-	int BITS4 = 15;
-
-	int BITS6 = 63;
+	int BITS1 = 1,BITS2 = 3,BITS3 = 7,BITS4 = 15,BITS6 = 63;
 
 	// Moving Piece
 	int _PIECE = 0;
-
 	int PIECETYPE = BITS3 << _PIECE;
-
 	int PIECE = BITS4 << _PIECE;
-
 	int BLACK = BITS1 << _PIECE + 3;
 
 	// From to
 	int _FROM = 4;
-
 	int FROM = BITS6 << _FROM;
-
 	int _TO = 10;
-
 	int TO = BITS6 << _TO;
 
 	// **** Special move ****
@@ -44,67 +30,28 @@ public interface IConst {
 	// promotion special bit
 	// en-passant special bit
 	int _CAPTURE = 16;
-
 	int CAPTURE = BITS3 << _CAPTURE;
-
 	int SPECIAL = BITS1 << _CAPTURE + 3;
 
 	// Game state
 	int _CASTLING = 20;
-
 	long CASTLING_STATE = BITS4 << _CASTLING;
-
 	long CANCASTLE_WHITEQUEEN = BITS1 << (_CASTLING);
-
 	long CANCASTLE_WHITEKING = BITS1 << (_CASTLING + 1);
-
 	long CANCASTLE_WHITE = CANCASTLE_WHITEQUEEN | CANCASTLE_WHITEKING;
-
 	long CANCASTLE_BLACKQUEEN = BITS1 << (_CASTLING + 2);
-
 	long CANCASTLE_BLACKKING = BITS1 << (_CASTLING + 3);
-
 	long CANCASTLE_BLACK = CANCASTLE_BLACKQUEEN | CANCASTLE_BLACKKING;
 
 	int _HALFMOVES = 24;
-
 	long HALFMOVES = BITS6 << _HALFMOVES;
 
 	// piecetype
-	int NONE = 0;
-
-	int SLIDER = 4;
-	
-	int HIGHER = 2;
-	
-	int WP = 1;
-
-	int WN = 2;
-
-	int WK = 3;
-
-	int WB = 5;
-
-	int WR = 6;
-
-	int WQ = 7;
-
-	int BP = WP | BLACK;
-
-	int BN = WN | BLACK;
-
-	int BB = WB | BLACK;
-
-	int BR = WR | BLACK;
-
-	int BQ = WQ | BLACK;
-
-	int BK = WK | BLACK;
+	int NONE = 0,SLIDER = 4,HIGHER = 2;
+	int WP = 1,WN = 2,WK = 3,WB = 5,WR = 6,WQ = 7,BP = 9,BN = 10,BK = 11,BB = 13,BR = 14,BQ = 15;
 
 	// game state
-	int CHECK = 1;
-
-	int MATE = 2;
+	int CHECK = 1,MATE = 2;
 
 	int GOAL_LINE = 56;
 	int WK_STARTPOS = 4;
@@ -119,8 +66,20 @@ public interface IConst {
 	long CBQ = 7L << BK_STARTPOS - 3;
 	long CBK = 3L << BK_STARTPOS + 1;
 
-	long LEFTLANE = 0x0101010101010101L;
-	long RIGHTLANE = 0x8080808080808080L;
-	long LEFTMASK = ~LEFTLANE;
-	long RIGHTMASK = ~RIGHTLANE;
+	long MaskAFile = 0x0101010101010101L;
+	long MaskHFile = 0x8080808080808080L;
+	long MaskBToHFiles = ~MaskAFile;
+	long MaskAToGFiles = ~MaskHFile;
+    long MaskDarkSq    = 0xAA55AA55AA55AA55L;
+    long MaskLightSq   = 0x55AA55AA55AA55AAL;
+
+    public static final long maskCorners   = 0x8100000000000081L;
+
+	int LEFT = -1,RIGHT = 1,UP = 8,DOWN = -8;
+
+	int[] DIAGONAL_MOVES = new int[] { UP + LEFT, UP + RIGHT, DOWN + LEFT, DOWN + RIGHT };
+	int[] LINE_MOVES = new int[] { UP, DOWN, LEFT, RIGHT };
+	int[] KNIGHT_MOVES = new int[] { UP + LEFT + LEFT, UP + UP + LEFT, UP + RIGHT + RIGHT, UP + UP + RIGHT, DOWN + LEFT + LEFT,
+			DOWN + DOWN + LEFT, DOWN + RIGHT + RIGHT, DOWN + DOWN + RIGHT };
+
 }

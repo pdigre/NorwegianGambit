@@ -6,7 +6,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
 import norwegiangambit.engine.fen.StartGame;
-import norwegiangambit.engine.movegen.BASE;
+import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
 
@@ -19,7 +19,7 @@ public class FastPerft implements IDivide{
 	@Override
 	public List<Eval> divide(String fen, int levels) {
 		StartGame pos = new StartGame(fen);
-		NodeGen root = new NodeGen(null,0);
+		PerftGen root = new PerftGen(null,0);
 		root.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
 		root.evaluate();
 		root.generate();
@@ -28,17 +28,17 @@ public class FastPerft implements IDivide{
 		if(levels<4 || !useConcurrency){
 			if(levels==1){
 		        for (int i = 0; i < root.iAll; i++)
-		        	map.add(new Eval(FEN.move2literal(BASE.ALL[root.moves[i]].bitmap),1,0));
+		        	map.add(new Eval(FEN.move2literal(MBase.ALL[root.moves[i]].bitmap),1,0));
 		        return map;
 			}
 		    for (int i = 0; i < root.iAll; i++) {
 		    	int md = root.moves[i];
-				NodeGen[] movegen = new NodeGen[levels-1];
+				PerftGen[] movegen = new PerftGen[levels-1];
 				int totdepth = movegen.length;
 				for (int ply = 0; ply < totdepth; ply++) {
-					NodeGen m = ply < totdepth - 1 ? new NodeGen(count,i) : new LeafGen(count,i);
+					PerftGen m = ply < totdepth - 1 ? new PerftGen(count,i) : new PerftHorizon(count,i);
 					movegen[ply] = m;
-					NodeGen parent = ply>0?movegen[ply - 1]:root;
+					PerftGen parent = ply>0?movegen[ply - 1]:root;
 					m.parent = parent;
 					parent.deeper = m;
 					m.ply=ply;
@@ -47,7 +47,7 @@ public class FastPerft implements IDivide{
 				movegen[0].make(md,root.isWhite,root.castling,root.wking,root.bking,root.bb_bit1,root.bb_bit2,root.bb_bit3,root.bb_black);
 				movegen[0].evaluate(md);
 				movegen[0].run();
-				map.add(new Eval(FEN.move2literal(BASE.ALL[md].bitmap),(int)count[i],0));
+				map.add(new Eval(FEN.move2literal(MBase.ALL[md].bitmap),(int)count[i],0));
 			}
 		    return map;
 		}
@@ -65,22 +65,22 @@ public class FastPerft implements IDivide{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			map.add(new Eval(FEN.move2literal(BASE.ALL[root.moves[i]].bitmap),(int) count[i],0));
+			map.add(new Eval(FEN.move2literal(MBase.ALL[root.moves[i]].bitmap),(int) count[i],0));
 		}
 		return map;
 	}
 
 	final private class CountTask extends RecursiveTask<Long> {
 		private static final long serialVersionUID = -2743566188067414328L;
-		NodeGen[] movegen;
+		PerftGen[] movegen;
 
-		public CountTask(int md,long[] count,int i,int levels,NodeGen root) {
-			movegen = new NodeGen[levels-1];
+		public CountTask(int md,long[] count,int i,int levels,PerftGen root) {
+			movegen = new PerftGen[levels-1];
 			int totdepth = movegen.length;
 			for (int ply = 0; ply < totdepth; ply++) {
-				NodeGen m = ply < totdepth - 1 ? new NodeGen(count,i) : new LeafGen(count,i);
+				PerftGen m = ply < totdepth - 1 ? new PerftGen(count,i) : new PerftHorizon(count,i);
 				movegen[ply] = m;
-				NodeGen parent = ply>0?movegen[ply - 1]:root;
+				PerftGen parent = ply>0?movegen[ply - 1]:root;
 				m.parent = parent;
 				parent.deeper = m;
 				m.ply=ply;
@@ -97,10 +97,10 @@ public class FastPerft implements IDivide{
 		}
 	}
 
-	class NodeGen extends Evaluate {
+	class PerftGen extends Evaluate {
 		final long[] count;
 		final int inum;
-		public NodeGen(long[] count, int inum) {
+		public PerftGen(long[] count, int inum) {
 			this.count=count;
 			this.inum=inum;
 		}
@@ -123,7 +123,7 @@ public class FastPerft implements IDivide{
 					int md = moves[i];
 					deeper.make(md,isWhite,castling,wking,bking,bb_bit1,bb_bit2,bb_bit3,bb_black);
 					deeper.evaluate(md);
-					((NodeGen)deeper).run();
+					((PerftGen)deeper).run();
 				}
 				long cnt = count[inum]-t;
 				if(testTransposition){
@@ -145,15 +145,15 @@ public class FastPerft implements IDivide{
 					int md = moves[i];
 					deeper.make(md,isWhite,castling,wking,bking,bb_bit1,bb_bit2,bb_bit3,bb_black);
 					deeper.evaluate(md);
-					((NodeGen)deeper).run();
+					((PerftGen)deeper).run();
 				}
 			}
 		}
 
 	}
 
-	class LeafGen extends NodeGen {
-		public LeafGen(long[] count, int inum) {
+	class PerftHorizon extends PerftGen {
+		public PerftHorizon(long[] count, int inum) {
 			super(count,inum);
 		}
 

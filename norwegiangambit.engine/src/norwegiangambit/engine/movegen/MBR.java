@@ -1,11 +1,5 @@
 package norwegiangambit.engine.movegen;
 
-import static norwegiangambit.engine.movegen.BASE.DOWN;
-import static norwegiangambit.engine.movegen.BASE.LEFT;
-import static norwegiangambit.engine.movegen.BASE.RIGHT;
-import static norwegiangambit.engine.movegen.BASE.UP;
-import static norwegiangambit.engine.movegen.BASE.inside;
-
 import java.util.ArrayList;
 
 import norwegiangambit.util.IConst;
@@ -26,12 +20,12 @@ public class MBR extends MSlider{
 		MBR q = BR[BR_QUEEN_STARTPOS];
 		QLINE=cline(q.LINE,CANCASTLE_BLACKQUEEN);
 		q.Q=q.LINE[1][39];
-		Q2=MOVEDATAX.create(BASE.ALL[q.Q].bitmap^CANCASTLE_BLACKKING,CANCASTLE_BLACKQUEEN|CANCASTLE_WHITEQUEEN);
+		Q2=MOVEDATAX.create(ALL[q.Q].bitmap^CANCASTLE_BLACKKING,CANCASTLE_BLACKQUEEN|CANCASTLE_WHITEQUEEN);
 
 		MBR k = BR[BR_KING_STARTPOS];
 		KLINE=cline(k.LINE,CANCASTLE_BLACKKING);
 		k.K=k.LINE[1][39];
-		K2=MOVEDATAX.create(BASE.ALL[k.K].bitmap^CANCASTLE_BLACKQUEEN,CANCASTLE_BLACKKING|CANCASTLE_WHITEKING);
+		K2=MOVEDATAX.create(ALL[k.K].bitmap^CANCASTLE_BLACKQUEEN,CANCASTLE_BLACKKING|CANCASTLE_WHITEKING);
 	}
 
 	public static int[][] cline(int[][] l,long castling) {
@@ -80,7 +74,7 @@ public class MBR extends MSlider{
 		for (int[] m : moves) {
 			int i = 0;
 			while (i < m.length) {
-				long bto = BASE.getBTo(m[i + 5]);
+				long bto = getBTo(m[i + 5]);
 				if ((occ & bto) != 0) {
 					if ((enemy & bto) != 0) {
 						int c = gen.ctype(bto);

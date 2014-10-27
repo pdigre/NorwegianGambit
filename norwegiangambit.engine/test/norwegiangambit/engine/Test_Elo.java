@@ -3,7 +3,6 @@ package norwegiangambit.engine;
 import norwegiangambit.engine.evaluate.AbstractTest;
 import norwegiangambit.engine.evaluate.EloTester;
 import norwegiangambit.engine.evaluate.IThinker;
-import norwegiangambit.engine.movegen.BASE;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -13,7 +12,6 @@ public class Test_Elo extends AbstractTest{
 
 	@BeforeClass
 	public static void prepare() {
-		new BASE();
 		setTesting(new EloTester());
 	}
 	

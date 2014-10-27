@@ -3,7 +3,7 @@ package norwegiangambit.engine;
 import static org.junit.Assert.assertEquals;
 import norwegiangambit.engine.evaluate.Evaluate;
 import norwegiangambit.engine.fen.StartGame;
-import norwegiangambit.engine.movegen.BASE;
+import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.polyglot.Polyglot;
@@ -17,7 +17,7 @@ public class Test_Zobrist_Polyglot {
 
 	@BeforeClass
 	public static void prepare() {
-		new BASE();
+//		new BASE();
 	}
 	
     @Test
@@ -99,7 +99,7 @@ public class Test_Zobrist_Polyglot {
 	public int getMove(String id, Evaluate eval) {
 		eval.generate();
 		for (int m : eval.moves) {
-			MOVEDATA md=BASE.ALL[m];
+			MOVEDATA md=MBase.ALL[m];
 			String id2 = md.id();
 			if(id.equals(id2)){
 				return m;

@@ -15,7 +15,7 @@ public class MOVEDATA2 extends MOVEDATA {
 	}
 
 	public static int create(long bitmap,int epsq){
-		return BASE.add(new MOVEDATA2(bitmap,epsq));
+		return MBase.add(new MOVEDATA2(bitmap,epsq));
 	}
 
 }
