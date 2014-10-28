@@ -20,7 +20,7 @@ public class Movegen implements IConst{
 	public long bb_piece,castling;
 	public int wking,bking,epsq;
 	long bb_white, own, enemy,bb_knights,bb_kings,bb_pawns;
-	protected long checkers, pinners;
+	protected long checkers, pinners, atks, eatks;
 	int king,eking;
 	public int pv;
 
@@ -189,6 +189,8 @@ public class Movegen implements IConst{
 		// Calculate checkers and pinners
 		pinners=0L;
 		checkers=enemy & ~bb_bit3 & ((~bb_bit1 & bb_bit2 & BitBoard.NMasks[king]) | (bb_bit1 & ~bb_bit2 & (isWhite?MBP.REV[king]:MWP.REV[king])));
+		
+		
 		long sliders=enemy  & bb_bit3 & BitBoard.QMasks[king]; // Sliders
 		if(checkers==0L && sliders !=0L){
 			long diagatks = bb_bit1 & sliders & BitBoard.BMasks[king];
