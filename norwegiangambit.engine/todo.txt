@@ -10,6 +10,9 @@
 4. Expire & Better TT
 5. Solve MATE and Stalemate score
 
+*** FIX SSE ***
+a. Check Equal and Loosing captures for SQ_ATK_BY
+
 5. BT 2450
 5. Iterative deepening & concurrency
 5. Eval - Stockfish
@@ -24,3 +27,17 @@
 
 Toolset:
 Add display long as chess-board
+
+
+Magic Numbers:
+==============
+Check evasions
+
+SEE Static Exchange Evaluation
+====
+Find supported/attacked squares map (use Magic)
+
+Check Evasions:
+===============
+1. King to non-attacked square (and if double check) 
+2. Block attack ray or kill attacker
