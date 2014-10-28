@@ -3,6 +3,7 @@ package norwegiangambit.engine.movegen;
 import java.util.ArrayList;
 import java.util.List;
 
+import norwegiangambit.util.BITS;
 import norwegiangambit.util.IConst;
 
 public class MBK extends MBase {
@@ -81,7 +82,7 @@ public class MBK extends MBase {
 	}
 
 	final static void add(Movegen gen,int md) {
-		if(gen.isSafeKingMove(md))
+		if(gen.isSafePos(BITS.getTo(MBase.ALL[md].bitmap)))
 			gen.move(md);
 	}
 	

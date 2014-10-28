@@ -116,9 +116,14 @@ public class MBP  extends MBase{
 	}
 
 	public static <X extends MBase> void genLegal(Movegen gen,long b, X[] arr) {
+		genSingle(gen, b, arr,gen.bb_piece);
+		genDouble(gen, b, arr,gen.bb_piece);
+		genCaptures(gen, b, arr,gen.bb_white);
+	}
+	
+	public static <X extends MBase> void genSingle(final Movegen gen,long b, final X[] arr, long occupancy) {
 		final MBP[] mp=(MBP[])arr;
-		long occ=~(gen.bb_piece<<8);
-		long m1=b&occ;
+		long m1=b&~(occupancy<<8);
 		int pop = Long.bitCount(m1);
 		for (int j = 0; j < pop; j++) {
 			int from = Long.numberOfTrailingZeros(m1);
@@ -132,19 +137,24 @@ public class MBP  extends MBase{
 				gen.move(mp[from].M1);
 			}
 		}
-
+	}
+	public static <X extends MBase> void genDouble(final Movegen gen,long b, final X[] arr, long occupancy) {
+		final MBP[] mp=(MBP[])arr;
+		long occ=~(occupancy<<8);
 		long m2 = b&occ&0x00FF000000000000L&(occ<<8);
-		pop = Long.bitCount(m2);
+		int pop = Long.bitCount(m2);
 		for (int j = 0; j < pop; j++) {
 			int from = Long.numberOfTrailingZeros(m2);
 			m2 ^= 1L << from;
 			gen.move(mp[from].M2);
 		}
-
+	}
+	public static <X extends MBase> void genCaptures(final Movegen gen,long b, final X[] arr, long enemy) {
+		final MBP[] mp=(MBP[])arr;
 		final int enp = gen.epsq;
-		long e=gen.bb_white|(1L<<enp);
+		long e=enemy|(1L<<enp);
 		long cl = (b & IConst.MaskBToHFiles) &(e<<9);
-		pop = Long.bitCount(cl);
+		int pop = Long.bitCount(cl);
 		for (int j = 0; j < pop; j++) {
 			int from = Long.numberOfTrailingZeros(cl);
 			cl ^= 1L << from;

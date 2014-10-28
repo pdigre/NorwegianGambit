@@ -111,15 +111,15 @@ public class FEN implements IConst {
 	public static String board2string(long b1) {
 		StringBuilder fen = new StringBuilder();
         for (int y = 8; y-- > 0;) {
-            fen.append("\n");
             fen.append(String.valueOf(y+1)+" ");
             for (int x = 0; x < 8; x++) {
                 int sq = y * 8 + x;
 				long bit=1L<<sq;
                 fen.append((bit&b1)==0 ? "." : "x");
             }
+            fen.append("\n");
         }
-        fen.append("\n  ABCDEFGH");
+        fen.append("  ABCDEFGH\n");
         return fen.toString();
 	}
 

@@ -321,5 +321,5 @@ public class BitBoard implements IConst{
     }
 
     public static final long bishopAttacks(int sq, long occupied) {
-        return bTables[sq][(int)(((occupied & BMasks[sq]) * bMagics[sq]) >>> (64 - bBits[sq]))];    }    public static final long rookAttacks(int sq, long occupied) {        return rTables[sq][(int)(((occupied & RMasks[sq]) * rMagics[sq]) >>> (64 - rBits[sq]))];    }
+        return bTables[sq][(int)(((occupied & bMasks[sq]) * bMagics[sq]) >>> (64 - bBits[sq]))];    }    public static final long rookAttacks(int sq, long occupied) {        return rTables[sq][(int)(((occupied & rMasks[sq]) * rMagics[sq]) >>> (64 - rBits[sq]))];    }
 }

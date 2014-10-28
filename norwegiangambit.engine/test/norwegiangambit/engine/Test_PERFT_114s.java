@@ -8,7 +8,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * 30sec Dell 3.sep.2014
+ * 30.0 sec Dell 03.09.2014
+ *  9.0 sec Dell 27.10.2014
+ *  4.8 sec Dell 28.10.2014 Introducing Magic numbers and "unsafe" map
  *
  */
 public class Test_PERFT_114s extends PerftTest{

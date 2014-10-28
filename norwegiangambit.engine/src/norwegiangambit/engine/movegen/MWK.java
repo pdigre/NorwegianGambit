@@ -3,6 +3,7 @@ package norwegiangambit.engine.movegen;
 import java.util.ArrayList;
 import java.util.List;
 
+import norwegiangambit.util.BITS;
 import norwegiangambit.util.IConst;
 
 public class MWK extends MBase {
@@ -81,7 +82,7 @@ public class MWK extends MBase {
 	}
 
 	final static void add(Movegen gen,int md) {
-		if(gen.isSafeKingMove(md))
+		if(gen.isSafePos(BITS.getTo(MBase.ALL[md].bitmap)))
 			gen.move(md);
 	}
 	
@@ -97,15 +98,13 @@ public class MWK extends MBase {
 				&& (castling & CANCASTLE_WHITEQUEEN) != 0
 				&& gen.isSafePos(WK_STARTPOS - 1)
 				&& gen.isSafePos(WK_STARTPOS - 2)) {
-			if(gen.isSafeKingMove(CQ))
-				gen.castling((gen.castling & CANCASTLE_WHITEKING) != 0?CQ:CQ2);
+			add(gen,(gen.castling & CANCASTLE_WHITEKING) != 0?CQ:CQ2);
 		}
 		if ((CWK & gen.bb_piece) == 0
 				&& (castling & CANCASTLE_WHITEKING) != 0
 				&& gen.isSafePos(WK_STARTPOS + 1)
 				&& gen.isSafePos(WK_STARTPOS + 2)) {
-			if(gen.isSafeKingMove(CK))
-				gen.castling((gen.castling & CANCASTLE_WHITEQUEEN) != 0?CK:CK2);
+			add(gen,(gen.castling & CANCASTLE_WHITEQUEEN) != 0?CK:CK2);
 		}
 	}
 }

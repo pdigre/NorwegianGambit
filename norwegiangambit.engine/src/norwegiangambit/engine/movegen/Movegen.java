@@ -20,7 +20,7 @@ public class Movegen implements IConst{
 	public long bb_piece,castling;
 	public int wking,bking,epsq;
 	long bb_white, own, enemy,bb_knights,bb_kings,bb_pawns;
-	protected long checkers, pinners, atks, eatks;
+	protected long checkers, pinners, atks, unsafe;
 	int king,eking;
 	public int pv;
 
@@ -172,6 +172,18 @@ public class Movegen implements IConst{
 		return Arrays.copyOfRange(moves, 0, iAll);
 	}
 
+	public void pruneBlock(long between) {
+		while (iTested < iAll) {
+			int md = moves[iTested++];
+			if ((MBase.ALL[md].bto & between)!=0L){
+				moves[iLegal++]=md;
+			} else 
+				if(iTested<lvl3)
+					lvl3--;
+		}
+		iAll=iLegal;
+	}
+
 	public void pruneLegal() {
 		while (iTested < iAll) {
 			int md = moves[iTested++];
@@ -188,23 +200,61 @@ public class Movegen implements IConst{
 		clear();
 		// Calculate checkers and pinners
 		pinners=0L;
-		checkers=enemy & ~bb_bit3 & ((~bb_bit1 & bb_bit2 & BitBoard.NMasks[king]) | (bb_bit1 & ~bb_bit2 & (isWhite?MBP.REV[king]:MWP.REV[king])));
-		
-		
-		long sliders=enemy  & bb_bit3 & BitBoard.QMasks[king]; // Sliders
-		if(checkers==0L && sliders !=0L){
-			long diagatks = bb_bit1 & sliders & BitBoard.BMasks[king];
+		long en=enemy & ~bb_bit1 &  bb_bit2 & ~bb_bit3;
+		long ep=enemy &  bb_bit1 & ~bb_bit2 & ~bb_bit3;
+		long ek=enemy &  bb_bit1 &  bb_bit2 & ~bb_bit3;
+		long eslide=enemy & bb_bit3;
+		long ediag=eslide & bb_bit1;
+		long eline=eslide & bb_bit2;
+		long eb=ediag & ~bb_bit2;
+		long er=eline & ~bb_bit1;
+		long eq=ediag & eline;
+
+		// Regular checks
+		checkers=(en & BitBoard.NMasks[king]) | (ep & (isWhite?MBP.REV[king]:MWP.REV[king]));
+		// Slider checks
+		if((eslide & BitBoard.QMasks[king]) !=0L){
+			long diagatks = ediag & BitBoard.BMasks[king];
 			if (diagatks != 0L)
 				diagPinners(diagatks);
-			long lineatks = bb_bit2 & sliders & BitBoard.RMasks[king];
-			if (checkers==0L && lineatks != 0L)
+			long lineatks = eline & BitBoard.RMasks[king];
+			if (lineatks != 0L)
 				linePinners(lineatks);
 		}
+		long pcs=bb_piece&~(own &  bb_bit1 &  bb_bit2 & ~bb_bit3);
+		unsafe=isWhite?((ep&MaskAToGFiles)>>7) | ((ep&MaskBToHFiles)>>9):((ep&MaskAToGFiles)<<9) | ((ep&MaskBToHFiles)<<7);
+		while(en!=0L){
+			int sq = Long.numberOfTrailingZeros(en);
+			unsafe|=BitBoard.NMasks[sq];
+			en^=1L << sq;
+		}
+		while(ek!=0L){
+			int sq = Long.numberOfTrailingZeros(ek);
+			unsafe|=BitBoard.KMasks[sq];
+			ek^=1L << sq;
+		}
+		while(eb!=0L){
+			int sq = Long.numberOfTrailingZeros(eb);
+			unsafe|=BitBoard.bishopAttacks(sq, pcs);
+			eb^=1L << sq;
+		}
+		while(er!=0L){
+			int sq = Long.numberOfTrailingZeros(er);
+			unsafe|=BitBoard.rookAttacks(sq, pcs);
+			er^=1L << sq;
+		}
+		while(eq!=0L){
+			int sq = Long.numberOfTrailingZeros(eq);
+			unsafe|=BitBoard.bishopAttacks(sq, pcs);
+			unsafe|=BitBoard.rookAttacks(sq, pcs);
+			eq^=1L << sq;
+		}
+
 		if(checkers==0L){
 			nonevasive(own & ~pinners);
 		} else {
 			clear(); // not interested in pinned moves for evasive moves
-			evasive(own);
+			evasive(own & ~pinners);
 		}
 	}
 
@@ -315,22 +365,41 @@ public class Movegen implements IConst{
 	}
 
 	final public void evasive(long pieces) {
+		int num = Long.bitCount(checkers);
 		if (isWhite) {
-			MWP.genLegal(this,pieces & bb_pawns, MWP.WP);
-			MWN.genLegal(this,pieces & bb_knights, MWN.WN);
-			MWB.genLegal(this,pieces & (bb_bit1) & (~bb_bit2) & (bb_bit3), MWB.WB);
-			MWR.genLegal(this,pieces & (~bb_bit1) & (bb_bit2) & (bb_bit3), MWR.WR);
-			MWQ.genLegal(this,pieces & (bb_bit1) & (bb_bit2) & (bb_bit3), MWQ.WQ);
-			pruneLegal();
-			MWK.WK[king].genLegal(this);
+			if(num==1){
+				int atk_sq = Long.numberOfTrailingZeros(checkers);
+				long between=BitBoard.BETWEEN[atk_sq*64+king];
+				MWN.genLegal(this,pieces & ~bb_bit1 &  bb_bit2 & ~bb_bit3, MWN.WN);
+				MWB.genLegal(this,pieces &  bb_bit1 & ~bb_bit2 &  bb_bit3, MWB.WB);
+				MWR.genLegal(this,pieces & ~bb_bit1 &  bb_bit2 &  bb_bit3, MWR.WR);
+				MWQ.genLegal(this,pieces &  bb_bit1 &  bb_bit2 &  bb_bit3, MWQ.WQ);
+				pruneBlock(between|checkers);
+				MWP.genCaptures(this,pieces & bb_pawns, MWP.WP,checkers);
+				MWP.genSingle(this,pieces & bb_pawns, MWP.WP,~between);
+				MWP.genDouble(this,pieces & bb_pawns & (between>>16), MWP.WP,bb_piece);
+				MWK.WK[king].genLegal(this);
+			} else {
+				MWK.WK[king].genLegal(this);
+			}
 		} else {
-			MBP.genLegal(this,pieces & bb_pawns, MBP.BP);
-			MBN.genLegal(this,pieces & bb_knights, MBN.BN);
-			MBB.genLegal(this,pieces & (bb_bit1) & (~bb_bit2) & (bb_bit3), MBB.BB);
-			MBR.genLegal(this,pieces & (~bb_bit1) & (bb_bit2) & (bb_bit3), MBR.BR);
-			MBQ.genLegal(this,pieces & (bb_bit1) & (bb_bit2) & (bb_bit3), MBQ.BQ);
-			pruneLegal();
-			MBK.BK[king].genLegal(this);
+			if(num==1){
+				int atk_sq = Long.numberOfTrailingZeros(checkers);
+				long between=BitBoard.BETWEEN[atk_sq*64+king];
+				MBN.genLegal(this,pieces & ~bb_bit1 &  bb_bit2 & ~bb_bit3, MBN.BN);
+				MBB.genLegal(this,pieces &  bb_bit1 & ~bb_bit2 &  bb_bit3, MBB.BB);
+				MBR.genLegal(this,pieces & ~bb_bit1 &  bb_bit2 &  bb_bit3, MBR.BR);
+				MBQ.genLegal(this,pieces &  bb_bit1 &  bb_bit2 &  bb_bit3, MBQ.BQ);
+//				pruneLegal();
+//				pruneBlock(between|checkers);
+				MBP.genCaptures(this,pieces & bb_pawns, MBP.BP,checkers);
+				pruneLegal();
+				MBP.genSingle(this,pieces & bb_pawns, MBP.BP,~between);
+				MBP.genDouble(this,pieces & bb_pawns & (between<<16), MBP.BP,bb_piece);
+				MBK.BK[king].genLegal(this);
+			} else {
+				MBK.BK[king].genLegal(this);
+			}
 		}
 	}
 
@@ -404,37 +473,8 @@ public class Movegen implements IConst{
 		return isSafe(isWhite,king,bb_black^m.b_black, bb_bit1^m.b_bit1, bb_bit2^m.b_bit2, bb_bit3^m.b_bit3);
 	}
 
-	final public boolean isSafeKingMove(int md) {
-		return isSafePos(BITS.getTo(MBase.ALL[md].bitmap));
-	}
-	
 	final public boolean isSafePos(int kingpos) {
-		long e=isWhite?bb_black:bb_white;
-		long rp=isWhite?MBP.REV[kingpos]:MWP.REV[kingpos];
-		MWQ rq=MWQ.WQ[kingpos];
-		return safeSimple(e,kingpos,rp) && safeSliders(e, kingpos, rq);
-	}
-
-	final private boolean safeSimple(long e,int from,long revp) {
-		return ((e & bb_knights & BitBoard.NMasks[from]) == 0) && ((e & bb_kings & BitBoard.KMasks[from]) == 0) && ((e & bb_pawns & revp) == 0);
-	}
-
-	final private  boolean safeSliders(long enemy, int from, MWQ x) {
-		long slider=enemy & bb_bit3;
-		if((slider & BitBoard.QMasks[from]) !=0){
-			long a = bb_piece  & ~(bb_kings & ~enemy);
-			if ((bb_bit1 & slider & BitBoard.BMasks[from]) != 0) {
-				long diag=slider & bb_bit1;
-				if(ray(diag, x.DIAG[0], a)||ray(diag, x.DIAG[1], a)||ray(diag, x.DIAG[2], a)||ray(diag, x.DIAG[3], a))
-					return false;
-			}
-			if ((bb_bit2 & slider & BitBoard.RMasks[from]) != 0) {
-				long line=slider & bb_bit2;
-				if(ray(line, x.LINE[0], a)||ray(line, x.LINE[1], a)||ray(line, x.LINE[2], a)||ray(line, x.LINE[3], a))
-					return false;
-			}
-		}
-		return true;
+		return ((1L<<kingpos)&unsafe)==0;
 	}
 
 	public final static boolean isSafe(boolean white,int king,long bb_black, long bb_bit1, long bb_bit2, long bb_bit3) {
@@ -443,34 +483,24 @@ public class Movegen implements IConst{
 		long bb_kings = bb_bit1 & bb_bit2 & ~bb_bit3;
 		long bb_pawns = bb_bit1 & ~bb_bit2 & ~bb_bit3;
 		long enemy=white?bb_black:(bb_bit1 | bb_bit2 | bb_bit3)^bb_black;
-		long rp=white?MBP.REV[king]:MWP.REV[king];
-		MWQ rq=MWQ.WQ[king];
-		if(((enemy & bb_knights & BitBoard.NMasks[king]) != 0) || ((enemy & bb_kings & BitBoard.KMasks[king]) != 0) || ((enemy & bb_pawns & rp) != 0))
+		if(((enemy & bb_knights & BitBoard.NMasks[king]) != 0) || 
+				((enemy & bb_kings & BitBoard.KMasks[king]) != 0) || 
+				((enemy & bb_pawns & (white?MBP.REV[king]:MWP.REV[king])) != 0))
 			return false;
 		long slider=enemy & bb_bit3;
 		if((slider & BitBoard.QMasks[king]) !=0){
-			long a = bb_piece  & ~(bb_kings & ~enemy);
-			if ((bb_bit1 & slider & BitBoard.BMasks[king]) != 0) {
-				long diag=slider & bb_bit1;
-				if(ray(diag, rq.DIAG[0], a)||ray(diag, rq.DIAG[1], a)||ray(diag, rq.DIAG[2], a)||ray(diag, rq.DIAG[3], a))
+			long diag = bb_bit1 & slider;
+			if ((diag & BitBoard.BMasks[king]) != 0) {
+				if((diag & BitBoard.bishopAttacks(king, bb_piece))!=0L)
 					return false;
 			}
-			if ((bb_bit2 & slider & BitBoard.RMasks[king]) != 0) {
-				long line=slider & bb_bit2;
-				if(ray(line, rq.LINE[0], a)||ray(line, rq.LINE[1], a)||ray(line, rq.LINE[2], a)||ray(line, rq.LINE[3], a))
+			long line = bb_bit2 & slider;
+			if ((line & BitBoard.RMasks[king]) != 0) {
+				if((line & BitBoard.rookAttacks(king, bb_piece))!=0L)
 					return false;
 			}
 		}
 		return true;
-	}
-
-	final private static boolean ray(long enemy, int[] s, long a) {
-		for (int m : s) {
-			long bit = MBase.getBTo(m);
-			if ((a & bit) != 0)
-				return (enemy & bit) != 0;
-		}
-		return false;
 	}
 	
 	public void sortHash(int md) {
