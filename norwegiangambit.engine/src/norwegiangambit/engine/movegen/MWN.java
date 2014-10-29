@@ -41,22 +41,23 @@ public class MWN extends MBase{
 	
 	final int[][] M;
 
-	public void genLegal(Movegen gen) {
+	public void genLegal(Movegen gen,long mask) {
 		long all = gen.bb_piece;
 		long enemy = gen.bb_black;
 		for (int[] m : M){
 			long bto = getBTo(m[5]);
 			if ((all & bto) == 0) {
-				gen.move(m[5]);
+				if((bto & mask)!=0L)
+					gen.move(m[5]);
 			} else {
-				if ((enemy & bto) != 0) {
+				if ((enemy & bto & mask) != 0) {
 					int c = gen.ctype(bto);
 					if(c==3 && bto==1L<<IConst.BR_KING_STARTPOS && (gen.castling&CANCASTLE_BLACKKING)!=0)
-						gen.capture(K, 1, c);
+						gen.capture(K, 1, c, bto);
 					else if(c==3 && bto==1L<<IConst.BR_QUEEN_STARTPOS && (gen.castling&CANCASTLE_BLACKQUEEN)!=0)
-						gen.capture(Q, 1, c);
+						gen.capture(Q, 1, c, bto);
 					else 
-						gen.capture(m[c], 1, c);
+						gen.capture(m[c], 1, c, bto);
 				}
 			}
 		}

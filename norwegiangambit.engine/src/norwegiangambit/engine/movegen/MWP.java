@@ -79,8 +79,8 @@ public class MWP extends MBase{
 	}
 
 	private int enpassant(int to) {
-		long bitmap = assemble(IConst.WP, from, to, CASTLING_STATE | IConst.SPECIAL);
-		return MOVEDATA.create(bitmap | (IConst.WP << IConst._CAPTURE));
+		long bitmap = assemble(IConst.WP, from, to, CASTLING_STATE | SPECIAL);
+		return MOVEDATA.create(bitmap | (IConst.WP << _CAPTURE));
 	}
 
 	private int[] captures(int to) {
@@ -116,95 +116,93 @@ public class MWP extends MBase{
 		return promotes;
 	}
 
-	public static <X extends MBase> void genLegal(final Movegen gen,long b, final X[] arr) {
-		genSingle(gen, b, arr,gen.bb_piece);
-		genDouble(gen, b, arr,gen.bb_piece);
-		genCaptures(gen, b, arr,gen.bb_black);
-	}
-	public static <X extends MBase> void genSingle(final Movegen gen,long b, final X[] arr, long occupancy) {
-		final MWP[] mp=(MWP[])arr;
+	public static <X extends MBase> void genSingle(final Movegen gen,long b, long occupancy) {
 		long m1=b&~(occupancy>>8);
 		int pop = Long.bitCount(m1);
 		for (int j = 0; j < pop; j++) {
 			int from = Long.numberOfTrailingZeros(m1);
 			m1 ^= 1L << from;
 			if(from>47){
-				gen.promote(mp[from].P1[0],1);
-				gen.promote(mp[from].P1[1],2);
-				gen.promote(mp[from].P1[2],3);
-				gen.promote(mp[from].P1[3],4);
+				gen.promote(WP[from].P1[0],1);
+				gen.promote(WP[from].P1[1],2);
+				gen.promote(WP[from].P1[2],3);
+				gen.promote(WP[from].P1[3],4);
 			} else {
-				gen.move(mp[from].M1);
+				gen.move(WP[from].M1);
 			}
 		}
 	}
-	public static <X extends MBase> void genDouble(final Movegen gen,long b, final X[] arr, long occupancy) {
-		final MWP[] mp=(MWP[])arr;
+	public static <X extends MBase> void genDouble(final Movegen gen,long b, long occupancy) {
 		long occ=~(occupancy>>8);
 		long m2 = b&occ&0xFF00L&(occ>>8);
 		int pop = Long.bitCount(m2);
 		for (int j = 0; j < pop; j++) {
 			int from = Long.numberOfTrailingZeros(m2);
 			m2 ^= 1L << from;
-			gen.move(mp[from].M2);
+			gen.move(WP[from].M2);
 		}
 	}
-	public static <X extends MBase> void genCaptures(final Movegen gen,long b, final X[] arr, long enemy) {
-		final MWP[] mp=(MWP[])arr;
+	public static <X extends MBase> void genCaptures(final Movegen gen,long b, long enemy) {
 		final int enp = gen.epsq;
 		long e=enemy|(1L<<enp);
-		long cl = (b & IConst.MaskBToHFiles) &(e>>7);
+		long cl = (b & MaskBToHFiles) &(e>>7);
 		int pop = Long.bitCount(cl);
 		for (int j = 0; j < pop; j++) {
 			int from = Long.numberOfTrailingZeros(cl);
 			cl ^= 1L << from;
 			int to=from+7;
 			if (to == enp) {
-				int md=mp[from].EL;
+				int md=WP[from].EL;
 				if(gen.isSafeMove(md))
 					gen.enpassant(md);
 			} else {
-				int ctype=gen.ctype(1L << to);
+				long bto = 1L << to;
+				int ctype=gen.ctype(bto);
 				if(from<48){
-					gen.capture(mp[from].CL[ctype], 0, ctype);
+					gen.capture(WP[from].CL[ctype], 0, ctype, bto);
 				} else {
 					if(from+7==BR_QUEEN_STARTPOS && (gen.castling & CANCASTLE_BLACKQUEEN)!=0){
-						gen.capturePromote(MWP.PQ[0], 1, ctype);
-						gen.capturePromote(MWP.PQ[1], 2, ctype);
-						gen.capturePromote(MWP.PQ[2], 3, ctype);
-						gen.capturePromote(MWP.PQ[3], 4, ctype);
+						gen.capturePromote(MWP.PQ[0], 1, ctype, bto);
+						gen.capturePromote(MWP.PQ[1], 2, ctype, bto);
+						gen.capturePromote(MWP.PQ[2], 3, ctype, bto);
+						gen.capturePromote(MWP.PQ[3], 4, ctype, bto);
 					} else {
-						gen.capturePromote(mp[from].PL, ctype);
+						gen.capturePromote(WP[from].PL, ctype,bto);
 					}
 				}
 			}
 		}
 
-		long cr = (b & IConst.MaskAToGFiles) &(e>>9);
+		long cr = (b & MaskAToGFiles) &(e>>9);
 		pop = Long.bitCount(cr);
 		for (int j = 0; j < pop; j++) {
 			int from = Long.numberOfTrailingZeros(cr);
 			cr ^= 1L << from;
 			int to=from+9;
 			if (to == enp) {
-				int md=mp[from].ER;
+				int md=WP[from].ER;
 				if(gen.isSafeMove(md))
 					gen.enpassant(md);
 			} else {
-				int ctype=gen.ctype(1L << to);
+				long bto = 1L << to;
+				int ctype=gen.ctype(bto);
 				if(from<48){
-					gen.capture(mp[from].CR[ctype], 0, ctype);
+					gen.capture(WP[from].CR[ctype], 0, ctype, bto);
 				} else {
 					if(from+9==BR_KING_STARTPOS && (gen.castling & CANCASTLE_BLACKKING)!=0){
-						gen.capturePromote(MWP.PK[0], 1, ctype);
-						gen.capturePromote(MWP.PK[1], 2, ctype);
-						gen.capturePromote(MWP.PK[2], 3, ctype);
-						gen.capturePromote(MWP.PK[3], 4, ctype);
+						gen.capturePromote(MWP.PK[0], 1, ctype, bto);
+						gen.capturePromote(MWP.PK[1], 2, ctype, bto);
+						gen.capturePromote(MWP.PK[2], 3, ctype, bto);
+						gen.capturePromote(MWP.PK[3], 4, ctype, bto);
 					} else {
-						gen.capturePromote(mp[from].PR, ctype);
+						gen.capturePromote(WP[from].PR, ctype,bto);
 					}
 				}
 			}
 		}
+	}
+
+	@Override
+	public void genLegal(Movegen gen, long mask) {
 	}
 }

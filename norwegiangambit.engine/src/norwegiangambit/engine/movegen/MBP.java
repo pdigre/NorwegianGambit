@@ -115,42 +115,33 @@ public class MBP  extends MBase{
 		return promotes;
 	}
 
-	public static <X extends MBase> void genLegal(Movegen gen,long b, X[] arr) {
-		genSingle(gen, b, arr,gen.bb_piece);
-		genDouble(gen, b, arr,gen.bb_piece);
-		genCaptures(gen, b, arr,gen.bb_white);
-	}
-	
-	public static <X extends MBase> void genSingle(final Movegen gen,long b, final X[] arr, long occupancy) {
-		final MBP[] mp=(MBP[])arr;
+	public static <X extends MBase> void genSingle(final Movegen gen,long b, long occupancy) {
 		long m1=b&~(occupancy<<8);
 		int pop = Long.bitCount(m1);
 		for (int j = 0; j < pop; j++) {
 			int from = Long.numberOfTrailingZeros(m1);
 			m1 ^= 1L << from;
 			if(from<16){
-				gen.promote(mp[from].P1[0],1);
-				gen.promote(mp[from].P1[1],2);
-				gen.promote(mp[from].P1[2],3);
-				gen.promote(mp[from].P1[3],4);
+				gen.promote(BP[from].P1[0],1);
+				gen.promote(BP[from].P1[1],2);
+				gen.promote(BP[from].P1[2],3);
+				gen.promote(BP[from].P1[3],4);
 			} else {
-				gen.move(mp[from].M1);
+				gen.move(BP[from].M1);
 			}
 		}
 	}
-	public static <X extends MBase> void genDouble(final Movegen gen,long b, final X[] arr, long occupancy) {
-		final MBP[] mp=(MBP[])arr;
+	public static <X extends MBase> void genDouble(final Movegen gen,long b, long occupancy) {
 		long occ=~(occupancy<<8);
 		long m2 = b&occ&0x00FF000000000000L&(occ<<8);
 		int pop = Long.bitCount(m2);
 		for (int j = 0; j < pop; j++) {
 			int from = Long.numberOfTrailingZeros(m2);
 			m2 ^= 1L << from;
-			gen.move(mp[from].M2);
+			gen.move(BP[from].M2);
 		}
 	}
-	public static <X extends MBase> void genCaptures(final Movegen gen,long b, final X[] arr, long enemy) {
-		final MBP[] mp=(MBP[])arr;
+	public static <X extends MBase> void genCaptures(final Movegen gen,long b, long enemy) {
 		final int enp = gen.epsq;
 		long e=enemy|(1L<<enp);
 		long cl = (b & IConst.MaskBToHFiles) &(e<<9);
@@ -160,21 +151,22 @@ public class MBP  extends MBase{
 			cl ^= 1L << from;
 			int to=from-9;
 			if (to == enp) {
-				int md=mp[from].EL;
+				int md=BP[from].EL;
 				if(gen.isSafeMove(md))
 					gen.enpassant(md);
 			} else {
-				int ctype=gen.ctype(1L << to);
+				long bto = 1L << to;
+				int ctype=gen.ctype(bto);
 				if(from>15){
-					gen.capture(mp[from].CL[ctype], 0, ctype);
+					gen.capture(BP[from].CL[ctype], 0, ctype, bto);
 				} else {
 					if(from-9==WR_QUEEN_STARTPOS && (gen.castling & CANCASTLE_WHITEQUEEN)!=0){
-						gen.capturePromote(MBP.PQ[0], 1, ctype);
-						gen.capturePromote(MBP.PQ[1], 2, ctype);
-						gen.capturePromote(MBP.PQ[2], 3, ctype);
-						gen.capturePromote(MBP.PQ[3], 4, ctype);
+						gen.capturePromote(MBP.PQ[0], 1, ctype, bto);
+						gen.capturePromote(MBP.PQ[1], 2, ctype, bto);
+						gen.capturePromote(MBP.PQ[2], 3, ctype, bto);
+						gen.capturePromote(MBP.PQ[3], 4, ctype, bto);
 					} else {
-						gen.capturePromote(mp[from].PL, ctype);
+						gen.capturePromote(BP[from].PL, ctype,bto);
 					}
 				}
 			}
@@ -187,25 +179,30 @@ public class MBP  extends MBase{
 			cr ^= 1L << from;
 			int to=from-7;
 			if (to == enp) {
-				int md=mp[from].ER;
+				int md=BP[from].ER;
 				if(gen.isSafeMove(md))
 					gen.enpassant(md);
 			} else {
-				int ctype=gen.ctype(1L << to);
+				long bto = 1L << to;
+				int ctype=gen.ctype(bto);
 				if(from>15){
-					gen.capture(mp[from].CR[ctype], 0, ctype);
+					gen.capture(BP[from].CR[ctype], 0, ctype, bto);
 				} else {
 					if(from-7==WR_KING_STARTPOS && (gen.castling & CANCASTLE_WHITEKING)!=0){
-						gen.capturePromote(MBP.PK[0], 1, ctype);
-						gen.capturePromote(MBP.PK[1], 2, ctype);
-						gen.capturePromote(MBP.PK[2], 3, ctype);
-						gen.capturePromote(MBP.PK[3], 4, ctype);
+						gen.capturePromote(MBP.PK[0], 1, ctype, bto);
+						gen.capturePromote(MBP.PK[1], 2, ctype, bto);
+						gen.capturePromote(MBP.PK[2], 3, ctype, bto);
+						gen.capturePromote(MBP.PK[3], 4, ctype, bto);
 					} else {
-						MBP mbp = mp[from];
-						gen.capturePromote(mbp.PR, ctype);
+						MBP mbp = BP[from];
+						gen.capturePromote(mbp.PR, ctype,bto);
 					}
 				}
 			}
 		}
+	}
+
+	@Override
+	public void genLegal(Movegen gen, long mask) {
 	}
 }

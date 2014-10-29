@@ -19,8 +19,8 @@ public class MWB extends MSlider{
 		DIAG=new int[][]{slide(IConst.WB, UP + LEFT),slide(IConst.WB, UP + RIGHT),slide(IConst.WB, DOWN + LEFT),slide(IConst.WB, DOWN + RIGHT)};
 	}
 
-	public void genLegal(Movegen gen){
-		wslide(gen,DIAG, 2,Q,K);
+	public void genLegal(Movegen gen,long mask){
+		wslide(gen,DIAG, 2,Q,K,mask);
 	}
 	
 }

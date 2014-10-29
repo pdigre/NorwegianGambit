@@ -53,22 +53,22 @@ public class MBR extends MSlider{
 		return makeArray(list);
 	}
 
-	public void genLegal(Movegen gen){
+	public void genLegal(Movegen gen,long mask){
 		if(from==IConst.BR_QUEEN_STARTPOS){
 			if((gen.castling & IConst.CANCASTLE_BLACKQUEEN) != 0 ){
-				bslide2(gen,QLINE);
+				bslide2(gen,QLINE, mask);
 				return;
 			}
 		} else if(from==IConst.BR_KING_STARTPOS){
 			if((gen.castling & IConst.CANCASTLE_BLACKKING) != 0 ){
-				bslide2(gen,KLINE);
+				bslide2(gen,KLINE,mask);
 				return;
 			}
 		}
-		bslide(gen,LINE, 3,Q,K);
+		bslide(gen,LINE, 3,Q,K, mask);
 	}
 
-	public void bslide2(Movegen gen, int[][] moves) {
+	public void bslide2(Movegen gen, int[][] moves,long mask) {
 		long occ = gen.bb_piece;
 		long enemy = gen.bb_white;
 		for (int[] m : moves) {
@@ -76,18 +76,19 @@ public class MBR extends MSlider{
 			while (i < m.length) {
 				long bto = getBTo(m[i + 5]);
 				if ((occ & bto) != 0) {
-					if ((enemy & bto) != 0) {
+					if ((enemy & bto & mask) != 0) {
 						int c = gen.ctype(bto);
 						if(c==3 && bto==1L<<IConst.WR_KING_STARTPOS)
-							gen.capture(K2, 3, c);
+							gen.capture(K2, 3, c, bto);
 						else if(c==3 && bto==1L<<IConst.WR_QUEEN_STARTPOS)
-							gen.capture(Q2, 3, c);
+							gen.capture(Q2, 3, c, bto);
 						else
-							gen.capture(m[i + c], 3, c);
+							gen.capture(m[i + c], 3, c, bto);
 					}
 					break;
 				} else {
-					gen.move(m[i + 5]);
+					if((bto & mask)!=0)
+						gen.move(m[i + 5]);
 					i += 6;
 				}
 			}

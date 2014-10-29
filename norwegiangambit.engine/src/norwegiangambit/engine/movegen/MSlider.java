@@ -26,7 +26,7 @@ public abstract class MSlider extends MBase {
 		return makeArray(list);
 	}
 
-	public void bslide(Movegen gen, int[][] mm, int type,int Q, int K) {
+	public void bslide(Movegen gen, int[][] mm, int type,int Q, int K, long mask) {
 		long occ = gen.bb_piece;
 		long enemy = gen.bb_white;
 		for (int[] m : mm) {
@@ -34,18 +34,19 @@ public abstract class MSlider extends MBase {
 			while (i < m.length) {
 				long bto = getBTo(m[i + 5]);
 				if ((occ & bto) != 0) {
-					if ((enemy & bto) != 0) {
+					if ((enemy & bto & mask) != 0) {
 						int c = gen.ctype(bto);
 						if(c==3 && bto==1L<<IConst.WR_KING_STARTPOS && (gen.castling&CANCASTLE_WHITEKING)!=0){
-							gen.capture(K,type,c);
+							gen.capture(K,type,c, bto);
 						}else if(c==3 && bto==1L<<IConst.WR_QUEEN_STARTPOS && (gen.castling&CANCASTLE_WHITEQUEEN)!=0){
-							gen.capture(Q,type,c);
+							gen.capture(Q,type,c, bto);
 						}else{
-							gen.capture(m[i + c], type, c);
+							gen.capture(m[i + c], type, c, bto);
 						}
 					}
 					break;
 				} else {
+					if((bto & mask)!=0)
 					gen.move(m[i + 5]);
 					i += 6;
 				}
@@ -53,7 +54,7 @@ public abstract class MSlider extends MBase {
 		}
 	}
 
-	public void wslide(Movegen gen, int[][] mm, int type,int Q, int K) {
+	public void wslide(Movegen gen, int[][] mm, int type,int Q, int K, long mask) {
 		long occ = gen.bb_piece;
 		long enemy = gen.bb_black;
 		for (int[] m : mm) {
@@ -61,19 +62,20 @@ public abstract class MSlider extends MBase {
 			while (i < m.length) {
 				long bto = getBTo(m[i + 5]);
 				if ((occ & bto) != 0) {
-					if ((enemy & bto) != 0) {
+					if ((enemy & bto & mask) != 0) {
 						int c = gen.ctype(bto);
 						if(c==3 && bto==1L<<IConst.BR_KING_STARTPOS  && (gen.castling&CANCASTLE_BLACKKING)!=0){
-							gen.capture(K, type, c);
+							gen.capture(K, type, c, bto);
 						}else if(c==3 && bto==1L<<IConst.BR_QUEEN_STARTPOS && (gen.castling&CANCASTLE_BLACKQUEEN)!=0){
-							gen.capture(Q, type, c);
+							gen.capture(Q, type, c, bto);
 						}else{
-							gen.capture(m[i + c], type, c);
+							gen.capture(m[i + c], type, c, bto);
 						}
 					}
 					break;
 				} else {
-					gen.move(m[i + 5]);
+					if((bto&mask)!=0)
+						gen.move(m[i + 5]);
 					i += 6;
 				}
 			}

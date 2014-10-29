@@ -56,22 +56,22 @@ public class MWR extends MSlider{
 		return makeArray(list);
 	}
 
-	public void genLegal(Movegen gen){
+	public void genLegal(Movegen gen,long mask){
 		if(from==IConst.WR_QUEEN_STARTPOS){
 			if((gen.castling & IConst.CANCASTLE_WHITEQUEEN) != 0 ){
-				wslide2(gen,QLINE);
+				wslide2(gen,QLINE, mask);
 				return;
 			}
 		} else if(from==IConst.WR_KING_STARTPOS){
 			if((gen.castling & IConst.CANCASTLE_WHITEKING) != 0 ){
-				wslide2(gen,KLINE);
+				wslide2(gen,KLINE, mask);
 				return;
 			}
 		}
-		wslide(gen,LINE, 3,Q,K);
+		wslide(gen,LINE, 3,Q,K,mask);
 	}
 	
-	public void wslide2(Movegen gen, int[][] moves) {
+	public void wslide2(Movegen gen, int[][] moves,long mask) {
 		long occ = gen.bb_piece;
 		long enemy = gen.bb_black;
 		for (int[] m : moves) {
@@ -79,17 +79,17 @@ public class MWR extends MSlider{
 			while (i < m.length) {
 				long bto = MBase.getBTo(m[i + 5]);
 				if ((occ & bto) != 0) {
-					if ((enemy & bto) != 0) {
+					if ((enemy & bto & mask) != 0) {
 						int c = gen.ctype(bto);
 						if(c==3 && bto==1L<<IConst.BR_KING_STARTPOS  && (gen.castling&CANCASTLE_BLACKKING)!=0)
-							gen.capture(K2, 3, c);
+							gen.capture(K2, 3, c, bto);
 						else if(c==3 && bto==1L<<IConst.BR_QUEEN_STARTPOS && (gen.castling&CANCASTLE_BLACKQUEEN)!=0)
-							gen.capture(Q2, 3, c);
+							gen.capture(Q2, 3, c, bto);
 						else {
 //							MOVEDATA md = BASE.ALL[m[i + c]];
 //							if(from==7 && BITS.getTo(md.bitmap)==63)
 //								System.out.println("hi");
-							gen.capture(m[i + c], 3, c);
+							gen.capture(m[i + c], 3, c, bto);
 						}
 					}
 					break;
@@ -97,7 +97,8 @@ public class MWR extends MSlider{
 //					MOVEDATA md = BASE.ALL[m[i + 5]];
 //					if(from==7 && BITS.getTo(md.bitmap)==63)
 //						System.out.println("hi");
-					gen.move(m[i + 5]);
+					if((bto & mask)!=0)
+						gen.move(m[i + 5]);
 					i += 6;
 				}
 			}

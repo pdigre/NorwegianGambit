@@ -23,9 +23,8 @@ public class MBQ extends MSlider{
 		LINE=new int[][]{slide(IConst.BQ, UP),slide(IConst.BQ, DOWN), slide(IConst.BQ, LEFT),slide(IConst.BQ, RIGHT)};
 	}
 
-	public void genLegal(Movegen gen){
-		bslide(gen,DIAG, 4,QD,KD);
-		bslide(gen,LINE, 4,Q,K);
+	public void genLegal(Movegen gen,long mask){
+		bslide(gen,DIAG, 4,QD,KD, mask);
+		bslide(gen,LINE, 4,Q,K, mask);
 	}
-	
 }

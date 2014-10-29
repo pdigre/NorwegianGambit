@@ -20,6 +20,8 @@ public abstract class MBase implements IConst{
 		this.from = from;
 	}
 
+	public abstract void genLegal(Movegen gen,long mask);
+
 	public int[] makeArray(ArrayList<Integer> list) {
 		int[] arr = new int[list.size()];
 		for (int i = 0; i < list.size(); i++)
@@ -53,19 +55,6 @@ public abstract class MBase implements IConst{
 		return x;
 	}
 
-	public void genLegal(Movegen gen){
-		//
-	}
-
-	public static <X extends MBase> void genLegal(Movegen gen,long b, X[] arr) {
-		int bits = Long.bitCount(b);
-		for (int j = 0; j < bits; j++) {
-			int from = Long.numberOfTrailingZeros(b);
-			b ^= 1L << from;
-			arr[from].genLegal(gen);
-		}
-	}
-	
 	public void rookCapture(int to, long bitmap, int captured) {
 		if (captured == IConst.BR) {
 			if (to == IConst.BR_KING_STARTPOS){

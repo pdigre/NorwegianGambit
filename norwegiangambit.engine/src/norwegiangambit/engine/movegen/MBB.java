@@ -19,7 +19,7 @@ public class MBB extends MSlider{
 		DIAG=new int[][]{slide(IConst.BB, UP + LEFT),slide(IConst.BB, UP + RIGHT),slide(IConst.BB, DOWN + LEFT),slide(IConst.BB, DOWN + RIGHT)};
 	}
 
-	public void genLegal(Movegen gen){
-		bslide(gen,DIAG, 2,Q,K);
+	public void genLegal(Movegen gen,long mask){
+		bslide(gen,DIAG, 2,Q,K,mask);
 	}
 }

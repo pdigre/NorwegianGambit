@@ -3,7 +3,6 @@ package norwegiangambit.engine.movegen;
 import java.util.ArrayList;
 import java.util.List;
 
-import norwegiangambit.util.BITS;
 import norwegiangambit.util.IConst;
 
 public class MWK extends MBase {
@@ -56,19 +55,20 @@ public class MWK extends MBase {
 		}
 	}
 
-	public void genLegal(Movegen gen) {
-		kmoves(gen,from==WK_STARTPOS?getCastlingMoves(gen):M);
+	public void genLegal(Movegen gen,long mask) {
+		kmoves(gen,from==WK_STARTPOS?getBreakerMoves(gen,mask):M,mask);
 	}
 	
-	public void kmoves(Movegen gen, int[][] moves) {
+	public void kmoves(Movegen gen, int[][] moves,long mask) {
 		long enemy = gen.bb_black;
 		long all = gen.bb_piece;
 		for (int[] m : moves){
 			long bto = getBTo(m[5]);
 			if ((all & bto) == 0) {
-				add(gen,m[5]);
+				if((bto&mask)!=0L)
+					add(gen,m[5]);
 			} else {
-				if ((enemy & bto) != 0) {
+				if ((enemy & bto & mask) != 0) {
 					int c = gen.ctype(bto);
 					if(c==3 && bto==1L<<BR_KING_STARTPOS && (gen.castling&CANCASTLE_BLACKKING)!=0)
 						add(gen,K);
@@ -82,28 +82,28 @@ public class MWK extends MBase {
 	}
 
 	final static void add(Movegen gen,int md) {
-		if(gen.isSafePos(BITS.getTo(MBase.ALL[md].bitmap)))
-			gen.move(md);
+		gen.move(md);
 	}
 	
-	public int[][] getCastlingMoves(Movegen gen) {
+	final private int[][] getBreakerMoves(Movegen gen,long mask) {
 		final boolean qc=(gen.castling & CANCASTLE_WHITEQUEEN) != 0;
 		final boolean kc=(gen.castling & CANCASTLE_WHITEKING) != 0;
 		return qc?(kc?X:XQ):(kc?XK:M);
 	}
 
-	public static void genCastling(Movegen gen) {
+	final private static long CQ_MASK=(1L<<WK_STARTPOS - 1) | (1L<<WK_STARTPOS - 2);
+	final private static long CK_MASK=(1L<<WK_STARTPOS + 1) | (1L<<WK_STARTPOS + 2);
+	
+	public static void genCastling(Movegen gen,long unsafe) {
 		long castling = gen.castling & CANCASTLE_WHITE;
 		if ((CWQ & gen.bb_piece) == 0
 				&& (castling & CANCASTLE_WHITEQUEEN) != 0
-				&& gen.isSafePos(WK_STARTPOS - 1)
-				&& gen.isSafePos(WK_STARTPOS - 2)) {
+				&& (CQ_MASK&unsafe)==0) {
 			add(gen,(gen.castling & CANCASTLE_WHITEKING) != 0?CQ:CQ2);
 		}
 		if ((CWK & gen.bb_piece) == 0
 				&& (castling & CANCASTLE_WHITEKING) != 0
-				&& gen.isSafePos(WK_STARTPOS + 1)
-				&& gen.isSafePos(WK_STARTPOS + 2)) {
+				&& (CK_MASK&unsafe)==0) {
 			add(gen,(gen.castling & CANCASTLE_WHITEQUEEN) != 0?CK:CK2);
 		}
 	}

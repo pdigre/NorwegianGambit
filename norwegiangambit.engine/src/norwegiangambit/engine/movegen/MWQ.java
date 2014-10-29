@@ -25,9 +25,9 @@ public class MWQ extends MSlider{
 		LINE=new int[][]{slide(IConst.WQ, UP),slide(IConst.WQ, DOWN), slide(IConst.WQ, LEFT),slide(IConst.WQ, RIGHT)};
 	}
 
-	public void genLegal(Movegen gen){
-		wslide(gen,DIAG, 4,QD,KD);
-		wslide(gen,LINE, 4,Q,K);
+	public void genLegal(Movegen gen,long mask){
+		wslide(gen,DIAG, 4,QD,KD,mask);
+		wslide(gen,LINE, 4,Q,K,mask);
 	}
 	
 }

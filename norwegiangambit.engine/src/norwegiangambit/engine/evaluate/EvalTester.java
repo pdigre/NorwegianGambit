@@ -7,7 +7,8 @@ public class EvalTester extends AbstractTester{
 	public Evaluate insert(RootEval eval, int depth, int level) {
 		if(level == depth - 1)
 			return new HorizonGen(eval);
-		return new PVS();
+		return new AlphaBeta();
+//		return new PVS();
 //		return depth-level>4 ? new PVS():new AlphaBeta();
 	}
 

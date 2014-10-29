@@ -58,7 +58,6 @@ public class WrapExe implements IEXE{
 						BufferedReader br = new BufferedReader(new InputStreamReader(is));
 						String line;
 						while ((line = br.readLine()) != null) {
-							System.out.println(">"+line);
 							response(line);
 						}
 					} catch (IOException e) {
