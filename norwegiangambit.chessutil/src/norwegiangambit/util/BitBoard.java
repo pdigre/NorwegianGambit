@@ -322,4 +322,17 @@ public class BitBoard implements IConst{
 
     public static final long bishopAttacks(int sq, long occupied) {
         return bTables[sq][(int)(((occupied & bMasks[sq]) * bMagics[sq]) >>> (64 - bBits[sq]))];    }    public static final long rookAttacks(int sq, long occupied) {        return rTables[sq][(int)(((occupied & rMasks[sq]) * rMagics[sq]) >>> (64 - rBits[sq]))];    }
+
+    public static final long[] maskFile = {
+        0x0101010101010101L,
+        0x0202020202020202L,
+        0x0404040404040404L,
+        0x0808080808080808L,
+        0x1010101010101010L,
+        0x2020202020202020L,
+        0x4040404040404040L,
+        0x8080808080808080L
+    };
+
+    
 }

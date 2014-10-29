@@ -4,7 +4,7 @@ import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
-import norwegiangambit.util.PSQT_SEF;
+import norwegiangambit.util.PSQT;
 import norwegiangambit.util.polyglot.ZobristKey;
 
 public class MOVEDATA {
@@ -103,13 +103,13 @@ public class MOVEDATA {
 	}
 
 	private void sub(int piece, int sq, int[] score) {
-		int[] pv = PSQT_SEF.psqt(sq, piece);
+		int[] pv = PSQT.current.psqt(sq, piece);
 		score[0]-=pv[0];
 		score[1]-=pv[1];
 	}
 
 	private void add(int piece, int sq, int[] score) {
-		int[] pv = PSQT_SEF.psqt(sq, piece);
+		int[] pv = PSQT.current.psqt(sq, piece);
 		score[0]+=pv[0];
 		score[1]+=pv[1];
 	}

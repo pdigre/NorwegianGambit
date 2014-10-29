@@ -47,7 +47,7 @@ public abstract class MSlider extends MBase {
 					break;
 				} else {
 					if((bto & mask)!=0)
-					gen.move(m[i + 5]);
+						gen.move(m[i + 5]);
 					i += 6;
 				}
 			}

@@ -19,8 +19,8 @@ public class Movegen implements IConst{
 	public long bitmap;
 	public long bb_piece,castling;
 	public int wking,bking,epsq;
-	long bb_white, own, enemy,bb_knights,bb_kings,bb_pawns;
-	protected long checkers, pinners, support, unsafe;
+	public long bb_white, own, enemy,bb_knights,bb_kings,bb_pawns;
+	public long checkers, pinners, support, unsafe;
 	int king,eking;
 	public int pv;
 
@@ -163,8 +163,12 @@ public class Movegen implements IConst{
 		moves[iAll++] = md;
 	}
 	
-	final int ctype(long bit) {
+	final public int ctype(long bit) {
 		return ((bb_bit1 & bit) == 0 ? 0 : 1) + ((bb_bit2 & bit) == 0 ? 0 : 2) + ((bb_bit3 & bit) == 0 ? 0 : 2) - 1;
+	}
+	
+	final public int type(long bit) {
+		return ((bb_bit1 & bit) == 0 ? 0 : 1) + ((bb_bit2 & bit) == 0 ? 0 : 2) + ((bb_bit3 & bit) == 0 ? 0 : 4) + ((bb_black & bit) == 0 ? 0 : 8);
 	}
 	
 	final public int[] legalmoves() {

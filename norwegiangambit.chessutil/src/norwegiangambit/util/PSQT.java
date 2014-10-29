@@ -2,6 +2,7 @@ package norwegiangambit.util;
 
 public class PSQT {
 	
+	public static PSQT current= PSQT_SEF.psqt;
 	private int[][][] PSQT_ARR;
     
 	public int[] psqt(int sq, int piece) {

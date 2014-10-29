@@ -56,33 +56,26 @@ public class MBK extends MBase {
 	}
 
 	public void genLegal(Movegen gen,long mask) {
-		kmoves(gen,from == BK_STARTPOS?getBreakerMoves(gen,mask):M,mask);
-	}
-	
-	public void kmoves(Movegen gen, int[][] moves,long mask) {
 		long enemy = gen.bb_white;
 		long all = gen.bb_piece;
-		for (int[] m : moves){
+		int[][] mvs = from == BK_STARTPOS?getBreakerMoves(gen,mask):M;
+		for (int[] m : mvs){
 			long bto = getBTo(m[5]);
 			if ((all & bto) == 0) {
 				if((bto&mask)!=0L)
-					add(gen,m[5]);
+					gen.move(m[5]);
 			} else {
 				if ((enemy & bto & mask) != 0L) {
 					int c = gen.ctype(bto);
 					if(c==3 && bto==1L<<WR_KING_STARTPOS && (gen.castling&CANCASTLE_WHITEKING)!=0)
-						add(gen,K);
+						gen.move(K);
 					else if(c==3 && bto==1L<<WR_QUEEN_STARTPOS && (gen.castling&CANCASTLE_WHITEQUEEN)!=0)
-						add(gen,Q);
-					else 
-						add(gen,m[c]);
+						gen.move(Q);
+					else
+						gen.move(m[c]);
 				}
 			}
 		}
-	}
-
-	final static void add(Movegen gen,int md) {
-		gen.move(md);
 	}
 	
 	final private int[][] getBreakerMoves(Movegen gen,long mask) {
@@ -99,12 +92,12 @@ public class MBK extends MBase {
 		if ((CBQ & gen.bb_piece) == 0
 				&& (castling & CANCASTLE_BLACKQUEEN) != 0
 				&& (CQ_MASK&unsafe)==0) {
-			add(gen,(gen.castling & CANCASTLE_BLACKKING) != 0?CQ:CQ2);
+			gen.move((gen.castling & CANCASTLE_BLACKKING) != 0?CQ:CQ2);
 		}
 		if ((CBK & gen.bb_piece) == 0
 				&& (castling & CANCASTLE_BLACKKING) != 0
 				&& (CK_MASK&unsafe)==0) {
-			add(gen,(gen.castling & CANCASTLE_BLACKQUEEN) != 0?CK:CK2);
+			gen.move((gen.castling & CANCASTLE_BLACKQUEEN) != 0?CK:CK2);
 		}
 	}
 

@@ -11,9 +11,8 @@ public class MBR extends MSlider{
 	final int[][] LINE;
 	final static int Q2, K2;
 
-	final static MBR[] BR;
+	final static MBR[] BR=new MBR[64];
 	static {
-		BR=new MBR[64];
 		for (int from = 0; from < 64; from++)
 			BR[from] = new MBR(from);
 
@@ -61,7 +60,7 @@ public class MBR extends MSlider{
 			}
 		} else if(from==IConst.BR_KING_STARTPOS){
 			if((gen.castling & IConst.CANCASTLE_BLACKKING) != 0 ){
-				bslide2(gen,KLINE,mask);
+				bslide2(gen,KLINE, mask);
 				return;
 			}
 		}
@@ -94,5 +93,4 @@ public class MBR extends MSlider{
 			}
 		}
 	}
-
 }

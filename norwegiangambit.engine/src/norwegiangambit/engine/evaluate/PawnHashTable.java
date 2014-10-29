@@ -18,30 +18,34 @@ public class PawnHashTable {
 	final public static long[] data=new long[TTSIZE];
 	final public static long[] passedW=new long[TTSIZE];
 	final public static long[] passedB=new long[TTSIZE];
-	final public static long[] validate=new long[TTSIZE];
 	
-    final public static int get(long zobrist, long key2) {
+    final public static int get(long zobrist) {
 		int i1=(int)zobrist&TTMASK;
-		if(hash[i1]==(zobrist^key2)){
-			if(validate[i1]!=key2){
-//				System.out.println("Key collision:");
-				return -1;
-			}
+		if(hash[i1]==zobrist){
 			return i1;
 		}
 		return -1;
 	}
     
-    final public int getPassedBonusW(long data){
+    final static public int getPassedBonusW(long data){
     	return (int) ((data >> 16) & 0xFFFFL);
     }
 
-    final public int getPassedBonusB(long data){
+    final static public int getPassedBonusB(long data){
     	return (int) ((data >> 32) & 0xFFFFL);
     }
 
-    final public int getScore(long data){
+    final static public int getScore(long data){
     	return (int) ( data & 0xFFFFL);
     }
+
+	public static int set(int score, long zobrist, int passedBonusW, int passedBonusB, long passedPawnsW, long passedPawnsB) {
+		int i1=(int)zobrist&TTMASK;
+		hash[i1]=zobrist;
+		passedW[i1]=passedPawnsW;
+		passedB[i1]=passedPawnsB;
+		data[i1]=((long)score)|(((long)passedBonusW)<<16)|(((long)passedBonusB)<<32);
+		return 0;
+	}
 
 }
