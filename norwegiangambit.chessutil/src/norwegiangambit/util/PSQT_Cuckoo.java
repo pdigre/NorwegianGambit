@@ -73,7 +73,7 @@ public class PSQT_Cuckoo extends PSQT{
 		 S( -22,   0), S( -35,   8), S( -40,  16), S( -40,  24), S( -40,  24), S( -40,  16), S( -35,   8), S( -22,   0)
 		}
 		});
-		init("");
+		init("a=4"); 
 	}
 
 }

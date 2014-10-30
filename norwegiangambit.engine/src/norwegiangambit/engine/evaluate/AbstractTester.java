@@ -13,15 +13,29 @@ import norwegiangambit.util.IDivide;
 import norwegiangambit.util.PSQT;
 import norwegiangambit.util.PSQT_SEF;
 
-public abstract class AbstractTester implements IDivide, IThinker{
+/**
+ * Test Engine super-class
+ * <br>Subclass your search and evaluation engine to this  
+ *
+ */
+public abstract class AbstractTester implements IDivide, ISearch{
 
 	public static boolean useConcurrency;
 
+	/**
+	 * Constructor for Junit test class
+	 * @param concurrent - use concurrency (may turn test-results unstable)
+	 */
 	public AbstractTester(boolean concurrent){
 		useConcurrency=concurrent;
 		MBase.psqt=new PSQT_SEF();
 	}
 	
+	/**
+	 * Constructor for Junit test class
+	 * @param concurrent - use concurrency (may turn test-results unstable)
+	 * @param psqt - Evaluation variables and PSQT tables 
+	 */
 	public AbstractTester(boolean concurrent,PSQT psqt){
 		useConcurrency=concurrent;
 		MBase.psqt=psqt;
@@ -110,7 +124,14 @@ public abstract class AbstractTester implements IDivide, IThinker{
 		}
 	}
 
-	public abstract Evaluate insert(RootEval eval, int depth, int level);
+	/**
+	 * Implement this method to configure the engine stack
+	 * @param eval  - for returning results
+	 * @param depth - depth left to choose 
+	 * @param ply   - current ply level for stack
+	 * @return
+	 */
+	public abstract Evaluate insert(RootEval eval, int depth, int ply);
 	
 
 	
