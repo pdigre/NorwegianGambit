@@ -1,24 +1,17 @@
 package norwegiangambit.engine
 
 import norwegiangambit.engine.evaluate.AbstractTest
-import norwegiangambit.engine.evaluate.AbstractTester
 import norwegiangambit.engine.evaluate.QuiesceTester
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Ignore
 import org.junit.Test
 
-import static norwegiangambit.engine.evaluate.AbstractTester.*
-import static norwegiangambit.engine.evaluate.QuiesceTester.*
-
 class Test_Quiesce1 extends AbstractTest {
 
 	@BeforeClass
 	def static void prepare() {
-		val engine = new QuiesceTester();
-		AbstractTester.useConcurrency=true;
-		QuiesceTester.useTransposition=true;
-		setTesting(engine);
+		setTesting(new QuiesceTester(true,true));
 	}
 	
 	@Test

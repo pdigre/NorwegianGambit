@@ -5,6 +5,12 @@ package norwegiangambit.engine.evaluate;
 public class QuiesceTester extends AbstractTester{
 
 	public static boolean useTransposition=true;
+
+	public QuiesceTester(boolean concurrent,boolean transposition) {
+		super(concurrent);
+		useTransposition=transposition;
+	}
+
 	@Override
 	public Evaluate insert(RootEval eval, int depth, int ply) {
 		if(ply == depth - 1)
@@ -112,11 +118,11 @@ public class QuiesceTester extends AbstractTester{
 		}
 
 		public int getTT() {
-			return TranspositionTable.get(getZobrist(), bb_bit1);
+			return TranspositionTable.get(getZobrist(), aMinor);
 		}
 
 		public void setTT(int md,int score,int type) {
-			TranspositionTable.set(getZobrist(),bb_bit1,depth,type,md,score);
+			TranspositionTable.set(getZobrist(),aMinor,depth,type,md,score);
 		}
 	}
 
@@ -155,7 +161,7 @@ public class QuiesceTester extends AbstractTester{
 				type=TranspositionTable.T_LE;
 			else if(score2>=beta)
 				type=TranspositionTable.T_GE;
-			TranspositionTable.set(getZobrist(),bb_bit1,depth,type,curr_move,score2);
+			TranspositionTable.set(getZobrist(),aMinor,depth,type,curr_move,score2);
 			return score2;
 		}
 		

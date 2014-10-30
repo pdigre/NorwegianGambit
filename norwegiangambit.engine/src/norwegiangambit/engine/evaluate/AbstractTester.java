@@ -10,11 +10,23 @@ import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
+import norwegiangambit.util.PSQT;
+import norwegiangambit.util.PSQT_SEF;
 
 public abstract class AbstractTester implements IDivide, IThinker{
 
-	public static boolean useConcurrency = false;
+	public static boolean useConcurrency;
 
+	public AbstractTester(boolean concurrent){
+		useConcurrency=concurrent;
+		MBase.psqt=new PSQT_SEF();
+	}
+	
+	public AbstractTester(boolean concurrent,PSQT psqt){
+		useConcurrency=concurrent;
+		MBase.psqt=psqt;
+	}
+	
 	@Override
 	public List<Eval> divide(String fen, int levels) {
 		boolean isConcurrent = levels>2 && useConcurrency;
@@ -61,7 +73,7 @@ public abstract class AbstractTester implements IDivide, IThinker{
 			m.ply=ply;
 		}
 		Evaluate start = movegen[0];
-		start.make(md,root.isWhite,root.castling,root.wking,root.bking,root.bb_bit1,root.bb_bit2,root.bb_bit3,root.bb_black);
+		start.make(md,root.wNext,root.castling,root.wkingpos,root.bkingpos,root.aMinor,root.aMajor,root.aSlider,root.bOccupied);
 		start.evaluate(md);
 		return movegen;
 	}

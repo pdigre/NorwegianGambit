@@ -1,11 +1,15 @@
 package norwegiangambit.util;
 
-import static norwegiangambit.util.PSQT.S;
 
-public class PSQT_SEF{
+/**
+ * Simplified Evaluation Function 
+ *
+ */
+public class PSQT_SEF extends PSQT{
 
-	public static PSQT psqt = new PSQT(
-			new int[]{IConst.WP,IConst.WN,IConst.WB,IConst.WR,IConst.WQ,IConst.WK}, 
+	public PSQT_SEF(){
+		super(
+			new int[]{WP,WN,WB,WR,WQ,WK}, 
 			new int[]{100,320,330,500,900,20000}, 
 			new int[][][]{ //
 		{ // Pawn
@@ -69,9 +73,5 @@ public class PSQT_SEF{
 		 S( -30, -50), S( -40, -40), S( -40, -30), S( -50, -20), S( -50, -20), S( -40, -30), S( -40, -40), S( -30, -50)
 		}
 	});
-	
-
-	public static int[] psqt(int sq, int piece) {
-		return psqt.psqt(sq, piece);
 	}
 }

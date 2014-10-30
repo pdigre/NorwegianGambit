@@ -7,19 +7,18 @@ import norwegiangambit.engine.movegen.Movegen;
 import norwegiangambit.util.BitBoard;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
-import norwegiangambit.util.PSQT;
 import norwegiangambit.util.polyglot.ZobristKey;
 
 public class Evaluate extends Movegen {
 
 	final public static int MATE = -32000; 
 	final public static int STALE = 0; 
-    static final int pV =   92;
-    static final int nV =  385;
-    static final int bV =  385;
-    static final int rV =  593;
-    static final int qV = 1244;
-    static final int kV = 9900; // Used by SEE algorithm, but not included in board material sums
+    static final int pV = MBase.psqt.pVal(WP);
+    static final int nV = MBase.psqt.pVal(WN);
+    static final int bV = MBase.psqt.pVal(WB);
+    static final int rV = MBase.psqt.pVal(WR);
+    static final int qV = MBase.psqt.pVal(WQ);
+    static final int kV = MBase.psqt.pVal(WK); // Used by SEE algorithm, but not included in board material sums
 	
 	Evaluate parent,deeper;
 
@@ -49,11 +48,11 @@ public class Evaluate extends Movegen {
 
 	public int score(){
 		int score = whiteScore();
-		return isWhite?score:-score;
+		return wNext?score:-score;
 	}
 
 	public int whiteScore() {
-		int popcnt=Long.bitCount(bb_piece);
+		int popcnt=Long.bitCount(aOccupied);
 		return ((popcnt)*midscore+(32-popcnt)*endscore)/32;
 	}
 
@@ -70,7 +69,7 @@ public class Evaluate extends Movegen {
 	}
 	
 	public void make(int md) {
-		((Movegen)deeper).make(md,isWhite, castling, wking, bking, bb_bit1, bb_bit2, bb_bit3, bb_black);
+		((Movegen)deeper).make(md,wNext, castling, wkingpos, bkingpos, aMinor, aMajor, aSlider, bOccupied);
 	}
 
 	public void evaluate(int i) {
@@ -83,11 +82,11 @@ public class Evaluate extends Movegen {
 			zobrist=zobrist_fwd;
 			if(md instanceof MOVEDATA2){
 				final long ep=1L<<epsq;
-				final long epb = isWhite
+				final long epb = wNext
 						?((ep&IConst.MaskAToGFiles)>>7) | ((ep&IConst.MaskBToHFiles)>>9)
 						:((ep&IConst.MaskBToHFiles)<<7) | ((ep&IConst.MaskAToGFiles)<<9);
-				final long cmask = isWhite ? ~bb_black:bb_black;
-				long enemy = cmask & bb_bit1&~bb_bit2&~bb_bit3;
+				final long cmask = wNext ? ~bOccupied:bOccupied;
+				long enemy = cmask & aMinor&~aMajor&~aSlider;
 				if((epb & enemy) !=0L)
 					zobrist^=((MOVEDATA2)md).zobrist_ep;
 			}
@@ -99,8 +98,8 @@ public class Evaluate extends Movegen {
 	}
 
 	public void evaluate() {
-		int[] brd = FEN.boardFrom64(bb_bit1, bb_bit2, bb_bit3,bb_black);
-		zobrist_fwd=ZobristKey.getKey(isWhite, castling, epsq, brd);
+		int[] brd = FEN.boardFrom64(aMinor, aMajor, aSlider,bOccupied);
+		zobrist_fwd=ZobristKey.getKey(wNext, castling, epsq, brd);
 		zobrist=zobrist_fwd;
 		int[] score = getScore(brd);
 		midscore=score[0];
@@ -112,7 +111,7 @@ public class Evaluate extends Movegen {
 		for (int sq = 0; sq < 64; sq++) {
 			int piece = brd[sq];
 			if(piece!=0){
-				int[] pv = PSQT.current.psqt(sq, piece);
+				int[] pv = MBase.psqt(sq, piece);
 				score[0]+=pv[0];
 				score[1]+=pv[1];
 			}
@@ -145,7 +144,7 @@ public class Evaluate extends Movegen {
 	
 	public String getHistory2(){
 		String id = curr_move>0?MBase.ALL[curr_move].id():"??";
-		String text=FEN.board2string(this.bb_bit1, this.bb_bit2, this.bb_bit3, this.bb_black) + "\n" 
+		String text=FEN.board2string(this.aMinor, this.aMajor, this.aSlider, this.bOccupied) + "\n" 
 				+(" << "+id+"              ").substring(0,10) + "\n";
 		if(parent instanceof Evaluate)
 			return FEN.addHorizontal(text,parent.getHistory2());
@@ -172,18 +171,18 @@ public class Evaluate extends Movegen {
 	long wPawns,wKnights,wBishops,wRooks,wQueens,wKings,bPawns,bKnights,bBishops,bRooks,bQueens,bKings;
 	int wMtrl,wMtrlPawns,bMtrl,bMtrlPawns;
 	public int calulateAdjustments(){
-        wPawns   =  bb_bit1&~bb_bit2&~bb_bit3&~bb_black;
-        wKnights = ~bb_bit1& bb_bit2&~bb_bit3&~bb_black;
-        wBishops =  bb_bit1&~bb_bit2& bb_bit3&~bb_black;
-        wRooks   = ~bb_bit1& bb_bit2& bb_bit3&~bb_black;
-        wQueens  =  bb_bit1& bb_bit2& bb_bit3&~bb_black;
-        wKings   =  bb_bit1& bb_bit2&~bb_bit3&~bb_black;
-        bPawns   =  bb_bit1&~bb_bit2&~bb_bit3& bb_black;
-        bKnights = ~bb_bit1& bb_bit2&~bb_bit3& bb_black;
-        bBishops =  bb_bit1&~bb_bit2& bb_bit3& bb_black;
-        bRooks   = ~bb_bit1& bb_bit2& bb_bit3& bb_black;
-        bQueens  =  bb_bit1& bb_bit2& bb_bit3& bb_black;
-        bKings   =  bb_bit1& bb_bit2&~bb_bit3& bb_black;
+        wPawns   = wOccupied & aPawns;
+        wKnights = wOccupied & aKnights;
+        wBishops = wOccupied & aBishops;
+        wRooks   = wOccupied & aRooks;
+        wQueens  = wOccupied & aQueens;
+        wKings   = wOccupied & aKings;
+        bPawns   = bOccupied & aPawns;
+        bKnights = bOccupied & aKnights;
+        bBishops = bOccupied & aBishops;
+        bRooks   = bOccupied & aRooks;
+        bQueens  = bOccupied & aQueens;
+        bKings   = bOccupied & aKings;
         wMtrlPawns=pV*Long.bitCount(wPawns);
         bMtrlPawns=pV*Long.bitCount(bPawns);
         wMtrl=nV*Long.bitCount(wKnights)+bV*Long.bitCount(wBishops)+rV*Long.bitCount(wRooks)+qV*Long.bitCount(wQueens);
@@ -208,7 +207,7 @@ public class Evaluate extends Movegen {
 
 	private int bishopBonus() {
         int score = 0;
-        final long occupied = bb_piece;
+        final long occupied = aOccupied;
         if ((wBishops | bBishops) == 0)
             return 0;
         long m = wBishops;
@@ -216,7 +215,7 @@ public class Evaluate extends Movegen {
             int sq = Long.numberOfTrailingZeros(m);
             long atk = BitBoard.bishopAttacks(sq, occupied);
             wAttacksBB |= atk;
-            score += BishMobScore[Long.bitCount(atk & ~(bb_white | bPawnAttacks))];
+            score += BishMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAttacks))];
             if ((atk & bKingZone) != 0)
                 bKingAttacks += Long.bitCount(atk & bKingZone);
             m &= m-1;
@@ -226,7 +225,7 @@ public class Evaluate extends Movegen {
             int sq = Long.numberOfTrailingZeros(m);
             long atk = BitBoard.bishopAttacks(sq, occupied);
             bAttacksBB |= atk;
-            score -= BishMobScore[Long.bitCount(atk & ~(bb_black | wPawnAttacks))];
+            score -= BishMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAttacks))];
             if ((atk & wKingZone) != 0)
                 wKingAttacks += Long.bitCount(atk & wKingZone);
             m &= m-1;
@@ -276,9 +275,9 @@ public class Evaluate extends Movegen {
             if ((wPawns & BitBoard.maskFile[x]) == 0) { // At least half-open file
                 score += (bPawns & BitBoard.maskFile[x]) == 0 ? 25 : 12;
             }
-            long atk = BitBoard.rookAttacks(sq, bb_piece);
+            long atk = BitBoard.rookAttacks(sq, aOccupied);
             wAttacksBB |= atk;
-            score += RookMobScore[Long.bitCount(atk & ~(bb_white | bPawnAttacks))];
+            score += RookMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAttacks))];
             if ((atk & bKingZone) != 0)
                 bKingAttacks += Long.bitCount(atk & bKingZone);
             m &= m-1;
@@ -294,9 +293,9 @@ public class Evaluate extends Movegen {
             if ((bPawns & BitBoard.maskFile[x]) == 0) {
                 score -= (wPawns & BitBoard.maskFile[x]) == 0 ? 25 : 12;
             }
-            long atk = BitBoard.rookAttacks(sq, bb_piece);
+            long atk = BitBoard.rookAttacks(sq, aOccupied);
             bAttacksBB |= atk;
-            score -= RookMobScore[Long.bitCount(atk & ~(bb_black | wPawnAttacks))];
+            score -= RookMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAttacks))];
             if ((atk & wKingZone) != 0)
                 wKingAttacks += Long.bitCount(atk & wKingZone);
             m &= m-1;
@@ -309,20 +308,20 @@ public class Evaluate extends Movegen {
 	}
 
 	private int threatBonus() {
-        long kMask = ~(bb_bit1& bb_bit2&~bb_bit3); 
-        int score1 = tradeBonus(bb_black, bb_white & kMask);
-		int score2 = tradeBonus(bb_white, bb_black & kMask);
+        long kMask = ~(aMinor& aMajor&~aSlider); 
+        int score1 = threatBonus(bOccupied, wOccupied & kMask);
+		int score2 = threatBonus(wOccupied, bOccupied & kMask);
 		return (score1 + score2) / 64;
 	}
 
-	private int tradeBonus(long own, long enemy) {
+	private int threatBonus(long own, long enemy) {
 		int score = 0;
-        long op = bb_bit1&~bb_bit2&~bb_bit3&own;
-        long on = bb_bit1&~bb_bit2&~bb_bit3&own;
-        long ob = bb_bit1&~bb_bit2& bb_bit3&own;
-        long or = bb_bit1&~bb_bit2& bb_bit3&own;
-        long oq = bb_bit1& bb_bit2& bb_bit3&own;
-		long atks=isWhite?((op&MaskAToGFiles)>>7) | ((op&MaskBToHFiles)>>9):((op&MaskAToGFiles)<<9) | ((op&MaskBToHFiles)<<7);
+        long op = own&aPawns;
+        long on = own&aKnights;
+        long ob = own&aBishops;
+        long or = own&aRooks;
+        long oq = own&aQueens;
+		long atks=wNext?((op&MaskAToGFiles)>>7) | ((op&MaskBToHFiles)>>9):((op&MaskAToGFiles)<<9) | ((op&MaskBToHFiles)<<7);
 		score+=threatOffset(atks&enemy);
             
         while(on!=0L){
@@ -332,18 +331,18 @@ public class Evaluate extends Movegen {
 		}
 		while(ob!=0L){
 			int sq = Long.numberOfTrailingZeros(ob);
-			score+=threatOffset(BitBoard.bishopAttacks(sq, bb_piece)&enemy);
+			score+=threatOffset(BitBoard.bishopAttacks(sq, aOccupied)&enemy);
 			ob^=1L << sq;
 		}
 		while(or!=0L){
 			int sq = Long.numberOfTrailingZeros(or);
-			score+=threatOffset(BitBoard.rookAttacks(sq, bb_piece)&enemy);
+			score+=threatOffset(BitBoard.rookAttacks(sq, aOccupied)&enemy);
 			or^=1L << sq;
 		}
 		while(oq!=0L){
 			int sq = Long.numberOfTrailingZeros(oq);
-			score+=threatOffset(BitBoard.bishopAttacks(sq, bb_piece)&enemy);
-			score+=threatOffset(BitBoard.rookAttacks(sq, bb_piece)&enemy);
+			score+=threatOffset(BitBoard.bishopAttacks(sq, aOccupied)&enemy);
+			score+=threatOffset(BitBoard.rookAttacks(sq, aOccupied)&enemy);
 			oq^=1L << sq;
 		}
 		return score;
@@ -353,7 +352,7 @@ public class Evaluate extends Movegen {
 		int score=0;
 		while(atk!=0L){
 			int sq = Long.numberOfTrailingZeros(atk);
-			int val = PSQT.current.psqt(sq, type(sq))[1];
+			int val = MBase.psqt(sq, type(sq))[1];
 			score+=val+val*val/qV;
 			atk^=1L << sq;
 		}
@@ -434,7 +433,7 @@ public class Evaluate extends Movegen {
             return 0;
         final int maxM = qV + 2 * rV + 2 * bV + 2 * nV;
         int score = kingSafetyKPPart();
-        if (BitBoard.sq2y(wking) == 0) {
+        if (BitBoard.sq2y(wkingpos) == 0) {
             if (((wKings & 0x60L) != 0) && // King on f1 or g1
                 ((wRooks & 0xC0L) != 0) && // Rook on g1 or h1
                 ((wPawns & BitBoard.maskFile[6]) != 0) &&
@@ -448,7 +447,7 @@ public class Evaluate extends Movegen {
                 score -= 6 * 15;
             }
         }
-        if (BitBoard.sq2y(bking) == 7) {
+        if (BitBoard.sq2y(bkingpos) == 7) {
             if (((bKings & 0x6000000000000000L) != 0) && // King on f8 or g8
                 ((bRooks & 0xC000000000000000L) != 0) && // Rook on g8 or h8
                 ((bPawns & BitBoard.maskFile[6]) != 0) &&
@@ -477,8 +476,8 @@ public class Evaluate extends Movegen {
         {
             int safety = 0;
             int halfOpenFiles = 0;
-            if (BitBoard.sq2y(wking) < 2) {
-                long shelter = 1L << BitBoard.sq2x(wking);
+            if (BitBoard.sq2y(wkingpos) < 2) {
+                long shelter = 1L << BitBoard.sq2x(wkingpos);
                 shelter |= ((shelter & IConst.MaskBToHFiles) >>> 1) |
                            ((shelter & IConst.MaskAToGFiles) << 1);
                 shelter <<= 8;
@@ -507,8 +506,8 @@ public class Evaluate extends Movegen {
         {
             int safety = 0;
             int halfOpenFiles = 0;
-            if (BitBoard.sq2y(bking) >= 6) {
-                long shelter = 1L << (56 + BitBoard.sq2x(bking));
+            if (BitBoard.sq2y(bkingpos) >= 6) {
+                long shelter = 1L << (56 + BitBoard.sq2x(bkingpos));
                 shelter |= ((shelter & IConst.MaskBToHFiles) >>> 1) |
                            ((shelter & IConst.MaskAToGFiles) << 1);
                 shelter >>>= 8;
@@ -568,7 +567,7 @@ public class Evaluate extends Movegen {
         if (m != 0) {
             int mtrlNoPawns = bMtrl - bMtrlPawns;
             if (mtrlNoPawns < hiMtrl) {
-                int kingPos = wking;
+                int kingPos = wkingpos;
                 while (m != 0) {
                     int sq = Long.numberOfTrailingZeros(m);
                     int x = BitBoard.sq2x(sq);
@@ -578,10 +577,10 @@ public class Evaluate extends Movegen {
                     int kScore = kingDist * 4;
                     if (kingDist > pawnDist) kScore += (kingDist - pawnDist) * (kingDist - pawnDist);
                     score += interpolate(mtrlNoPawns, 0, kScore, hiMtrl, 0);
-                    if (!isWhite)
+                    if (!wNext)
                         kingDist--;
                     if ((pawnDist < kingDist) && (mtrlNoPawns == 0)) {
-                        if ((BitBoard.northFill(1L<<sq) & (1L << wking)) != 0)
+                        if ((BitBoard.northFill(1L<<sq) & (1L << wkingpos)) != 0)
                             pawnDist++; // Own king blocking pawn
                         if (pawnDist < bestWPawnDist) {
                             bestWPawnDist = pawnDist;
@@ -598,7 +597,7 @@ public class Evaluate extends Movegen {
         if (m != 0) {
             int mtrlNoPawns = wMtrl - wMtrlPawns;
             if (mtrlNoPawns < hiMtrl) {
-                int kingPos = wking;
+                int kingPos = wkingpos;
                 while (m != 0) {
                     int sq = Long.numberOfTrailingZeros(m);
                     int x = BitBoard.sq2x(sq);
@@ -608,10 +607,10 @@ public class Evaluate extends Movegen {
                     int kScore = kingDist * 4;
                     if (kingDist > pawnDist) kScore += (kingDist - pawnDist) * (kingDist - pawnDist);
                     score -= interpolate(mtrlNoPawns, 0, kScore, hiMtrl, 0);
-                    if (isWhite)
+                    if (wNext)
                         kingDist--;
                     if ((pawnDist < kingDist) && (mtrlNoPawns == 0)) {
-                        if ((BitBoard.southFill(1L<<sq) & (1L << bking)) != 0)
+                        if ((BitBoard.southFill(1L<<sq) & (1L << bkingpos)) != 0)
                             pawnDist++; // Own king blocking pawn
                         if (pawnDist < bestBPawnDist) {
                             bestBPawnDist = pawnDist;
@@ -626,15 +625,15 @@ public class Evaluate extends Movegen {
         // Evaluate pawn races in pawn end games
         if (bestWPromSq >= 0) {
             if (bestBPromSq >= 0) {
-                int wPly = bestWPawnDist * 2; if (isWhite) wPly--;
-                int bPly = bestBPawnDist * 2; if (!isWhite) bPly--;
+                int wPly = bestWPawnDist * 2; if (wNext) wPly--;
+                int bPly = bestBPawnDist * 2; if (!wNext) bPly--;
                 if (wPly < bPly - 1) {
                     score += 500;
                 } else if (wPly == bPly - 1) {
-                    if (BitBoard.getDirection(bestWPromSq, bking) != 0)
+                    if (BitBoard.getDirection(bestWPromSq, bkingpos) != 0)
                         score += 500;
                 } else if (wPly == bPly + 1) {
-                    if (BitBoard.getDirection(bestBPromSq, bking) != 0)
+                    if (BitBoard.getDirection(bestBPromSq, bkingpos) != 0)
                         score -= 500;
                 } else {
                     score -= 500;

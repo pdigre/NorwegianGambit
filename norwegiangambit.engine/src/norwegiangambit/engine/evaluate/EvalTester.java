@@ -3,6 +3,10 @@ package norwegiangambit.engine.evaluate;
 
 public class EvalTester extends AbstractTester{
 
+	public EvalTester(boolean concurrent) {
+		super(concurrent);
+	}
+
 	@Override
 	public Evaluate insert(RootEval eval, int depth, int level) {
 		if(level == depth - 1)

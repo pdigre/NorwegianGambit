@@ -7,11 +7,11 @@ public class MBB extends MSlider{
 
 	final int[][] DIAG;
 
-	final static MBB[] BB;
+	final static MBB[] MOVES;
 	static {
-		BB=new MBB[64];
+		MOVES=new MBB[64];
 		for (int from = 0; from < 64; from++)
-			BB[from] = new MBB(from);
+			MOVES[from] = new MBB(from);
 	}
 
 	public MBB(int from) {

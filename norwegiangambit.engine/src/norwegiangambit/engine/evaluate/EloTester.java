@@ -6,8 +6,13 @@ import java.util.concurrent.ForkJoinPool;
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.FEN;
+import norwegiangambit.util.PSQT;
 
 public class EloTester extends EvalTesterTT {
+
+	public EloTester(boolean concurrent, boolean transposition,PSQT psqt) {
+		super(concurrent, transposition,psqt);
+	}
 
 	private CountTask[] tasks;
 	private RootEval[] evals;

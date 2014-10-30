@@ -4,11 +4,10 @@ import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
-import norwegiangambit.util.PSQT;
 import norwegiangambit.util.polyglot.ZobristKey;
 
 public class MOVEDATA {
-	final public long bitmap,b_black,b_bit1,b_bit2,b_bit3;
+	final public long bitmap,bOccupied,aMinor,aMajor,aSlider;
 	final public long bto;
 	final public int mscore,escore;
 	final public long zobrist;
@@ -88,10 +87,10 @@ public class MOVEDATA {
 	    	long castling = (IConst.CASTLING_STATE&bitmap)^IConst.CASTLING_STATE;
 			zobrist^=ZobristKey.keyCastling(castling);
 	    }
-		this.b_bit1=b_bit1;
-		this.b_bit2=b_bit2;
-		this.b_bit3=b_bit3;
-		this.b_black=b_black;
+		this.aMinor=b_bit1;
+		this.aMajor=b_bit2;
+		this.aSlider=b_bit3;
+		this.bOccupied=b_black;
 		this.mscore=score[0];
 		this.escore=score[1];
 		this.zobrist=zobrist;
@@ -103,13 +102,13 @@ public class MOVEDATA {
 	}
 
 	private void sub(int piece, int sq, int[] score) {
-		int[] pv = PSQT.current.psqt(sq, piece);
+		int[] pv = MBase.psqt(sq, piece);
 		score[0]-=pv[0];
 		score[1]-=pv[1];
 	}
 
 	private void add(int piece, int sq, int[] score) {
-		int[] pv = PSQT.current.psqt(sq, piece);
+		int[] pv = MBase.psqt(sq, piece);
 		score[0]+=pv[0];
 		score[1]+=pv[1];
 	}
@@ -139,7 +138,7 @@ public class MOVEDATA {
 			sb.append(" x");
 			sb.append(FEN.type2fen(BITS.getCaptured(bitmap)));
 		}
-		return FEN.board2string(b_bit1,b_bit2,b_bit3,b_black)+" "+sb.toString();
+		return FEN.board2string(aMinor,aMajor,aSlider,bOccupied)+" "+sb.toString();
 	}
 
 	public String id() {

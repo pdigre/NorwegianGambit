@@ -1,21 +1,17 @@
 package norwegiangambit.engine
 
 import norwegiangambit.engine.evaluate.AbstractTest
-import norwegiangambit.engine.evaluate.AbstractTester
 import norwegiangambit.engine.evaluate.EvalTesterTT
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Ignore
 import org.junit.Test
 
-import static norwegiangambit.engine.evaluate.AbstractTester.*
-
 class Test_TT1 extends AbstractTest {
 
 	@BeforeClass
 	def static void prepare() {
-		AbstractTester.useConcurrency=false;
-		setTesting(new EvalTesterTT());
+		setTesting(new EvalTesterTT(false,true));
 	}
 	
 	@Test

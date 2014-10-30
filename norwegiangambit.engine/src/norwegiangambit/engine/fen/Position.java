@@ -243,10 +243,10 @@ public class Position implements IConst, Comparable<Position> {
 	public void make(int i,long p_castling) {
 		MOVEDATA m=MBase.ALL[i];
 		bitmap=m.bitmap&(~CASTLING_STATE | p_castling);
-		bb_black ^=m.b_black;
-		bb_bit1 ^=m.b_bit1;
-		bb_bit2 ^=m.b_bit2;
-		bb_bit3 ^=m.b_bit3;
+		bb_black ^=m.bOccupied;
+		bb_bit1 ^=m.aMinor;
+		bb_bit2 ^=m.aMajor;
+		bb_bit3 ^=m.aSlider;
 		int type = BITS.getPiece(bitmap);
 		if(type==IConst.WK)
 			wking=BITS.getTo(bitmap);
@@ -256,10 +256,10 @@ public class Position implements IConst, Comparable<Position> {
 
 	public void undo(MOVEDATA m,long bitmap) {
 		this.bitmap=bitmap;
-		bb_black ^=m.b_black;
-		bb_bit1 ^=m.b_bit1;
-		bb_bit2 ^=m.b_bit2;
-		bb_bit3 ^=m.b_bit3;
+		bb_black ^=m.bOccupied;
+		bb_bit1 ^=m.aMinor;
+		bb_bit2 ^=m.aMajor;
+		bb_bit3 ^=m.aSlider;
 		
 		int type = BITS.getPiece(bitmap);
 		if(type==IConst.WK)

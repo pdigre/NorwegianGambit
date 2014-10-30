@@ -1,8 +1,8 @@
 package norwegiangambit.engine.iterate;
 
 import norwegiangambit.engine.fen.Position;
+import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.IConst;
-import norwegiangambit.util.PSQT_SEF;
 
 public class FullEval implements IEvaluator {
 
@@ -19,12 +19,12 @@ public class FullEval implements IEvaluator {
             } else if (p == IConst.WK) {
                 wk = i;
             } else if (p > 0) {
-                score += PSQT_SEF.psqt(i, p)[0];
+                score += MBase.psqt(i, p)[0];
                 pcs++;
             }
         }
-        score += PSQT_SEF.psqt(wk,IConst.WK)[pcs < 15 && false?1:0];
-        score += PSQT_SEF.psqt(wk,IConst.BK)[pcs < 15 && false?1:0];
+        score += MBase.psqt(wk,IConst.WK)[pcs < 15 && false?1:0];
+        score += MBase.psqt(wk,IConst.BK)[pcs < 15 && false?1:0];
         return score;
     }
 }

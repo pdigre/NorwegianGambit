@@ -27,8 +27,8 @@ public abstract class MSlider extends MBase {
 	}
 
 	public void bslide(Movegen gen, int[][] mm, int type,int Q, int K, long mask) {
-		long occ = gen.bb_piece;
-		long enemy = gen.bb_white;
+		long occ = gen.aOccupied;
+		long enemy = gen.wOccupied;
 		for (int[] m : mm) {
 			int i = 0;
 			while (i < m.length) {
@@ -55,8 +55,8 @@ public abstract class MSlider extends MBase {
 	}
 
 	public void wslide(Movegen gen, int[][] mm, int type,int Q, int K, long mask) {
-		long occ = gen.bb_piece;
-		long enemy = gen.bb_black;
+		long occ = gen.aOccupied;
+		long enemy = gen.bOccupied;
 		for (int[] m : mm) {
 			int i = 0;
 			while (i < m.length) {
