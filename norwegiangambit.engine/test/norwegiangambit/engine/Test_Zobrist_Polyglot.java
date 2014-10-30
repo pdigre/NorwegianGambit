@@ -72,7 +72,7 @@ public class Test_Zobrist_Polyglot {
 
 
 	public long getKey(Evaluate eval) {
-		return ZobristKey.getKey(eval.isWhite, eval.castling, eval.epsq, FEN.boardFrom64(eval.bb_bit1, eval.bb_bit2, eval.bb_bit3, eval.bb_black));
+		return ZobristKey.getKey(eval.wNext, eval.castling, eval.epsq, FEN.boardFrom64(eval.aMinor, eval.aMajor, eval.aSlider, eval.bOccupied));
 	}
 
 

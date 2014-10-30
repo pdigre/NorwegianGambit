@@ -3,6 +3,10 @@ package norwegiangambit.engine.movegen;
 import norwegiangambit.util.polyglot.ZobristKey;
 
 
+/**
+ * Extra movedata for when special zobrist enpassant lane is required
+ *
+ */
 public class MOVEDATA2 extends MOVEDATA {
 
 	final public int epsq;

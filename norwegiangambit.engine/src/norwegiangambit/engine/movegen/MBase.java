@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.IConst;
+import norwegiangambit.util.PSQT;
 
 public abstract class MBase implements IConst{
 	
@@ -12,6 +13,12 @@ public abstract class MBase implements IConst{
 	final static int[] WCAPTURES=new int[]{IConst.BP,IConst.BN,IConst.BB,IConst.BR,IConst.BQ};
 	final static int[] BCAPTURES=new int[]{IConst.WP,IConst.WN,IConst.WB,IConst.WR,IConst.WQ};
 	
+	public static PSQT psqt; 
+
+	public static int[] psqt(int sq, int piece) {
+		return psqt.psqt(sq, piece);
+	}
+
 	int Q, K; // Break castling
 	
 	final public int from;

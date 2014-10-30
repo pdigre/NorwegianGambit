@@ -11,17 +11,17 @@ public class MBR extends MSlider{
 	final int[][] LINE;
 	final static int Q2, K2;
 
-	final static MBR[] BR=new MBR[64];
+	final static MBR[] MOVES=new MBR[64];
 	static {
 		for (int from = 0; from < 64; from++)
-			BR[from] = new MBR(from);
+			MOVES[from] = new MBR(from);
 
-		MBR q = BR[BR_QUEEN_STARTPOS];
+		MBR q = MOVES[BR_QUEEN_STARTPOS];
 		QLINE=cline(q.LINE,CANCASTLE_BLACKQUEEN);
 		q.Q=q.LINE[1][39];
 		Q2=MOVEDATAX.create(ALL[q.Q].bitmap^CANCASTLE_BLACKKING,CANCASTLE_BLACKQUEEN|CANCASTLE_WHITEQUEEN);
 
-		MBR k = BR[BR_KING_STARTPOS];
+		MBR k = MOVES[BR_KING_STARTPOS];
 		KLINE=cline(k.LINE,CANCASTLE_BLACKKING);
 		k.K=k.LINE[1][39];
 		K2=MOVEDATAX.create(ALL[k.K].bitmap^CANCASTLE_BLACKQUEEN,CANCASTLE_BLACKKING|CANCASTLE_WHITEKING);
@@ -68,8 +68,8 @@ public class MBR extends MSlider{
 	}
 
 	public void bslide2(Movegen gen, int[][] moves,long mask) {
-		long occ = gen.bb_piece;
-		long enemy = gen.bb_white;
+		long occ = gen.aOccupied;
+		long enemy = gen.wOccupied;
 		for (int[] m : moves) {
 			int i = 0;
 			while (i < m.length) {

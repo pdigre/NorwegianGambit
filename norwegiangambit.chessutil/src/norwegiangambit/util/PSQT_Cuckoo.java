@@ -5,12 +5,12 @@ package norwegiangambit.util;
  * Simplified Evaluation Function 
  *
  */
-public class PSQT_SEF extends PSQT{
+public class PSQT_Cuckoo extends PSQT{
 
-	public PSQT_SEF(){
+	public PSQT_Cuckoo(){
 		super(
 			new int[]{WP,WN,WB,WR,WQ,WK}, 
-			new int[]{100,320,330,500,900,20000}, 
+			new int[]{92,385,385,593,1244,9900}, 
 			new int[][][]{ //
 		{ // Pawn
 		 S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0),

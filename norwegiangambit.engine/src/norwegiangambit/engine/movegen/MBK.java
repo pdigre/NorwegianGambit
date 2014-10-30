@@ -11,12 +11,12 @@ public class MBK extends MBase {
 	final static int CQ,CK,CQ2,CK2;
 	final static int[][] X,XQ,XK;
 	
-	final static MBK[] BK;
+	final static MBK[] MOVES;
 	static {
-		BK=new MBK[64];
+		MOVES=new MBK[64];
 		for (int from = 0; from < 64; from++)
-			BK[from] = new MBK(from);
-		int[][] M=BK[BK_STARTPOS].M;
+			MOVES[from] = new MBK(from);
+		int[][] M=MOVES[BK_STARTPOS].M;
 		X=castlingKing(M,CANCASTLE_BLACK);
 		XQ=castlingKing(M,CANCASTLE_BLACKQUEEN);
 		XK=castlingKing(M,CANCASTLE_BLACKKING);
@@ -56,8 +56,8 @@ public class MBK extends MBase {
 	}
 
 	public void genLegal(Movegen gen,long mask) {
-		long enemy = gen.bb_white;
-		long all = gen.bb_piece;
+		long enemy = gen.wOccupied;
+		long all = gen.aOccupied;
 		int[][] mvs = from == BK_STARTPOS?getBreakerMoves(gen,mask):M;
 		for (int[] m : mvs){
 			long bto = getBTo(m[5]);
@@ -89,12 +89,12 @@ public class MBK extends MBase {
 
 	public static void genCastling(Movegen gen,long unsafe) {
 		long castling = gen.castling & CANCASTLE_BLACK;
-		if ((CBQ & gen.bb_piece) == 0
+		if ((CBQ & gen.aOccupied) == 0
 				&& (castling & CANCASTLE_BLACKQUEEN) != 0
 				&& (CQ_MASK&unsafe)==0) {
 			gen.move((gen.castling & CANCASTLE_BLACKKING) != 0?CQ:CQ2);
 		}
-		if ((CBK & gen.bb_piece) == 0
+		if ((CBK & gen.aOccupied) == 0
 				&& (castling & CANCASTLE_BLACKKING) != 0
 				&& (CK_MASK&unsafe)==0) {
 			gen.move((gen.castling & CANCASTLE_BLACKQUEEN) != 0?CK:CK2);

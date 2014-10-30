@@ -3,6 +3,7 @@ package norwegiangambit.engine;
 import norwegiangambit.engine.evaluate.AbstractTest;
 import norwegiangambit.engine.evaluate.EloTester;
 import norwegiangambit.engine.evaluate.IThinker;
+import norwegiangambit.util.PSQT_Cuckoo;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,7 +13,7 @@ public class Test_Elo extends AbstractTest{
 
 	@BeforeClass
 	public static void prepare() {
-		setTesting(new EloTester());
+		setTesting(new EloTester(true,true, new PSQT_Cuckoo()));
 	}
 	
 	@Test

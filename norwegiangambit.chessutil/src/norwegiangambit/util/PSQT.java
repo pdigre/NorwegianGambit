@@ -1,9 +1,9 @@
 package norwegiangambit.util;
 
-public class PSQT {
+public class PSQT implements IConst{
 	
-	public static PSQT current= PSQT_SEF.psqt;
 	private int[][][] PSQT_ARR;
+	private int[] PVAL;
     
 	public int[] psqt(int sq, int piece) {
     	return PSQT_ARR[piece][sq];
@@ -23,9 +23,11 @@ public class PSQT {
 	}
 
 	public PSQT(int[] pt, int[] val, int[][][] psqt2) {
+		PVAL=new int[16];
 		PSQT_ARR=new int[16][][];
 		for (int i = 0; i < pt.length; i++){
 			int p=pt[i];
+			PVAL[p]=val[i];
 			int[][] fill = get(psqt2,i,val[i],val[i]);
 			PSQT_ARR[p]=fill;
 			PSQT_ARR[p+8]=invert(fill);
@@ -40,5 +42,9 @@ public class PSQT {
 	                b[8 * (7 - r) + c][s] = -w[8 * r + c][s];
 		}
         return b;
+	}
+
+	public int pVal(int type) {
+		return PVAL[type];
 	}
 }

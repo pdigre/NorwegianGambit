@@ -9,12 +9,19 @@ import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
+import norwegiangambit.util.PSQT_SEF;
 
 public class FastPerft implements IDivide{
 
-	public static boolean useConcurrency = true;
-	public static boolean useTransposition = true;
+	public static boolean useConcurrency;
+	public static boolean useTransposition;
 	public static boolean testTransposition = false;
+	
+	public FastPerft(boolean concurrency,boolean transposition){
+		useConcurrency=concurrency;
+		useTransposition=transposition;
+		MBase.psqt=new PSQT_SEF();
+	}
 	
 	@Override
 	public List<Eval> divide(String fen, int levels) {
@@ -44,7 +51,7 @@ public class FastPerft implements IDivide{
 					m.ply=ply;
 					m.depth=totdepth-ply;
 				}
-				movegen[0].make(md,root.isWhite,root.castling,root.wking,root.bking,root.bb_bit1,root.bb_bit2,root.bb_bit3,root.bb_black);
+				movegen[0].make(md,root.wNext,root.castling,root.wkingpos,root.bkingpos,root.aMinor,root.aMajor,root.aSlider,root.bOccupied);
 				movegen[0].evaluate(md);
 				movegen[0].run();
 				map.add(new Eval(FEN.move2literal(MBase.ALL[md].bitmap),(int)count[i],0));
@@ -86,7 +93,7 @@ public class FastPerft implements IDivide{
 				m.ply=ply;
 				m.depth=totdepth-ply;
 			}
-			movegen[0].make(md,root.isWhite,root.castling,root.wking,root.bking,root.bb_bit1,root.bb_bit2,root.bb_bit3,root.bb_black);
+			movegen[0].make(md,root.wNext,root.castling,root.wkingpos,root.bkingpos,root.aMinor,root.aMajor,root.aSlider,root.bOccupied);
 			movegen[0].evaluate(md);
 		}
 
@@ -108,7 +115,7 @@ public class FastPerft implements IDivide{
 		public void run() {
 			if(useTransposition){
 				if(!testTransposition){
-					int tt = TranspositionTable.get(getZobrist(),bb_bit1);
+					int tt = TranspositionTable.get(getZobrist(),aMinor);
 					if(tt!=-1){
 						long data=TranspositionTable.data[tt];
 						if(TranspositionTable.getDepth(data)==depth){
@@ -121,13 +128,13 @@ public class FastPerft implements IDivide{
 				generate();
 				for (int i = 0; i < iAll; i++) {
 					int md = moves[i];
-					deeper.make(md,isWhite,castling,wking,bking,bb_bit1,bb_bit2,bb_bit3,bb_black);
+					deeper.make(md,wNext,castling,wkingpos,bkingpos,aMinor,aMajor,aSlider,bOccupied);
 					deeper.evaluate(md);
 					((PerftGen)deeper).run();
 				}
 				long cnt = count[inum]-t;
 				if(testTransposition){
-					int tt = TranspositionTable.get(getZobrist(),bb_bit1);
+					int tt = TranspositionTable.get(getZobrist(),aMinor);
 					if(tt!=-1){
 						long data=TranspositionTable.data[tt];
 						if(TranspositionTable.getDepth(data)==depth){
@@ -138,12 +145,12 @@ public class FastPerft implements IDivide{
 						}
 					}
 				}
-				TranspositionTable.set(getZobrist(),bb_bit1,depth,cnt);
+				TranspositionTable.set(getZobrist(),aMinor,depth,cnt);
 			} else {
 				generate();
 				for (int i = 0; i < iAll; i++) {
 					int md = moves[i];
-					deeper.make(md,isWhite,castling,wking,bking,bb_bit1,bb_bit2,bb_bit3,bb_black);
+					deeper.make(md,wNext,castling,wkingpos,bkingpos,aMinor,aMajor,aSlider,bOccupied);
 					deeper.evaluate(md);
 					((PerftGen)deeper).run();
 				}

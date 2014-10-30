@@ -8,11 +8,11 @@ public class MWQ extends MSlider{
 	final int[][] DIAG,LINE;
 	final int QD,KD;
 
-	final static MWQ[] WQ;
+	final static MWQ[] MOVES;
 	static {
-		WQ=new MWQ[64];
+		MOVES=new MWQ[64];
 		for (int from = 0; from < 64; from++)
-			WQ[from] = new MWQ(from);
+			MOVES[from] = new MWQ(from);
 	}
 
 	public MWQ(int from) {

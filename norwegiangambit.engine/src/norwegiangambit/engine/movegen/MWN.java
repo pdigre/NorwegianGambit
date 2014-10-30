@@ -7,13 +7,13 @@ import norwegiangambit.util.IConst;
 
 public class MWN extends MBase{
 
-	final static MWN[] WN;
+	final static MWN[] MOVES;
 	;
 
 	static {
-		WN=new MWN[64];
+		MOVES=new MWN[64];
 		for (int from = 0; from < 64; from++)
-			WN[from] = new MWN(from);
+			MOVES[from] = new MWN(from);
 	}
 	
 	public MWN(int from) {
@@ -42,8 +42,8 @@ public class MWN extends MBase{
 	final int[][] M;
 
 	public void genLegal(Movegen gen,long mask) {
-		long all = gen.bb_piece;
-		long enemy = gen.bb_black;
+		long all = gen.aOccupied;
+		long enemy = gen.bOccupied;
 		for (int[] m : M){
 			long bto = getBTo(m[5]);
 			if ((all & bto) == 0) {

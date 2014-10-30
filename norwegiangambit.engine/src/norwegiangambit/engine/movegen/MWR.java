@@ -11,17 +11,17 @@ public class MWR extends MSlider{
 	final int[][] LINE;
 	final static int Q2, K2;
 
-	final static MWR[] WR=new MWR[64];
+	final static MWR[] MOVES=new MWR[64];
 	static {
 		for (int from = 0; from < 64; from++)
-			WR[from] = new MWR(from);
+			MOVES[from] = new MWR(from);
 
-		MWR q = WR[WR_QUEEN_STARTPOS];
+		MWR q = MOVES[WR_QUEEN_STARTPOS];
 		QLINE=cline(q.LINE,CANCASTLE_WHITEQUEEN);
 		q.Q=q.LINE[0][39];
 		Q2=MOVEDATAX.create(ALL[q.Q].bitmap^CANCASTLE_WHITEKING,CANCASTLE_BLACKQUEEN|CANCASTLE_WHITEQUEEN);
 
-		MWR k = WR[WR_KING_STARTPOS];
+		MWR k = MOVES[WR_KING_STARTPOS];
 		KLINE=cline(k.LINE,CANCASTLE_WHITEKING);
 		k.K=k.LINE[0][39];
 		K2=MOVEDATAX.create(ALL[k.K].bitmap^CANCASTLE_WHITEQUEEN,CANCASTLE_BLACKKING|CANCASTLE_WHITEKING);
@@ -69,8 +69,8 @@ public class MWR extends MSlider{
 	}
 
 	public void wslide2(Movegen gen, int[][] moves,long mask) {
-		long occ = gen.bb_piece;
-		long enemy = gen.bb_black;
+		long occ = gen.aOccupied;
+		long enemy = gen.bOccupied;
 		for (int[] m : moves) {
 			int i = 0;
 			while (i < m.length) {

@@ -1,9 +1,9 @@
 package norwegiangambit.engine.iterate;
 
 import norwegiangambit.engine.fen.Position;
+import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.IConst;
-import norwegiangambit.util.PSQT_SEF;
 
 public class TacticEval implements IEvaluator {
 
@@ -21,28 +21,28 @@ public class TacticEval implements IEvaluator {
 			if(BITS.isEnpassant(bitmap)){
 				int captured = BITS.getCaptured(bitmap);
 				int to2 = BITS.white(bitmap)?(to-8):(to+8);
-				int pVal = PSQT_SEF.psqt(to2, captured)[0];
+				int pVal = MBase.psqt(to2, captured)[0];
 				last -= pVal;
 			} else {
 				int captured = BITS.getCaptured(bitmap);
-				int pVal = PSQT_SEF.psqt(to, captured)[0];
+				int pVal = MBase.psqt(to, captured)[0];
 				last -= pVal;
 			}
 		}
 		if (BITS.isPromotion(bitmap)){
-			int vt = PSQT_SEF.psqt(to, piece)[0];
-			int vf = PSQT_SEF.psqt(from, BITS.white(bitmap)?IConst.WP:IConst.BP)[0];
+			int vt = MBase.psqt(to, piece)[0];
+			int vf = MBase.psqt(from, BITS.white(bitmap)?IConst.WP:IConst.BP)[0];
 			return last + vt - vf;
 		}
 		if (piece == IConst.BK) {
-			return last + PSQT_SEF.psqt(to,IConst.BK)[0] - PSQT_SEF.psqt(from,IConst.BK)[0];
+			return last + MBase.psqt(to,IConst.BK)[0] - MBase.psqt(from,IConst.BK)[0];
 		} else if (piece == IConst.WK) {
-			int vto = PSQT_SEF.psqt(to,IConst.WK)[0];
-			int vfrom = PSQT_SEF.psqt(from,IConst.WK)[0];
+			int vto = MBase.psqt(to,IConst.WK)[0];
+			int vfrom = MBase.psqt(from,IConst.WK)[0];
 			return last + vto - vfrom;
 		} else if (piece > 0) {
-			int vt = PSQT_SEF.psqt(to, piece)[0];
-			int vf = PSQT_SEF.psqt(from, piece)[0];
+			int vt = MBase.psqt(to, piece)[0];
+			int vf = MBase.psqt(from, piece)[0];
 			return last + vt - vf;
 		}
 		return last;
