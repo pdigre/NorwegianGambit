@@ -11,7 +11,7 @@ class Test_TT1 extends AbstractTest {
 
 	@BeforeClass
 	def static void prepare() {
-		setTesting(new EvalTesterTT(false,true));
+		setTesting(new EvalTesterTT(true,true));
 	}
 	
 	@Test

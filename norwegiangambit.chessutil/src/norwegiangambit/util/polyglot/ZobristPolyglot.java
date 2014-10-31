@@ -1,7 +1,5 @@
 package norwegiangambit.util.polyglot;
 
-import java.util.Arrays;
-
 import norwegiangambit.util.IConst;
 
 /**
@@ -11,10 +9,10 @@ import norwegiangambit.util.IConst;
  * 
  * @author Per Digre
  */
-public class ZobristKey implements IConst {
+public class ZobristPolyglot implements IZobristKey, IConst {
 
 	
-	public final static long[] random64 = new long[] { 0x9D39247E33776D41L, 0x2AF7398005AAA5C7L, 0x44DB015024623547L, 0x9C15F73E62A76AE2L,
+	public final static long[] polyglot64 = new long[] { 0x9D39247E33776D41L, 0x2AF7398005AAA5C7L, 0x44DB015024623547L, 0x9C15F73E62A76AE2L,
 			0x75834465489C0C89L, 0x3290AC3A203001BFL, 0x0FBBAD1F61042279L, 0xE83A908FF2FB60CAL, 0x0D7E765D58755C10L, 0x1A083822CEAFE02DL,
 			0x9605D5F0E25EC3B0L, 0xD021FF5CD13A2ED5L, 0x40BDF15D4A672E32L, 0x011355146FD56395L, 0x5DB4832046F3D9E5L, 0x239F8B2D7FF719CCL,
 			0x05D1A1AE85B49AA1L, 0x679F848F6E8FC971L, 0x7449BBFF801FED0BL, 0x7D11CDB1C3B7ADF0L, 0x82C7709E781EB7CCL, 0xF3218F1C9510786CL,
@@ -147,89 +145,23 @@ public class ZobristKey implements IConst {
 			0x77C621CC9FB3A483L, 0x67A34DAC4356550BL, 0xF8D626AAAF278509L };
 
 
-	public final static long[][] KEYS;
+	public final static int[] INDEX=new int[16];
 	
-	private static long[] longkey(int p) {
-		long[] l = new long[64];
-		int pt = ZobristKey.getKindOfPiece(p);
-		if(pt>=0){
-			int n = pt * 64;
-			for (int i = 0; i < 64; i++)
-				l[i] = ZobristKey.random64[n + i];
-		}
-		return l;
-	}
-
 	static{
-		KEYS=new long[16][];
-		for(int i=0;i<16;i++)
-			KEYS[i]=longkey(i);
-	}
-
-	long zobrist;
-
-	public ZobristKey(long zobrist) {
-		this.zobrist = zobrist;
+		int[] pt=new int[]{BP,WP,BN,WN,BB,WB,BR,WR,BQ,WQ,BK,WK};
+		for (int i = 0; i < pt.length; i++)
+			INDEX[pt[i]]=i*64;
 	}
 
 	@Override
-	public int hashCode() {
-		return (int) zobrist;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof ZobristKey)
-			return ((ZobristKey) obj).zobrist == zobrist;
-		return super.equals(obj);
-	}
-
-
-	private final static int getKindOfPiece(int piece) {
-		switch (piece) {
-		case IConst.BP:
-			return 0;
-		case IConst.WP:
-			return 1;
-		case IConst.BN:
-			return 2;
-		case IConst.WN:
-			return 3;
-		case IConst.BB:
-			return 4;
-		case IConst.WB:
-			return 5;
-		case IConst.BR:
-			return 6;
-		case IConst.WR:
-			return 7;
-		case IConst.BQ:
-			return 8;
-		case IConst.WQ:
-			return 9;
-		case IConst.BK:
-			return 10;
-		case IConst.WK:
-			return 11;
-		}
-		return -1;
-	}
-
-	public final static long ZOBRIST_CWK = random64[768];
-	public final static long ZOBRIST_CWQ = random64[769];
-	public final static long ZOBRIST_CBK = random64[770];
-	public final static long ZOBRIST_CBQ = random64[771];
-	public final static long ZOBRIST_NXT = random64[780];
-	public final static long[] ZOBRIST_ENP = Arrays.copyOfRange(random64, 772, 780);
-
-	public static long getKey(boolean isWhite, long castling, int enpassant, int[] brd) {
+	public long getKey(boolean isWhite, long castling, int enpassant, int[] brd) {
 		// Castling
 		long key = keyCastling(castling);
 
 		for (int i = 0; i < 64; i++) {
 			int piece = brd[i];
 			if(piece!=0)
-				key ^= ZobristKey.KEYS[piece][i];
+				key ^= get(piece,i);
 		}
 
 		// passant flags only when pawn can capture
@@ -237,34 +169,45 @@ public class ZobristKey implements IConst {
 			int file = enpassant & 7;
 			if (isWhite) {
 				if (file != 0 && brd[enpassant - 9] == WP) {
-					key ^= ZobristKey.ZOBRIST_ENP[file];
+					key ^= polyglot64[ZOBRIST_ENP+file];
 				} else if (file != 7 && brd[enpassant - 7] == WP) {
-					key ^= ZobristKey.ZOBRIST_ENP[file];
+					key ^= polyglot64[ZOBRIST_ENP+file];
 				}
 			} else {
 				if (file != 0 && brd[enpassant + 7] == BP) {
-					key ^= ZobristKey.ZOBRIST_ENP[file];
+					key ^= polyglot64[ZOBRIST_ENP+file];
 				} else if (file != 7 && brd[enpassant + 9] == BP) {
-					key ^= ZobristKey.ZOBRIST_ENP[file];
+					key ^= polyglot64[ZOBRIST_ENP+file];
 				}
 			}
 		}
 		if (isWhite)
-			key ^= ZobristKey.ZOBRIST_NXT;
+			key ^= polyglot64[ZOBRIST_NXT];
 		return key;
 	}
 
-	public static long keyCastling(long castling) {
+	@Override
+	public long keyCastling(long castling) {
 		long key = 0;
 		if ((castling & CANCASTLE_WHITEKING) != 0)
-			key ^= ZobristKey.ZOBRIST_CWK;
+			key ^= polyglot64[ZOBRIST_CWK];
 		if ((castling & CANCASTLE_WHITEQUEEN) != 0)
-			key ^= ZobristKey.ZOBRIST_CWQ;
+			key ^= polyglot64[ZOBRIST_CWQ];
 		if ((castling & CANCASTLE_BLACKKING) != 0)
-			key ^= ZobristKey.ZOBRIST_CBK;
+			key ^= polyglot64[ZOBRIST_CBK];
 		if ((castling & CANCASTLE_BLACKQUEEN) != 0)
-			key ^= ZobristKey.ZOBRIST_CBQ;
+			key ^= polyglot64[ZOBRIST_CBQ];
 		return key;
+	}
+
+	@Override
+	final public long get(int piece, int sq) {
+		return polyglot64[INDEX[piece]+sq];
+	}
+
+	@Override
+	public long get(int i) {
+		return polyglot64[i];
 	}
 
 }

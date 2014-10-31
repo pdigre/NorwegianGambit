@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.IConst;
 import norwegiangambit.util.PSQT;
+import norwegiangambit.util.polyglot.IZobristKey;
 
 public abstract class MBase implements IConst{
 	
@@ -14,9 +15,22 @@ public abstract class MBase implements IConst{
 	final static int[] BCAPTURES=new int[]{IConst.WP,IConst.WN,IConst.WB,IConst.WR,IConst.WQ};
 	
 	public static PSQT psqt; 
+	public static IZobristKey zobrist;
 
 	public static int[] psqt(int sq, int piece) {
 		return psqt.psqt(sq, piece);
+	}
+
+	public static long getZobrist(int piece, int sq){
+		return zobrist.get(piece, sq);
+	}
+
+	public static long getZobrist(int i){
+		return zobrist.get(i);
+	}
+
+	public static long keyCastling(long castling) {
+		return zobrist.keyCastling(castling);
 	}
 
 	int Q, K; // Break castling
@@ -210,5 +224,6 @@ public abstract class MBase implements IConst{
 			return 25000 + allb-1;
 		}
 	}
+
 
 }

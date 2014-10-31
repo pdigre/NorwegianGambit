@@ -99,7 +99,7 @@ Zobrist ^ bit1
 		int i1=(int)zobrist&TTMASK;
 		if(hash[i1]==(zobrist^key2)){
 			if(validate[i1]!=key2){
-//				System.out.println("Key collision:");
+				System.out.println("Key collision:");
 				return -1;
 			}
 			return i1;
@@ -107,7 +107,7 @@ Zobrist ^ bit1
 		i1=(int)((zobrist>>TTLog2SIZE)&TTMASK);
 		if(hash[i1]==(zobrist^key2)){
 			if(validate[i1]!=key2){
-//				System.out.println("Key collision:");
+				System.out.println("Key collision:");
 				return -1;
 			}
 			return i1;
@@ -161,10 +161,10 @@ Zobrist ^ bit1
 
 	final public static int set(long zobrist,long key2, int depth, long count) {
 		int i=(int)(zobrist&TTMASK);
-		hash[i]=zobrist^key2;
 		validate[i]=key2;
 		long s=count<<8;
 		data[i]=((long)depth) | s;
+		hash[i]=zobrist^key2;
 		return i;
 	}
 	

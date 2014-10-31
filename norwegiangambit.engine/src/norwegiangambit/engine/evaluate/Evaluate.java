@@ -7,7 +7,7 @@ import norwegiangambit.engine.movegen.Movegen;
 import norwegiangambit.util.BitBoard;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
-import norwegiangambit.util.polyglot.ZobristKey;
+import norwegiangambit.util.polyglot.ZobristPolyglot;
 
 public class Evaluate extends Movegen {
 
@@ -99,7 +99,7 @@ public class Evaluate extends Movegen {
 
 	public void evaluate() {
 		int[] brd = FEN.boardFrom64(aMinor, aMajor, aSlider,bOccupied);
-		zobrist_fwd=ZobristKey.getKey(wNext, castling, epsq, brd);
+		zobrist_fwd=MBase.zobrist.getKey(wNext, castling, epsq, brd);
 		zobrist=zobrist_fwd;
 		int[] score = getScore(brd);
 		midscore=score[0];

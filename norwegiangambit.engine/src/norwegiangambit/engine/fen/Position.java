@@ -6,7 +6,6 @@ import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 import norwegiangambit.util.PieceType;
-import norwegiangambit.util.polyglot.ZobristKey;
 
 public class Position implements IConst, Comparable<Position> {
 
@@ -146,7 +145,7 @@ public class Position implements IConst, Comparable<Position> {
 			long castling=bitmap&CASTLING_STATE;
 			int enpassant = BITS.getEnpassant(bitmap);
 			int[] brd = FEN.boardFrom64(bb_bit1, bb_bit2, bb_bit3, bb_black);
-			zobrist=ZobristKey.getKey(isWhite, castling, enpassant, brd);
+			zobrist=MBase.zobrist.getKey(isWhite, castling, enpassant, brd);
 		}
 		return zobrist;
 	}

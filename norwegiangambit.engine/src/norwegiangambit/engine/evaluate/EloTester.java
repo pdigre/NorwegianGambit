@@ -7,11 +7,20 @@ import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.PSQT;
+import norwegiangambit.util.polyglot.IZobristKey;
 
 public class EloTester extends EvalTesterTT {
 
 	public EloTester(boolean concurrent, boolean transposition,PSQT psqt) {
 		super(concurrent, transposition,psqt);
+	}
+
+	public EloTester(boolean concurrent, boolean transposition, PSQT psqt, IZobristKey zobrist) {
+		super(concurrent, transposition, psqt, zobrist);
+	}
+
+	public EloTester(boolean concurrent, boolean transposition) {
+		super(concurrent, transposition);
 	}
 
 	private CountTask[] tasks;

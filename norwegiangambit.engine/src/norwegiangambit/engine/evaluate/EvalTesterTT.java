@@ -1,6 +1,9 @@
 package norwegiangambit.engine.evaluate;
 
+import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.PSQT;
+import norwegiangambit.util.polyglot.IZobristKey;
+import norwegiangambit.util.polyglot.ZobristPolyglot;
 
 
 
@@ -10,12 +13,21 @@ public class EvalTesterTT extends AbstractTester{
 
 	public EvalTesterTT(boolean concurrent,boolean transposition) {
 		super(concurrent);
+		MBase.zobrist=new ZobristPolyglot();
 		useTransposition=transposition;
 	}
 
 	public EvalTesterTT(boolean concurrent,boolean transposition,PSQT psqt) {
 		super(concurrent,psqt);
+		MBase.zobrist=new ZobristPolyglot();
 		useTransposition=transposition;
+	}
+
+	public EvalTesterTT(boolean concurrent,boolean transposition,PSQT psqt,IZobristKey zobrist) {
+		super(concurrent,psqt);
+		MBase.zobrist=new ZobristPolyglot();
+		useTransposition=transposition;
+		MBase.zobrist=zobrist;
 	}
 
 	@Override

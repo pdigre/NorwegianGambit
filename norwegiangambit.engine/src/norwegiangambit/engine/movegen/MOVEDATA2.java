@@ -1,11 +1,9 @@
 package norwegiangambit.engine.movegen;
 
-import norwegiangambit.util.polyglot.ZobristKey;
-
+import norwegiangambit.util.polyglot.IZobristKey;
 
 /**
- * Extra movedata for when special zobrist enpassant lane is required
- *
+ * Extra movedata for when special zobrist enpassant file is required
  */
 public class MOVEDATA2 extends MOVEDATA {
 
@@ -15,7 +13,7 @@ public class MOVEDATA2 extends MOVEDATA {
 	protected MOVEDATA2(long bits,int epsq) {
 		super(bits);
 		this.epsq=epsq;
-		this.zobrist_ep=ZobristKey.ZOBRIST_ENP[epsq&7];
+		this.zobrist_ep=MBase.getZobrist(IZobristKey.ZOBRIST_ENP+(epsq&7));
 	}
 
 	public static int create(long bitmap,int epsq){

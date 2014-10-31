@@ -6,8 +6,9 @@ import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.FEN;
+import norwegiangambit.util.PSQT_SEF;
 import norwegiangambit.util.polyglot.Polyglot;
-import norwegiangambit.util.polyglot.ZobristKey;
+import norwegiangambit.util.polyglot.ZobristPolyglot;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,9 +16,13 @@ import org.junit.Test;
 @SuppressWarnings("static-method")
 public class Test_Zobrist_Polyglot {
 
+	static ZobristPolyglot z = new ZobristPolyglot();
+	
+
 	@BeforeClass
 	public static void prepare() {
-//		new BASE();
+		MBase.psqt=new PSQT_SEF();
+		MBase.zobrist=z;
 	}
 	
     @Test
@@ -72,7 +77,7 @@ public class Test_Zobrist_Polyglot {
 
 
 	public long getKey(Evaluate eval) {
-		return ZobristKey.getKey(eval.wNext, eval.castling, eval.epsq, FEN.boardFrom64(eval.aMinor, eval.aMajor, eval.aSlider, eval.bOccupied));
+		return z.getKey(eval.wNext, eval.castling, eval.epsq, FEN.boardFrom64(eval.aMinor, eval.aMajor, eval.aSlider, eval.bOccupied));
 	}
 
 

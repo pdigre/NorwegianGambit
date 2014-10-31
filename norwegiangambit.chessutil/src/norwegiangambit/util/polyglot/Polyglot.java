@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class Polyglot {
 
-    static public HashMap<ZobristKey, BookEntry> book = new HashMap<ZobristKey, BookEntry>();
+    static public HashMap<Long, BookEntry> book = new HashMap<Long, BookEntry>();
 
     static {
         try {
@@ -16,14 +16,13 @@ public class Polyglot {
             DataInputStream in = new DataInputStream(new BufferedInputStream(bookIs));
 
             while (true) {
-                long key = in.readLong();
+                long zobrist = in.readLong();
                 int move = in.readShort();
                 int weight = in.readShort();
                 in.readInt(); // Unused learn field
-                ZobristKey zobrist = new ZobristKey(key);
                 BookEntry entry = book.get(zobrist);
                 if (entry == null) {
-                    entry = new BookEntry(key);
+                    entry = new BookEntry(zobrist);
                     book.put(zobrist, entry);
                 }
                 entry.addMove(move, weight);
@@ -88,8 +87,8 @@ public class Polyglot {
         return sb.toString();
     }
 
-    public static ArrayList<BookMove> get(long key) {
-        BookEntry entry = Polyglot.book.get(new ZobristKey(key));
+    public static ArrayList<BookMove> get(long zobrist) {
+        BookEntry entry = Polyglot.book.get(zobrist);
         if (entry != null)
             return entry.moves;
         return new ArrayList<BookMove>();
