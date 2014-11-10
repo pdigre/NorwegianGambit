@@ -27,6 +27,7 @@ public class Movegen implements IConst{
 	public int wkingpos,bkingpos,epsq;
 	public long wOccupied, oOccupied, eOccupied,aPawns,aKnights,aBishops,aRooks,aQueens,aKings,aLine,aDiag;
 	public long checkers, pinners, oAttacked, eAttacked;
+	public long wPawns,bPawns,wPawnAtks,bPawnAtks,wPawnAtkBy,bPawnAtkBy;
 	int oKingpos,eKingpos;
 	public int pv;
 
@@ -68,7 +69,7 @@ public class Movegen implements IConst{
 		init();
 	}
 	public void set(boolean isWhite, long bitmap, int wkingpos, int bkingpos, long bOccupied, long aMinor, long aMajor, long aSlider) {
-		this.wNext	= isWhite;
+		this.wNext		= isWhite;
 		this.bOccupied 	= bOccupied;
 		this.aMinor 	= aMinor;
 		this.aMajor 	= aMajor;
@@ -81,20 +82,26 @@ public class Movegen implements IConst{
 	}
 
 	public void init() {
-		this.aOccupied 	= aMinor | aMajor | aSlider;
-		this.wOccupied 	= aOccupied ^ bOccupied;
-		this.aPawns 	=  aMinor & ~aMajor & ~aSlider;
-		this.aKnights 	= ~aMinor &  aMajor & ~aSlider;
-		this.aKings 	=  aMinor &  aMajor & ~aSlider;
-		this.aDiag 		=  aMinor           &  aSlider;
-		this.aLine	 	=            aMajor &  aSlider;
-		this.aBishops 	=  aMinor & ~aMajor &  aSlider;
-		this.aRooks 	= ~aMinor &  aMajor &  aSlider;
-		this.aQueens 	=  aMinor &  aMajor &  aSlider;
-		this.oKingpos 	= wNext?wkingpos:bkingpos;
-		this.eKingpos 	= wNext?bkingpos:wkingpos;
-		this.oOccupied	= wNext?wOccupied:bOccupied;
-		this.eOccupied	= wNext?bOccupied:wOccupied;
+		aOccupied 	= aMinor | aMajor | aSlider;
+		wOccupied 	= aOccupied ^ bOccupied;
+		aPawns 		=  aMinor & ~aMajor & ~aSlider;
+		aKnights 	= ~aMinor &  aMajor & ~aSlider;
+		aKings 		=  aMinor &  aMajor & ~aSlider;
+		aDiag 		=  aMinor           &  aSlider;
+		aLine	 	=            aMajor &  aSlider;
+		aBishops 	=  aMinor & ~aMajor &  aSlider;
+		aRooks 		= ~aMinor &  aMajor &  aSlider;
+		aQueens 	=  aMinor &  aMajor &  aSlider;
+		oKingpos 	= wNext?wkingpos:bkingpos;
+		eKingpos 	= wNext?bkingpos:wkingpos;
+		oOccupied	= wNext?wOccupied:bOccupied;
+		eOccupied	= wNext?bOccupied:wOccupied;
+		wPawns   	= wOccupied & aPawns;
+        bPawns   	= bOccupied & aPawns;
+		wPawnAtks 	= (((wPawns & MaskBToHFiles) << 7) | ((wPawns & MaskAToGFiles) << 9));  // Left - Right
+		bPawnAtks 	= (((bPawns & MaskBToHFiles) >> 9) | ((bPawns & MaskAToGFiles) >> 7));  // Left - Right
+		wPawnAtkBy 	= (((bPawns & MaskBToHFiles) >> 9) | ((bPawns & MaskAToGFiles) >> 7));  // Left - Right
+		bPawnAtkBy 	= (((wPawns & MaskBToHFiles) << 7) | ((wPawns & MaskAToGFiles) << 9));  // Left - Right
 	}
 
 	public void undo(MOVEDATA md){
@@ -222,7 +229,7 @@ public class Movegen implements IConst{
 		}
 		// Calculate unsafe positions, those attacked by enemy
 		long pcs=aOccupied&~(oOccupied &  aKings);
-		eAttacked=wNext?((ep&MaskAToGFiles)>>7) | ((ep&MaskBToHFiles)>>9):((ep&MaskAToGFiles)<<9) | ((ep&MaskBToHFiles)<<7);
+		eAttacked=wNext?wPawnAtkBy:bPawnAtkBy;
 		while(en!=0L){
 			int sq = Long.numberOfTrailingZeros(en);
 			eAttacked|=BitBoard.NMasks[sq];
@@ -283,13 +290,13 @@ public class Movegen implements IConst{
 					int ctype = ctype(attacker);
 					if(wNext){
 						MWP mwp = MWP.WP[from];
-						if(pinner<<7==attacker && (attacker&IConst.MaskHFile)==0L){
+						if(pinner<<7==attacker && (attacker&MaskHFile)==0L){
 							if(from>47){
 								capturePromote(mwp.PL, ctype, attacker);
 							} else
 								capture(mwp.CL[ctype], 0, ctype, attacker);
 						}
-						if(pinner<<9==attacker && (attacker&IConst.MaskAFile)==0L){
+						if(pinner<<9==attacker && (attacker&MaskAFile)==0L){
 							if(from>47){
 								capturePromote(mwp.PR, ctype, attacker);
 							} else
@@ -297,13 +304,13 @@ public class Movegen implements IConst{
 						}
 					} else {
 						MBP mbp = MBP.BP[from];
-						if(pinner>>9==attacker && (attacker&IConst.MaskHFile)==0L){
+						if(pinner>>9==attacker && (attacker&MaskHFile)==0L){
 							if(from<16){
 								capturePromote(mbp.PL, ctype, attacker);
 							} else
 								capture(mbp.CL[ctype], 0, ctype, attacker);
 						}
-						if(pinner>>7==attacker && (attacker&IConst.MaskAFile)==0L){
+						if(pinner>>7==attacker && (attacker&MaskAFile)==0L){
 							if(from<16){
 								capturePromote(mbp.PR, ctype, attacker);
 							} else
@@ -370,32 +377,30 @@ public class Movegen implements IConst{
 			int atk_sq = Long.numberOfTrailingZeros(checkers);
 			long between=BitBoard.BETWEEN[atk_sq*64+oKingpos];
 			long mask = between|checkers;
+			long free = oOccupied & ~pinners;
+			long pfree = free & aPawns;
 			if (wNext) {
-				long free = wOccupied & ~pinners;
 				loopMoves(free & aKnights, MWN.MOVES, mask);
 				loopMoves(free & aBishops, MWB.MOVES, mask);
 				loopMoves(free & aRooks,   MWR.MOVES, mask);
 				loopMoves(free & aQueens,  MWQ.MOVES, mask);
-				long _p = free & aPawns;
-				MWP.genSingle(this,_p, ~between);
-				MWP.genDouble(this,_p & (between>>16), aOccupied);
-				MWP.genCaptures(this,_p, checkers);
+				MWP.genSingle(this,pfree, ~between);
+				MWP.genDouble(this,pfree & (between>>16), aOccupied);
+				MWP.genCaptures(this,pfree, checkers);
 			} else {
-				long free = bOccupied & ~pinners;
 				loopMoves(free & aKnights, MBN.MOVES, mask);
 				loopMoves(free & aBishops, MBB.MOVES, mask);
 				loopMoves(free & aRooks,   MBR.MOVES, mask);
 				loopMoves(free & aQueens,  MBQ.MOVES, mask);
-				long _p = free & aPawns;
-				MBP.genSingle(this,_p, ~between);
-				MBP.genDouble(this,_p & (between<<16), aOccupied);
-				MBP.genCaptures(this,_p, checkers);
+				MBP.genSingle(this,pfree, ~between);
+				MBP.genDouble(this,pfree & (between<<16), aOccupied);
+				MBP.genCaptures(this,pfree, checkers);
 			}
 		}
 		if (wNext) {
-			MWK.MOVES[oKingpos].genLegal(this,~eAttacked);
+			MWK.MOVES[wkingpos].genLegal(this,~eAttacked);
 		} else {
-			MBK.MOVES[oKingpos].genLegal(this,~eAttacked);
+			MBK.MOVES[bkingpos].genLegal(this,~eAttacked);
 		}
 	}
 
@@ -407,12 +412,12 @@ public class Movegen implements IConst{
 			loopMoves(free & aBishops, MWB.MOVES, mask);
 			loopMoves(free & aRooks,   MWR.MOVES, mask);
 			loopMoves(free & aQueens,  MWQ.MOVES, mask);
-			MWK.MOVES[oKingpos].genLegal(this,~eAttacked);
+			MWK.MOVES[wkingpos].genLegal(this,~eAttacked);
 			long _p = free & aPawns;
 			MWP.genSingle(this, _p, this.aOccupied);
 			MWP.genDouble(this, _p, this.aOccupied);
 			MWP.genCaptures(this, _p, this.bOccupied);
-			if(oKingpos==IConst.WK_STARTPOS)
+			if(wkingpos==WK_STARTPOS)
 				MWK.genCastling(this,eAttacked);
 		} else {
 			long free = bOccupied & ~pinners;
@@ -420,12 +425,12 @@ public class Movegen implements IConst{
 			loopMoves(free & aBishops, MBB.MOVES, mask);
 			loopMoves(free & aRooks,   MBR.MOVES, mask);
 			loopMoves(free & aQueens,  MBQ.MOVES, mask);
-			MBK.MOVES[oKingpos].genLegal(this,~eAttacked);
+			MBK.MOVES[bkingpos].genLegal(this,~eAttacked);
 			long _p = free & aPawns;
 			MBP.genSingle(this, _p, this.aOccupied);
 			MBP.genDouble(this, _p, this.aOccupied);
 			MBP.genCaptures(this, _p, this.wOccupied);
-			if(oKingpos==IConst.BK_STARTPOS)
+			if(bkingpos==BK_STARTPOS)
 				MBK.genCastling(this,eAttacked);
 		}
 	}
@@ -452,16 +457,16 @@ public class Movegen implements IConst{
 					int c = ctype(bto);
 					if(c==3){
 						if(wNext){
-							if(bto==1L<<IConst.BR_KING_STARTPOS && (castling&CANCASTLE_BLACKKING)!=0)
+							if(bto==1L<<BR_KING_STARTPOS && (castling&CANCASTLE_BLACKKING)!=0)
 								capture(b.K, type, c, bto);
-							 else if(bto==1L<<IConst.BR_QUEEN_STARTPOS && (castling&CANCASTLE_BLACKQUEEN)!=0)
+							 else if(bto==1L<<BR_QUEEN_STARTPOS && (castling&CANCASTLE_BLACKQUEEN)!=0)
 								capture(b.Q, type, c, bto);
 							 else 
 								capture(m[i + c], type, c, bto);
 						} else {
-							if(bto==1L<<IConst.WR_KING_STARTPOS && (castling&CANCASTLE_WHITEKING)!=0)
+							if(bto==1L<<WR_KING_STARTPOS && (castling&CANCASTLE_WHITEKING)!=0)
 								capture(b.K, type, c, bto);
-							 else if(bto==1L<<IConst.WR_QUEEN_STARTPOS && (castling&CANCASTLE_WHITEQUEEN)!=0)
+							 else if(bto==1L<<WR_QUEEN_STARTPOS && (castling&CANCASTLE_WHITEQUEEN)!=0)
 								capture(b.Q, type, c, bto);
 							 else 
 								capture(m[i + c], type, c, bto);

@@ -1,7 +1,7 @@
 package norwegiangambit.engine;
 
 import static org.junit.Assert.assertEquals;
-import norwegiangambit.engine.evaluate.Evaluate;
+import norwegiangambit.engine.evaluate.FastEval;
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.engine.movegen.MOVEDATA;
@@ -49,41 +49,41 @@ public class Test_Zobrist_Polyglot {
     @Test
     public void zobringKeyMove_0() {
         // e2e4 d7d5 e4e5 f7f5 e1e2 e8f7
-        Evaluate e1 = start("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-		Evaluate e2 = next(e1, "e2e4");
+        FastEval e1 = start("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+		FastEval e2 = next(e1, "e2e4");
 		assertEquals("823c9b50fd114196", Long.toHexString(e2.getZobrist()));
-		Evaluate e3 = next(e2, "d7d5");
+		FastEval e3 = next(e2, "d7d5");
 		assertEquals("756b94461c50fb0", Long.toHexString(e3.getZobrist()));
-		Evaluate e4 = next(e3, "e4e5");
+		FastEval e4 = next(e3, "e4e5");
 		assertEquals("662fafb965db29d4", Long.toHexString(e4.getZobrist()));
-		Evaluate e5 = next(e4, "f7f5");
+		FastEval e5 = next(e4, "f7f5");
 		assertEquals("22a48b5a8e47ff78", Long.toHexString(e5.getZobrist()));
-		Evaluate e6 = next(e5, "e1e2");
+		FastEval e6 = next(e5, "e1e2");
 		assertEquals("652a607ca3f242c1", Long.toHexString(e6.getZobrist()));
-		Evaluate e7 = next(e6, "e8f7");
+		FastEval e7 = next(e6, "e8f7");
 		assertEquals("fdd303c946bdd9", Long.toHexString(e7.getZobrist()));
     }
 
     @Test
     public void zobringKeyMove_1() {
-        Evaluate e1 = start("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        FastEval e1 = start("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         // a2a4 b7b5 h2h4 b5b4 c2c4
-		Evaluate e6 = next(next(next(next(next(e1, "a2a4"), "b7b5"), "h2h4"), "b5b4"), "c2c4");
+		FastEval e6 = next(next(next(next(next(e1, "a2a4"), "b7b5"), "h2h4"), "b5b4"), "c2c4");
 		assertEquals("3c8123ea7b067637", Long.toHexString(e6.getZobrist()));
         // a2a4 b7b5 h2h4 b5b4 c2c4 b4c3 a1a3
-		Evaluate e8 = next(next(e6, "b4c3"), "a1a3");
+		FastEval e8 = next(next(e6, "b4c3"), "a1a3");
 		assertEquals("5c3f9b829b279560", Long.toHexString(e8.getZobrist()));
     }
 
 
-	public long getKey(Evaluate eval) {
+	public long getKey(FastEval eval) {
 		return z.getKey(eval.wNext, eval.castling, eval.epsq, FEN.boardFrom64(eval.aMinor, eval.aMajor, eval.aSlider, eval.bOccupied));
 	}
 
 
-	public Evaluate start(String fen) {
+	public FastEval start(String fen) {
 		StartGame pos = new StartGame(fen);
-		Evaluate e1 = new Evaluate();
+		FastEval e1 = new FastEval();
 		e1.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), 
 				pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
 		e1.evaluate();
@@ -91,9 +91,9 @@ public class Test_Zobrist_Polyglot {
 	}
 
 
-	public Evaluate next(Evaluate e1, String mm) {
+	public FastEval next(FastEval e1, String mm) {
 		int md = getMove(mm, e1);
-		Evaluate e2 = new Evaluate();
+		FastEval e2 = new FastEval();
 		e1.setChild(e2);
 		e2.setParent(e1);
 		e1.make(md);
@@ -101,7 +101,7 @@ public class Test_Zobrist_Polyglot {
 		return e2;
 	}
 
-	public int getMove(String id, Evaluate eval) {
+	public int getMove(String id, FastEval eval) {
 		eval.generate();
 		for (int m : eval.moves) {
 			MOVEDATA md=MBase.ALL[m];

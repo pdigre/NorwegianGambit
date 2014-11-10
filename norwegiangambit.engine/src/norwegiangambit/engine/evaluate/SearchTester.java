@@ -1,28 +1,32 @@
 package norwegiangambit.engine.evaluate;
 
+import norwegiangambit.engine.movegen.MBase;
+import norwegiangambit.util.polyglot.ZobristPolyglot;
 
-public class EvalTester extends AbstractTester{
 
-	public EvalTester(boolean concurrent) {
+public class SearchTester extends AbstractTester{
+
+	public SearchTester(boolean concurrent) {
 		super(concurrent);
+		MBase.zobrist=new ZobristPolyglot();
 	}
 
 	@Override
-	public Evaluate insert(RootEval eval, int depth, int level) {
+	public FastEval insert(RootEval eval, int depth, int level) {
 		if(level == depth - 1)
 			return new HorizonGen(eval);
-		return new AlphaBeta();
-//		return new PVS();
+//		return new AlphaBeta();
+		return new PVS();
 //		return depth-level>4 ? new PVS():new AlphaBeta();
 	}
 
 
-	class MiniMax extends Evaluate {
+	class MiniMax extends FastEval {
 
 		@Override
 		public void make(int md) {
 			super.make(md);
-			((Evaluate)deeper).evaluate(md);
+			((FastEval)deeper).evaluate(md);
 		}
 
 		// Minimax
@@ -41,12 +45,12 @@ public class EvalTester extends AbstractTester{
 		}
 	}
 
-	class AlphaBeta extends Evaluate {
+	class AlphaBeta extends FastEval {
 
 		@Override
 		public void make(int md) {
 			super.make(md);
-			((Evaluate)deeper).evaluate(md);
+			((FastEval)deeper).evaluate(md);
 		}
 
 		// Alphabeta
@@ -67,7 +71,7 @@ public class EvalTester extends AbstractTester{
 		}
 	}
 
-	class PVS extends Evaluate {
+	class PVS extends FastEval {
 
 		int killer1=-1;
 		int killer2=-1;
@@ -75,7 +79,7 @@ public class EvalTester extends AbstractTester{
 		@Override
 		public void make(int md) {
 			super.make(md);
-			((Evaluate)deeper).evaluate(md);
+			((FastEval)deeper).evaluate(md);
 		}
 
 		// PVS
@@ -118,8 +122,8 @@ public class EvalTester extends AbstractTester{
 		}
 
 		private void sortKillers() {
-			if(parent instanceof Evaluate){
-				Evaluate pp=parent.parent;
+			if(parent instanceof FastEval){
+				FastEval pp=parent.parent;
 				if(pp instanceof PVS){
 					sortKiller(((PVS) pp).killer2);
 					sortKiller(((PVS) pp).killer1);
@@ -137,7 +141,7 @@ public class EvalTester extends AbstractTester{
 		}
 	}
 
-	class HorizonGen extends Evaluate {
+	class HorizonGen extends FastEval {
 		final RootEval eval;
 		public HorizonGen(RootEval eval) {
 			this.eval=eval;
@@ -150,7 +154,7 @@ public class EvalTester extends AbstractTester{
 		}
 		
 		@Override
-		public void notifyPV(Evaluate child, int depth, boolean lowerBound, boolean upperBound, int score) {
+		public void notifyPV(FastEval child, int depth, boolean lowerBound, boolean upperBound, int score) {
 			parent.notifyPV(this, ply, lowerBound, upperBound, score);
 		}
 	}

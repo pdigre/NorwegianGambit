@@ -10,6 +10,7 @@ import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
 import norwegiangambit.util.PSQT_SEF;
+import norwegiangambit.util.polyglot.ZobristJLKISS64;
 
 public class FastPerft implements IDivide{
 
@@ -21,6 +22,7 @@ public class FastPerft implements IDivide{
 		useConcurrency=concurrency;
 		useTransposition=transposition;
 		MBase.psqt=new PSQT_SEF();
+		MBase.zobrist=new ZobristJLKISS64();
 	}
 	
 	@Override
@@ -104,7 +106,7 @@ public class FastPerft implements IDivide{
 		}
 	}
 
-	class PerftGen extends Evaluate {
+	class PerftGen extends FastEval {
 		final long[] count;
 		final int inum;
 		public PerftGen(long[] count, int inum) {
@@ -115,9 +117,8 @@ public class FastPerft implements IDivide{
 		public void run() {
 			if(useTransposition){
 				if(!testTransposition){
-					int tt = TranspositionTable.get(getZobrist(),aMinor);
-					if(tt!=-1){
-						long data=TranspositionTable.data[tt];
+					long data = TranspositionTable.get(getZobrist(),aMinor);
+					if(data!=0L){
 						if(TranspositionTable.getDepth(data)==depth){
 							count[inum]+=TranspositionTable.getCount(data);
 							return;
@@ -134,9 +135,8 @@ public class FastPerft implements IDivide{
 				}
 				long cnt = count[inum]-t;
 				if(testTransposition){
-					int tt = TranspositionTable.get(getZobrist(),aMinor);
-					if(tt!=-1){
-						long data=TranspositionTable.data[tt];
+					long data = TranspositionTable.get(getZobrist(),aMinor);
+					if(data!=0L){
 						if(TranspositionTable.getDepth(data)==depth){
 							long cnt2 = TranspositionTable.getCount(data);
 							if(cnt!=cnt2){

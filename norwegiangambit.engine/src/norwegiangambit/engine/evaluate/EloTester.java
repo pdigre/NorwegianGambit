@@ -9,7 +9,7 @@ import norwegiangambit.util.FEN;
 import norwegiangambit.util.PSQT;
 import norwegiangambit.util.polyglot.IZobristKey;
 
-public class EloTester extends EvalTesterTT {
+public class EloTester extends SearchTesterTT {
 
 	public EloTester(boolean concurrent, boolean transposition,PSQT psqt) {
 		super(concurrent, transposition,psqt);
@@ -27,7 +27,7 @@ public class EloTester extends EvalTesterTT {
 	private RootEval[] evals;
 	private int[] bestpath;
 	int bscore=-32000;
-	private Evaluate rooteval;
+	private FastEval rooteval;
 	
 	public final class RootGen extends PVS {
 	
@@ -51,17 +51,10 @@ public class EloTester extends EvalTesterTT {
 	}
 
 	@Override
-	public Evaluate insert(RootEval eval, int depth, int ply) {
-		if (ply == 0)
-			return new RootGen();
-		return super.insert(eval, depth, ply);
-	}
-
-	@Override
 	public void start(String fen) {
 		super.start(fen);
 		StartGame pos = new StartGame(fen);
-		rooteval = new Evaluate();
+		rooteval = new FastEval();
 		rooteval.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(),
 				pos.get64bit3());
 		rooteval.generate();
@@ -108,4 +101,35 @@ public class EloTester extends EvalTesterTT {
 	public String bestPath() {
 		return bscore+"   "+RootEval.pv2string(bestpath);
 	}
+
+	@Override
+	public FastEval insert(RootEval eval, int depth, int ply) {
+		if (ply == 0)
+			return new RootGen();
+		if(ply == depth - 1)
+			return new HorizonGen2(eval);
+		return new PVS();
+	}
+
+	class HorizonGen2 extends LongEval {
+		final Eval eval;
+		public HorizonGen2(Eval eval) {
+			this.eval=eval;
+		}
+		
+		@Override
+		public int search(int alpha, int beta) {
+			eval.count++;
+			longeval();
+			int score2 = score();
+			int type=TranspositionTable.T_EXACT;
+			if(score2<=alpha)
+				type=TranspositionTable.T_LE;
+			else if(score2>=beta)
+				type=TranspositionTable.T_GE;
+			TranspositionTable.set(getZobrist(),aMinor,depth,type,curr_move,score2);
+			return score2;
+		}
+	}
+
 }
