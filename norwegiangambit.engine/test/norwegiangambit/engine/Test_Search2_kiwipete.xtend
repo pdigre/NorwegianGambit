@@ -1,21 +1,21 @@
 package norwegiangambit.engine
 
 import norwegiangambit.engine.evaluate.AbstractTest
-import norwegiangambit.engine.evaluate.EvalTester
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
+import norwegiangambit.engine.evaluate.SearchTester
 
-class Test_Eval2_kiwipete extends AbstractTest {
+class Test_Search2_kiwipete extends AbstractTest {
 
 	@BeforeClass
 	def static void prepare() {
-		setTesting(new EvalTester(true));
+		setTesting(new SearchTester(true));
 	}
 	
 	@Test
 	def void k1_3() {
-		testEval(testing, 3,95,'''
+		testSearch(testing, 3,95,'''
 		r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1
 		a1b1 b4c3 f3f6=-15
 		a1c1 b4c3 f3f6=-15
@@ -70,7 +70,7 @@ class Test_Eval2_kiwipete extends AbstractTest {
 
 	@Test
 	def void k1_4() {
-		testEval(testing, 4,-395,'''
+		testSearch(testing, 4,-395,'''
 		r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1
 		a1b1 b4c3 e2a6 c3d2=-395
 		a1c1 b4c3 e2a6 c3d2=-395
@@ -125,7 +125,7 @@ class Test_Eval2_kiwipete extends AbstractTest {
 
 	@Test
 	def void k1_5() {
-		testEval(testing, 5,-111,'''
+		testSearch(testing, 5,-111,'''
 		r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1
 		a1b1 b4c3 d2c3 a6e2 e1e2=-221
 		a1c1 b4c3 d2c3 a6e2 e1e2=-221
@@ -180,7 +180,7 @@ class Test_Eval2_kiwipete extends AbstractTest {
 
 	@Test
 	def void k1_6() {
-		testEval(testing, 6,-290,'''
+		testSearch(testing, 6,-290,'''
 		r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1
 		a1b1 b4c3 e2a6 h3g2 f3g2 c3d2=-400
 		a1c1 b4c3 e2a6 h3g2 f3g2 c3d2=-400
@@ -235,7 +235,7 @@ class Test_Eval2_kiwipete extends AbstractTest {
 
 	@Test
 	def void k1_7() {
-		testEval(testing, 7,-114,'''
+		testSearch(testing, 7,-114,'''
 		r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1
 		a1b1 b4c3 d2c3 h3g2 f3g2 a6e2 e1e2=-224
 		a1c1 b4c3 d2c3 h3g2 f3g2 a6e2 e1e2=-224

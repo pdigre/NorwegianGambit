@@ -12,13 +12,13 @@ public class QuiesceTester extends AbstractTester{
 	}
 
 	@Override
-	public Evaluate insert(RootEval eval, int depth, int ply) {
+	public FastEval insert(RootEval eval, int depth, int ply) {
 		if(ply == depth - 1)
 			return new HorizonGen(eval);
 		return new PVS();
 	}
 
-	class PVS extends Evaluate {
+	class PVS extends FastEval {
 
 		int killer1=-1;
 		int killer2=-1;
@@ -26,15 +26,14 @@ public class QuiesceTester extends AbstractTester{
 		@Override
 		public void make(int md) {
 			super.make(md);
-			((Evaluate)deeper).evaluate(md);
+			((FastEval)deeper).evaluate(md);
 		}
 
 		// PVS
 		public int search(int alfa,int beta) {
 			if(useTransposition){
-				int tt = getTT();
-				if(tt!=-1){
-					long data=TranspositionTable.data[tt];
+				long data = getTT();
+				if(data!=0L){
 					if(TranspositionTable.getDepth(data)==depth){
 						int score = TranspositionTable.getScore(data);
 						if((data&TranspositionTable.T_EXACT)==TranspositionTable.T_EXACT){
@@ -53,8 +52,7 @@ public class QuiesceTester extends AbstractTester{
 				generate();
 				if(iAll==0)
 					return checkers==0L?STALE:MATE;  // (STALE)MATE
-				if(tt!=-1){
-					long data=TranspositionTable.data[tt];
+				if(data!=0L){
 					sortHash(TranspositionTable.getMove(data));
 				}
 			} else {
@@ -99,8 +97,8 @@ public class QuiesceTester extends AbstractTester{
 		}
 
 		private void sortKillers() {
-			if(parent instanceof Evaluate){
-				Evaluate pp=parent.parent;
+			if(parent instanceof FastEval){
+				FastEval pp=parent.parent;
 				if(pp instanceof PVS){
 					sortKiller(((PVS) pp).killer2);
 					sortKiller(((PVS) pp).killer1);
@@ -117,7 +115,7 @@ public class QuiesceTester extends AbstractTester{
 			}
 		}
 
-		public int getTT() {
+		public long getTT() {
 			return TranspositionTable.get(getZobrist(), aMinor);
 		}
 
@@ -138,7 +136,7 @@ public class QuiesceTester extends AbstractTester{
 			for (int ply = 0; ply < totdepth; ply++) {
 				Quiesce m = new Quiesce(eval);
 				movegen[ply] = m;
-				Evaluate parent = ply>0?movegen[ply - 1]:this;
+				FastEval parent = ply>0?movegen[ply - 1]:this;
 				m.parent = parent;
 				parent.deeper = m;
 				m.depth=totdepth-ply;
@@ -170,7 +168,7 @@ public class QuiesceTester extends AbstractTester{
 		}
 	}
 
-	class Quiesce extends Evaluate {
+	class Quiesce extends FastEval {
 		Eval eval;
 		boolean testCheckers=false;
 		
@@ -186,7 +184,7 @@ public class QuiesceTester extends AbstractTester{
 		@Override
 		public void make(int md) {
 			super.make(md);
-			((Evaluate)deeper).evaluate(md);
+			((FastEval)deeper).evaluate(md);
 		}
 
 		public int search(int alpha, int beta) {

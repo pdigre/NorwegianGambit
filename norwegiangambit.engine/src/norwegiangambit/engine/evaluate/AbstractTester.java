@@ -45,7 +45,7 @@ public abstract class AbstractTester implements IDivide, ISearch{
 	public List<Eval> divide(String fen, int levels) {
 		boolean isConcurrent = levels>2 && useConcurrency;
 		StartGame pos = new StartGame(fen);
-		Evaluate root = new Evaluate();
+		FastEval root = new FastEval();
 		root.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
 		ArrayList<Eval> map=new ArrayList<Eval>();
 		root.generate();
@@ -74,19 +74,19 @@ public abstract class AbstractTester implements IDivide, ISearch{
 		return map;
 	}
 
-	public Evaluate[] init(int md, Evaluate root, int levels, RootEval eval) {
-		Evaluate[] movegen = new Evaluate[levels];
+	public FastEval[] init(int md, FastEval root, int levels, RootEval eval) {
+		FastEval[] movegen = new FastEval[levels];
 		int totdepth = movegen.length;
 		for (int ply = 0; ply < totdepth; ply++) {
-			Evaluate m = insert(eval, totdepth, ply);
+			FastEval m = insert(eval, totdepth, ply);
 			movegen[ply] = m;
-			Evaluate parent = ply>0?movegen[ply - 1]:root;
+			FastEval parent = ply>0?movegen[ply - 1]:root;
 			m.parent = parent;
 			parent.deeper = m;
 			m.depth=totdepth-ply;
 			m.ply=ply;
 		}
-		Evaluate start = movegen[0];
+		FastEval start = movegen[0];
 		start.make(md,root.wNext,root.castling,root.wkingpos,root.bkingpos,root.aMinor,root.aMajor,root.aSlider,root.bOccupied);
 		start.evaluate(md);
 		return movegen;
@@ -94,11 +94,11 @@ public abstract class AbstractTester implements IDivide, ISearch{
 
 	final class CountTask extends RecursiveTask<Long> implements Comparable<CountTask>{
 		private static final long serialVersionUID = -2743566188067414328L;
-		Evaluate start;
+		FastEval start;
 		Eval eval;
 		int[] path;
 
-		public CountTask(int md,RootEval eval,int levels,Evaluate root) {
+		public CountTask(int md,RootEval eval,int levels,FastEval root) {
 			this.eval=eval;
 			path=new int[levels];
 			((RootEval)eval).path=path;
@@ -131,7 +131,7 @@ public abstract class AbstractTester implements IDivide, ISearch{
 	 * @param ply   - current ply level for stack
 	 * @return
 	 */
-	public abstract Evaluate insert(RootEval eval, int depth, int ply);
+	public abstract FastEval insert(RootEval eval, int depth, int ply);
 	
 
 	

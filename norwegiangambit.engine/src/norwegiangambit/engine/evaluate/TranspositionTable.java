@@ -95,24 +95,24 @@ Zobrist ^ bit1
     	return (data&~((long)T_DEPTHMASK))^(long)depth;
     }
 
-	final public static int get(long zobrist, long key2) {
+	final public synchronized static long get(long zobrist, long key2) {
 		int i1=(int)zobrist&TTMASK;
 		if(hash[i1]==(zobrist^key2)){
 			if(validate[i1]!=key2){
 				System.out.println("Key collision:");
-				return -1;
+				return 0L;
 			}
-			return i1;
+			return data[i1];
 		}
 		i1=(int)((zobrist>>TTLog2SIZE)&TTMASK);
 		if(hash[i1]==(zobrist^key2)){
 			if(validate[i1]!=key2){
 				System.out.println("Key collision:");
-				return -1;
+				return 0L;
 			}
-			return i1;
+			return data[i1];
 		}
-		return -1;
+		return 0L;
 	}
 
 	final public static int set(long zobrist,long key2, int depth, int type, int md, int score) {
@@ -128,26 +128,24 @@ Zobrist ^ bit1
 			if(hash[i1]!=hash0){
 				// Push 1 down
 				long data1=data[i1];
-				if(isBetter(data[i2],getType(data1),getDepth(data1))){
-					validate[i2]=validate[i1];
-					hash[i2]=hash[i1];
-					data[i2]=data1;
-				}
+				if(isBetter(data[i2],getType(data1),getDepth(data1)))
+					set(i2, hash[i1], validate[i1], data1);
 			}
-			validate[i1]=key2;
-			hash[i1]=hash0;
-			data[i1]=val;
+			set(i1, hash0, key2, val);
 			return i1;
 		} else {
 			if(hash[i1]==hash0)
 				return i1;
-			if(isBetter(data[i2],type,depth)){
-				validate[i2]=key2;
-				hash[i2]=hash0;
-				data[i2]=val;
-			}
+			if(isBetter(data[i2],type,depth))
+				set(i2, hash0, key2, val);
 			return i2;
 		}
+	}
+
+	public static synchronized void set(int i, long hash2, long key2, long val) {
+		validate[i]=key2;
+		data[i]=val;
+		hash[i]=hash2;
 	}
 	
     private static boolean isBetter(long other,int type,int depth) {

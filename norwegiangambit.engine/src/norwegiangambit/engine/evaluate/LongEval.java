@@ -1,177 +1,20 @@
 package norwegiangambit.engine.evaluate;
 
 import norwegiangambit.engine.movegen.MBase;
-import norwegiangambit.engine.movegen.MOVEDATA;
-import norwegiangambit.engine.movegen.MOVEDATA2;
-import norwegiangambit.engine.movegen.Movegen;
 import norwegiangambit.util.BitBoard;
-import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
-import norwegiangambit.util.polyglot.ZobristPolyglot;
 
-public class Evaluate extends Movegen {
+public class LongEval extends FastEval {
 
-	final public static int MATE = -32000; 
-	final public static int STALE = 0; 
-    static final int pV = MBase.psqt.pVal(WP);
-    static final int nV = MBase.psqt.pVal(WN);
-    static final int bV = MBase.psqt.pVal(WB);
-    static final int rV = MBase.psqt.pVal(WR);
-    static final int qV = MBase.psqt.pVal(WQ);
-    static final int kV = MBase.psqt.pVal(WK); // Used by SEE algorithm, but not included in board material sums
-	
-	Evaluate parent,deeper;
-
-	protected int midscore;
-	protected int endscore;
-	protected int pawnscore;
-	protected int score;
-	protected long zobrist;
-	protected long pawnhash;
-	protected long kinghash;
-	protected long zobrist_fwd;
-	public int ply, depth;
-	private int best_move;
-	public int curr_move;
-	
-	public void notifyPV(Evaluate next, int depth, boolean lowerBound, boolean upperBound, int score){
-		parent.notifyPV(this, depth, lowerBound, upperBound, score);
-	}
-	
-	public int midScore(){
-		return midscore;
-	}
-
-	public int endScore(){
-		return endscore;
-	}
-
-	public int score(){
-		int score = whiteScore();
-		return wNext?score:-score;
-	}
-
-	public int whiteScore() {
-		int popcnt=Long.bitCount(aOccupied);
-		return ((popcnt)*midscore+(32-popcnt)*endscore)/32;
-	}
-
-	public void setParent(Evaluate parent){
-		this.parent=parent;
-	}
-	
-	public void setChild(Evaluate child){
-		this.deeper=child;
-	}
-	
-	public int search(int alpha, int beta){
-		return score();
-	}
-	
-	public void make(int md) {
-		((Movegen)deeper).make(md,wNext, castling, wkingpos, bkingpos, aMinor, aMajor, aSlider, bOccupied);
-	}
-
-	public void evaluate(int i) {
-		curr_move=i;
-		MOVEDATA md = MBase.ALL[i];
-		midscore=parent.midScore()+md.mscore;
-		endscore=parent.endScore()+md.escore;
-		if(parent instanceof Evaluate){
-			zobrist_fwd=((Evaluate) parent).zobrist_fwd^md.zobrist;
-			zobrist=zobrist_fwd;
-			if(md instanceof MOVEDATA2){
-				final long ep=1L<<epsq;
-				final long epb = wNext
-						?((ep&IConst.MaskAToGFiles)>>7) | ((ep&IConst.MaskBToHFiles)>>9)
-						:((ep&IConst.MaskBToHFiles)<<7) | ((ep&IConst.MaskAToGFiles)<<9);
-				final long cmask = wNext ? ~bOccupied:bOccupied;
-				long enemy = cmask & aMinor&~aMajor&~aSlider;
-				if((epb & enemy) !=0L)
-					zobrist^=((MOVEDATA2)md).zobrist_ep;
-			}
-		}
-	}
-
-	public long getZobrist() {
-		return zobrist;
-	}
-
-	public void evaluate() {
-		int[] brd = FEN.boardFrom64(aMinor, aMajor, aSlider,bOccupied);
-		zobrist_fwd=MBase.zobrist.getKey(wNext, castling, epsq, brd);
-		zobrist=zobrist_fwd;
-		int[] score = getScore(brd);
-		midscore=score[0];
-		endscore=score[1];
-	}
-	
-	public static int[] getScore(int[] brd) {
-		int[] score=new int[]{0,0};
-		for (int sq = 0; sq < 64; sq++) {
-			int piece = brd[sq];
-			if(piece!=0){
-				int[] pv = MBase.psqt(sq, piece);
-				score[0]+=pv[0];
-				score[1]+=pv[1];
-			}
-		}
-		return score;
-	}
-
-	public void setPath(int[] mm) {
-		if(deeper!=null){
-			mm[ply+1]=best_move;
-			deeper.setPath(mm);
-		}
-	}
-
-	public int getBest() {
-		return best_move;
-	}
-
-	public void setBest(int best_move, int score) {
-		this.best_move = best_move;
-		this.score=score;
-	}
-
-	public String getHistory1(){
-		String text=getFen()+"\n";
-		if(parent instanceof Evaluate)
-			return parent.getHistory1()+text;
-		return text;
-	}
-	
-	public String getHistory2(){
-		String id = curr_move>0?MBase.ALL[curr_move].id():"??";
-		String text=FEN.board2string(this.aMinor, this.aMajor, this.aSlider, this.bOccupied) + "\n" 
-				+(" << "+id+"              ").substring(0,10) + "\n";
-		if(parent instanceof Evaluate)
-			return FEN.addHorizontal(text,parent.getHistory2());
-		return text;
-	}
-	
-	@Override
-	public String toString() {
-		return getHistory1()+getHistory2();
-	}
-	
-	
-	
-	/*
-	 * Adjustments
-	 * 
-	 * 
-	 */
-    static final int[] RookMobScore = {-10,-7,-4,-1,2,5,7,9,11,12,13,14,14,14,14};
+	static final int[] RookMobScore = {-10,-7,-4,-1,2,5,7,9,11,12,13,14,14,14,14};
 	static final int[] BishMobScore = {-15,-10,-6,-2,2,6,10,13,16,18,20,22,23,24};
     static final int[] QueenMobScore = {-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,9,10,10,10,10,10,10,10,10,10,10,10,10};
 	
-	
-	long wPawns,wKnights,wBishops,wRooks,wQueens,wKings,bPawns,bKnights,bBishops,bRooks,bQueens,bKings;
 	int wMtrl,wMtrlPawns,bMtrl,bMtrlPawns;
-	public int calulateAdjustments(){
-        wPawns   = wOccupied & aPawns;
+	long wPawns,wKnights,wBishops,wRooks,wQueens,wKings,bPawns,bKnights,bBishops,bRooks,bQueens,bKings;
+
+	public void initAdjustments() {
+		wPawns   = wOccupied & aPawns;
         wKnights = wOccupied & aKnights;
         wBishops = wOccupied & aBishops;
         wRooks   = wOccupied & aRooks;
@@ -187,16 +30,49 @@ public class Evaluate extends Movegen {
         bMtrlPawns=pV*Long.bitCount(bPawns);
         wMtrl=nV*Long.bitCount(wKnights)+bV*Long.bitCount(wBishops)+rV*Long.bitCount(wRooks)+qV*Long.bitCount(wQueens);
         bMtrl=nV*Long.bitCount(bKnights)+bV*Long.bitCount(bBishops)+rV*Long.bitCount(bRooks)+qV*Long.bitCount(bQueens);
-		int score=0;
-        score += pawnBonus();
-        score += tradeBonus();
-        score += castleBonus();
-        score += rookBonus();
-        score += bishopBonus();
-        score += threatBonus();
-        score += kingSafety();
-        score = endGameEval(score);
-		return score;
+	}
+
+	public void longeval() {
+		eval(false);
+	}
+
+	public String eval(boolean print) {
+        initAdjustments();
+        int pawnBonus = pawnBonus();
+        int tradeBonus = tradeBonus();
+        int castleBonus = castleBonus();
+        int rookBonus = rookBonus();
+        int bishopBonus = bishopBonus();
+        int threatBonus = threatBonus();
+        int kingSafety = kingSafety();
+        int endgame = endGameEval(score);
+        int plus= pawnBonus+tradeBonus+ castleBonus+ rookBonus+bishopBonus+threatBonus+kingSafety+endgame;
+        if(print){
+        	StringBuilder sb = new StringBuilder();
+        	sb.append(" _<"+f(score,4));
+        	sb.append(" pb"+f(pawnBonus,3));
+        	sb.append(" tb"+f(tradeBonus,3));
+        	sb.append(" cb"+f(castleBonus,3));
+        	sb.append(" rb"+f(rookBonus,3));
+        	sb.append(" bb"+f(bishopBonus,3));
+        	sb.append(" xb"+f(threatBonus,3));
+        	sb.append(" ks"+f(kingSafety,3));
+        	sb.append(" eg"+f(endgame,3));
+        	sb.append(" _>"+f(plus,3));
+        	sb.append(" _>"+f(score+plus,4));
+   			return sb.toString();
+        }
+        score+=plus;
+        return null;
+	}
+
+	public static String f(int in,int i){
+		String all="           "+in;
+		return all.substring(all.length()-3);
+	}
+	
+	public String printEval() {
+		return eval(true);
 	}
 
     // King safety variables
@@ -352,8 +228,11 @@ public class Evaluate extends Movegen {
 		int score=0;
 		while(atk!=0L){
 			int sq = Long.numberOfTrailingZeros(atk);
-			int val = MBase.psqt(sq, type(sq))[1];
-			score+=val+val*val/qV;
+			int type = type(sq);
+			if(type!=0){
+				int val = MBase.psqt(sq, type)[1];
+				score+=val+val*val/qV;
+			}
 			atk^=1L << sq;
 		}
 		return score;
@@ -723,6 +602,4 @@ public class Evaluate extends Movegen {
 		return 0;
 	}
 
-	
-	
 }

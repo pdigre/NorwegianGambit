@@ -38,7 +38,7 @@ public abstract class AbstractTest {
 		return sb.toString();
 	}
 
-	public static void testEval(IDivide inst, int depth, long ecount,String fen,String[] expected) {
+	public static void testSearch(IDivide inst, int depth, long ecount,String fen,String[] expected) {
 		List<Eval> divide = inst.divide(fen, depth);
 		long acount=0;
 		StringBuilder sb=new StringBuilder();
@@ -55,9 +55,39 @@ public abstract class AbstractTest {
 		assertEquals("Wrong score", expected2, actual2);
 	}
 
-	public static void testEval(IDivide inst, int depth, long ecount,String input) {
+	public static void testSearch(IDivide inst, int depth, long ecount,String input) {
 		String[] in=input.replace("\r","").split("\n");
-		testEval(inst, depth, ecount, in[0], Arrays.copyOfRange(in, 1, in.length));
+		testSearch(inst, depth, ecount, in[0], Arrays.copyOfRange(in, 1, in.length));
+	}
+
+	public static void testEval(LongEval leaf,String fen,String[] expected) {
+		StartGame pos = new StartGame(fen);
+		FastEval root = new FastEval();
+		root.setChild(leaf);
+		leaf.setParent(root);
+		root.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		root.evaluate();
+		root.generate();
+		StringBuilder sb=new StringBuilder();
+		for (int i1 = 0; i1 < root.iAll; i1++) {
+			int md = root.moves[i1];
+			root.make(md);
+			leaf.evaluate(md);
+//			leaf.longeval();
+			MOVEDATA m=MBase.ALL[md];
+			if(sb.length()>0)
+				sb.append(",");
+			sb.append(m.id()+"="+leaf.printEval());
+		}
+		String expected2 = String.join("\n", expected);
+		String actual = sb.toString();
+		String actual2 = actual.replace(",", "\n");
+		assertEquals("Wrong score", expected2, actual2);
+	}
+
+	public static void testEval(LongEval inst,String input) {
+		String[] in=input.replace("\r","").split("\n");
+		testEval(inst, in[0], Arrays.copyOfRange(in, 1, in.length));
 	}
 
 	public static void testQuiesce(IDivide inst, int depth, long ecount,String fen,String[] expected) {
@@ -86,7 +116,7 @@ public abstract class AbstractTest {
 	}
 
 	private static void assertScore(String fen, String[] moves, int expected) {
-		Evaluate gen = new Evaluate();
+		FastEval gen = new FastEval();
 		gen.setChild(gen);
 		StartGame pos = new StartGame(fen);
 		gen.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());

@@ -1,22 +1,22 @@
 package norwegiangambit.engine
 
 import norwegiangambit.engine.evaluate.AbstractTest
-import norwegiangambit.engine.evaluate.EvalTesterTT
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Ignore
 import org.junit.Test
+import norwegiangambit.engine.evaluate.SearchTesterTT
 
 class Test_TT1 extends AbstractTest {
 
 	@BeforeClass
 	def static void prepare() {
-		setTesting(new EvalTesterTT(true,true));
+		setTesting(new SearchTesterTT(true,true));
 	}
 	
 	@Test
 	def void m1_3() {
-		testEval(testing, 3,4133,'''
+		testSearch(testing, 3,4133,'''
 		rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 		a2a3 b8c6 b1c3=0
 		a2a4 b8c6 b1c3=-5
@@ -43,7 +43,7 @@ class Test_TT1 extends AbstractTest {
 
 	@Test
 	def void m1_4() {
-		testEval(testing, 4,18465,'''
+		testSearch(testing, 4,18465,'''
 		rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 		a2a3 e7e5 b1c3 f8a3=-95
 		a2a4 b8c6 b1c3 g8f6=-55
@@ -70,7 +70,7 @@ class Test_TT1 extends AbstractTest {
 
 	@Test
 	def void m1_5() {
-		testEval(testing, 5,142159,'''
+		testSearch(testing, 5,142159,'''
 		rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 		a2a3 b8c6 g1f3 g8f6 b1c3=0
 		a2a4 b8c6 g1f3 g8f6 b1c3=-5
@@ -97,7 +97,7 @@ class Test_TT1 extends AbstractTest {
 
 	@Test
 	def void m1_6() {
-		testEval(testing, 6,801553,'''
+		testSearch(testing, 6,801553,'''
 		rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 		a2a3 e7e5 b1c3 b8c6 g1f3 f8a3=-95
 		a2a4 e7e5 b1c3 f8b4 c3e4 b4d2=-75
@@ -124,7 +124,7 @@ class Test_TT1 extends AbstractTest {
 
 	@Test
 	def void m1_7() {
-		testEval(testing, 7,3802460,'''
+		testSearch(testing, 7,3802460,'''
 		rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 		a2a3 e7e6 e2e4 b8c6 f1b5 c6e5 b5d7=50
 		a2a4 e7e6 e2e4 b8c6 f1b5 c6e5 b5d7=45
@@ -151,7 +151,7 @@ class Test_TT1 extends AbstractTest {
 
 	@Test
 	def void m1_8() {
-		testEval(testing, 8,20795152,'''
+		testSearch(testing, 8,20795152,'''
 		rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 		a2a3 e7e5 b1c3 b8c6 c3d5 c6d4 e2e4 f8a3=-105
 		a2a4 b8c6 e2e3 e7e5 b1c3 f8b4 c3e4 b4d2=-105
@@ -178,7 +178,7 @@ class Test_TT1 extends AbstractTest {
 
 	@Test
 	def void m1_9() {
-		testEval(testing, 9,93788106L,'''
+		testSearch(testing, 9,93788106L,'''
 		rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 		a2a3 e7e6 b1c3 b8c6 e2e4 g8e7 f1c4 d7d6 c4e6=80
 		a2a4 e7e6 b1c3 b8c6 g1f3 g8f6 f3g5 e6e5 g5f7=55
@@ -206,7 +206,7 @@ class Test_TT1 extends AbstractTest {
 	@Ignore
 	@Test
 	def void bt2450_g5g7() {
-		testEval(testing, 9,190,'''
+		testSearch(testing, 9,190,'''
 		rq2r1k1/5pp1/p7/4bNP1/1p2P2P/5Q2/PP4K1/5R1R w - - 0 1
 		a2a3 b4a3 b2a3 b8b7 f1f2 f7f6 g5g6 a8d8 f5g7=80
 		a2a4 b4a3 b2a3 b8b7 f1f2 f7f6 g5g6 a8d8 f5g7=80
@@ -252,7 +252,7 @@ class Test_TT1 extends AbstractTest {
 	@Test
 	@Ignore
 	def void mate2_Nb3() {
-		testEval(testing, 6,-226,'''
+		testSearch(testing, 6,-226,'''
 		2bqkbn1/2pppp2/np2N3/r3P1p1/p2N2B1/5Q2/PPPPKPP1/RNB2r2 w KQkq - 0 1
 		a2a3 d7e6 e2f1 d8d4 f3c6 c8d7=-211
 		b1a3 d7e6 e2f1 d8d4 f3c6 c8d7=-201

@@ -7,23 +7,23 @@ import norwegiangambit.util.polyglot.ZobristPolyglot;
 
 
 
-public class EvalTesterTT extends AbstractTester{
+public class SearchTesterTT extends AbstractTester{
 
 	public static boolean useTransposition=true;
 
-	public EvalTesterTT(boolean concurrent,boolean transposition) {
+	public SearchTesterTT(boolean concurrent,boolean transposition) {
 		super(concurrent);
 		MBase.zobrist=new ZobristPolyglot();
 		useTransposition=transposition;
 	}
 
-	public EvalTesterTT(boolean concurrent,boolean transposition,PSQT psqt) {
+	public SearchTesterTT(boolean concurrent,boolean transposition,PSQT psqt) {
 		super(concurrent,psqt);
 		MBase.zobrist=new ZobristPolyglot();
 		useTransposition=transposition;
 	}
 
-	public EvalTesterTT(boolean concurrent,boolean transposition,PSQT psqt,IZobristKey zobrist) {
+	public SearchTesterTT(boolean concurrent,boolean transposition,PSQT psqt,IZobristKey zobrist) {
 		super(concurrent,psqt);
 		MBase.zobrist=new ZobristPolyglot();
 		useTransposition=transposition;
@@ -31,28 +31,27 @@ public class EvalTesterTT extends AbstractTester{
 	}
 
 	@Override
-	public Evaluate insert(RootEval eval, int depth, int ply) {
+	public FastEval insert(RootEval eval, int depth, int ply) {
 		if(ply == depth - 1)
 			return new HorizonGen(eval);
 		return new PVS();
 	}
 
-	class PVS extends Evaluate {
+	class PVS extends FastEval {
 		int killer1=-1;
 		int killer2=-1;
 		
 		@Override
 		public void make(int md) {
 			super.make(md);
-			((Evaluate)deeper).evaluate(md);
+			((FastEval)deeper).evaluate(md);
 		}
 
 		// PVS
 		public int search(int alfa,int beta) {
 			if(useTransposition){
-				int tt = getTT();
-				if(tt!=-1){
-					long data=TranspositionTable.data[tt];
+				long data = getTT();
+				if(data!=0L){
 					if(TranspositionTable.getDepth(data)==depth){
 						int score = TranspositionTable.getScore(data);
 						if((data&TranspositionTable.T_EXACT)==TranspositionTable.T_EXACT){
@@ -71,8 +70,7 @@ public class EvalTesterTT extends AbstractTester{
 				generate();
 				if(iAll==0)
 					return checkers==0L?STALE:MATE;  // (STALE)MATE
-				if(tt!=-1){
-					long data=TranspositionTable.data[tt];
+				if(data!=0L){
 					sortHash(TranspositionTable.getMove(data));
 				}
 			} else {
@@ -117,8 +115,8 @@ public class EvalTesterTT extends AbstractTester{
 		}
 
 		private void sortKillers() {
-			if(parent instanceof Evaluate){
-				Evaluate pp=parent.parent;
+			if(parent instanceof FastEval){
+				FastEval pp=parent.parent;
 				if(pp instanceof PVS){
 					sortKiller(((PVS) pp).killer2);
 					sortKiller(((PVS) pp).killer1);
@@ -135,7 +133,7 @@ public class EvalTesterTT extends AbstractTester{
 			}
 		}
 
-		public int getTT() {
+		public long getTT() {
 			return TranspositionTable.get(getZobrist(), aMinor);
 		}
 
@@ -144,7 +142,7 @@ public class EvalTesterTT extends AbstractTester{
 		}
 	}
 
-	class HorizonGen extends Evaluate {
+	class HorizonGen extends FastEval {
 		final Eval eval;
 		public HorizonGen(Eval eval) {
 			this.eval=eval;

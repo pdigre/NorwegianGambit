@@ -9,7 +9,7 @@ import norwegiangambit.util.FEN;
 import norwegiangambit.util.PSQT;
 import norwegiangambit.util.polyglot.IZobristKey;
 
-public class EloTester extends EvalTesterTT {
+public class EloTester extends SearchTesterTT {
 
 	public EloTester(boolean concurrent, boolean transposition,PSQT psqt) {
 		super(concurrent, transposition,psqt);
@@ -27,7 +27,7 @@ public class EloTester extends EvalTesterTT {
 	private RootEval[] evals;
 	private int[] bestpath;
 	int bscore=-32000;
-	private Evaluate rooteval;
+	private FastEval rooteval;
 	
 	public final class RootGen extends PVS {
 	
@@ -51,7 +51,7 @@ public class EloTester extends EvalTesterTT {
 	}
 
 	@Override
-	public Evaluate insert(RootEval eval, int depth, int ply) {
+	public FastEval insert(RootEval eval, int depth, int ply) {
 		if (ply == 0)
 			return new RootGen();
 		return super.insert(eval, depth, ply);
@@ -61,7 +61,7 @@ public class EloTester extends EvalTesterTT {
 	public void start(String fen) {
 		super.start(fen);
 		StartGame pos = new StartGame(fen);
-		rooteval = new Evaluate();
+		rooteval = new FastEval();
 		rooteval.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(),
 				pos.get64bit3());
 		rooteval.generate();
