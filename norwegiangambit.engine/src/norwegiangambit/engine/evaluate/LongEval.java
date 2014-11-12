@@ -8,29 +8,22 @@ public class LongEval extends FastEval {
 	static final int[] RookMobScore = {-10,-7,-4,-1,2,5,7,9,11,12,13,14,14,14,14};
 	static final int[] BishMobScore = {-15,-10,-6,-2,2,6,10,13,16,18,20,22,23,24};
     static final int[] QueenMobScore = {-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,9,10,10,10,10,10,10,10,10,10,10,10,10};
-	
-	int wMtrl,wMtrlPawns,bMtrl,bMtrlPawns;
+
+    static final int[] PawnThreat  = {0,80,80,117,127}; // pnbrq
+    static final int[] MinorThreat = {7,24,24,41,41}; // pnbrq
+    static final int[] MajorThreat = {15,15,15,15,24}; 
+    static final int   HANGING     = 23;
+
+    int wMtrl,wMtrlPawns,bMtrl,bMtrlPawns;
 	long wKnights,wBishops,wRooks,wQueens,wKings,bKnights,bBishops,bRooks,bQueens,bKings;
+	long wMinorAtks,wMajorAtks,bMinorAtks,bMajorAtks;
+
+    // King safety variables
+    long wKingZone, bKingZone;      // Squares close to king that are worth attacking
+    int wKingAtks, bKingAtks; 		// Number of attacks close to white/black king
 
 	StringBuilder sb;
 	
-	public void initAdjustments() {
-		wKnights = wOccupied & aKnights;
-        wBishops = wOccupied & aBishops;
-        wRooks   = wOccupied & aRooks;
-        wQueens  = wOccupied & aQueens;
-        wKings   = wOccupied & aKings;
-        bKnights = bOccupied & aKnights;
-        bBishops = bOccupied & aBishops;
-        bRooks   = bOccupied & aRooks;
-        bQueens  = bOccupied & aQueens;
-        bKings   = bOccupied & aKings;
-        wMtrlPawns=pV*Long.bitCount(wPawns);
-        bMtrlPawns=pV*Long.bitCount(bPawns);
-        wMtrl=nV*Long.bitCount(wKnights)+bV*Long.bitCount(wBishops)+rV*Long.bitCount(wRooks)+qV*Long.bitCount(wQueens);
-        bMtrl=nV*Long.bitCount(bKnights)+bV*Long.bitCount(bBishops)+rV*Long.bitCount(bRooks)+qV*Long.bitCount(bQueens);
-	}
-
 	public void longeval() {
 		eval();
 	}
@@ -38,8 +31,7 @@ public class LongEval extends FastEval {
 	public void eval() {
         if(sb!=null)
         	sb.append(f(score,5));
-        initAdjustments();
-        int plus= pawnBonus1() + pawnBonus2()+bishopBonus() +rookBonus()+
+        int plus= initAdjustments() + pawnBonus1() + passedPawnAdditionalBonus()+mob_atks()+special()+
         		castleBonus()+ tradeBonus()+ threatBonus()+kingSafety()+endGameEval(score);
         score+=plus;
         if(sb!=null){
@@ -59,52 +51,140 @@ public class LongEval extends FastEval {
 		return sb.toString();
 	}
 
-    // King safety variables
-    private long wKingZone, bKingZone;       // Squares close to king that are worth attacking
-    private int wKingAttacks, bKingAttacks; // Number of attacks close to white/black king
-    private long wAttacksBB, bAttacksBB;
+	public int initAdjustments() {
+		wKnights = wOccupied & aKnights;
+        wBishops = wOccupied & aBishops;
+        wRooks   = wOccupied & aRooks;
+        wQueens  = wOccupied & aQueens;
+        wKings   = wOccupied & aKings;
+        bKnights = bOccupied & aKnights;
+        bBishops = bOccupied & aBishops;
+        bRooks   = bOccupied & aRooks;
+        bQueens  = bOccupied & aQueens;
+        bKings   = bOccupied & aKings;
+        int wPawnNum = Long.bitCount(wPawns);
+        int bPawnNum = Long.bitCount(bPawns);
+        int wBishopNum = Long.bitCount(wBishops);
+        int bBishopNum = Long.bitCount(bBishops);
+		int wRookNum = Long.bitCount(wRooks);
+		int bRookNum = Long.bitCount(bRooks);
+		wMtrlPawns=pV*wPawnNum;
+		bMtrlPawns=pV*bPawnNum;
+		wMtrl=nV*Long.bitCount(wKnights)+bV*wBishopNum+rV*wRookNum+qV*Long.bitCount(wQueens);
+		bMtrl=nV*Long.bitCount(bKnights)+bV*bBishopNum+rV*bRookNum+qV*Long.bitCount(bQueens);
+		wKingZone=BitBoard.KMasks[wkingpos];
+		bKingZone=BitBoard.KMasks[bkingpos];
+		
+		// Bishop Pair Bonus
+		int bishopPair= bishopPairBonus(wBishopNum, wPawnNum) - bishopPairBonus(bBishopNum, bPawnNum);
+		
+		// Rook on enemy pawn row bonus
+		int rookEnemyRow=(wRookNum==2 && (wRooks &  ~0xff000000000000L)==0L && (bKings & ~0xff00000000000000L) == 0L ? 30:0)
+				    -(bRookNum==2 && (bRooks &  ~0x0000000000ff00L)==0L && (wKings & ~0x00000000000000ffL) == 0L ? 30:0);
+		
+		if(sb!=null){
+        	sb.append(f(bishopPair,3));
+        	sb.append(f(rookEnemyRow,3));
+        }
+		return bishopPair+rookEnemyRow;
+	}
 
-	private int bishopBonus() {
+	private final static int bishopPairBonus(int wBishopNum, int wPawnNum) {
+		return wBishopNum==2?28 + (8 - wPawnNum) * 3:0;
+	}
+
+
+	private int mob_atks() {
+        int wscore = 0, bscore = 0;
+        {
+	        long m = wBishops;
+	        while (m != 0L) {
+	            int sq = Long.numberOfTrailingZeros(m);
+	            long atk = BitBoard.bishopAttacks(sq, aOccupied);
+	            wMinorAtks |= atk;
+	            wscore += BishMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))];
+	            if ((atk & bKingZone) != 0)
+	                bKingAtks += Long.bitCount(atk & bKingZone);
+	            m &= m-1;
+	        }
+        }
+        {
+			long m = wRooks;
+	        while (m != 0) {
+	            int sq = Long.numberOfTrailingZeros(m);
+				wscore+=rookOpenFileBonus(sq,wPawns,bPawns);
+	            long atk = BitBoard.rookAttacks(sq, aOccupied);
+	            wMajorAtks |= atk;
+	            wscore += RookMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))];
+	            if ((atk & bKingZone) != 0)
+	                bKingAtks += Long.bitCount(atk & bKingZone);
+	            m &= m-1;
+	        }
+		}
+        {
+			long m = wQueens;
+	        while (m != 0) {
+	            int sq = Long.numberOfTrailingZeros(m);
+				wscore+=rookOpenFileBonus(sq,wPawns,bPawns);
+	            long atk = BitBoard.rookAttacks(sq, aOccupied) | BitBoard.bishopAttacks(sq, aOccupied);
+	            wMajorAtks |= atk;
+	            wscore += QueenMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))];
+	            if ((atk & bKingZone) != 0)
+	                bKingAtks += Long.bitCount(atk & bKingZone);
+	            m &= m-1;
+	        }
+		}
+        {
+	        long m = bBishops;
+	        while (m != 0L) {
+	            int sq = Long.numberOfTrailingZeros(m);
+	            long atk = BitBoard.bishopAttacks(sq, aOccupied);
+	            bMinorAtks |= atk;
+	            bscore += BishMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))];
+	            if ((atk & wKingZone) != 0)
+	                wKingAtks += Long.bitCount(atk & wKingZone);
+	            m &= m-1;
+	        }
+        }
+        {
+	        long m = bRooks;
+	        while (m != 0) {
+	            int sq = Long.numberOfTrailingZeros(m);
+				bscore+=rookOpenFileBonus(sq,bPawns,wPawns);
+	            long atk = BitBoard.rookAttacks(sq, aOccupied);
+	            bMajorAtks |= atk;
+	            bscore += RookMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))];
+	            if ((atk & wKingZone) != 0)
+	                wKingAtks += Long.bitCount(atk & wKingZone);
+	            m &= m-1;
+	        }
+        }
+        {
+	        long m = bQueens;
+	        while (m != 0) {
+	            int sq = Long.numberOfTrailingZeros(m);
+				bscore+=rookOpenFileBonus(sq,bPawns,wPawns);
+	            long atk = BitBoard.rookAttacks(sq, aOccupied) | BitBoard.bishopAttacks(sq, aOccupied);
+	            bMajorAtks |= atk;
+	            bscore += QueenMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))];
+	            if ((atk & wKingZone) != 0)
+	                wKingAtks += Long.bitCount(atk & wKingZone);
+	            m &= m-1;
+	        }
+        }
+
+        if(sb!=null){
+        	sb.append(f(wscore,4));
+        	sb.append(f(bscore,4));
+        }
+        return wscore-bscore;
+	}
+
+	private int special() {
         int wscore = 0,bscore=0;
-        final long occupied = aOccupied;
-        if ((wBishops | bBishops) == 0)
-            return 0;
-        long m = wBishops;
-        while (m != 0) {
-            int sq = Long.numberOfTrailingZeros(m);
-            long atk = BitBoard.bishopAttacks(sq, occupied);
-            wAttacksBB |= atk;
-            wscore += BishMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))];
-            if ((atk & bKingZone) != 0)
-                bKingAttacks += Long.bitCount(atk & bKingZone);
-            m &= m-1;
-        }
-        m = bBishops;
-        while (m != 0) {
-            int sq = Long.numberOfTrailingZeros(m);
-            long atk = BitBoard.bishopAttacks(sq, occupied);
-            bAttacksBB |= atk;
-            bscore += BishMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))];
-            if ((atk & wKingZone) != 0)
-                wKingAttacks += Long.bitCount(atk & wKingZone);
-            m &= m-1;
-        }
 
-        boolean whiteDark  = (wBishops & MaskDarkSq ) != 0;
-        boolean whiteLight = (wBishops & MaskLightSq) != 0;
-        boolean blackDark  = (bBishops & MaskDarkSq ) != 0;
-        boolean blackLight = (bBishops & MaskLightSq) != 0;
-        
-        // Bishop pair bonus
-		if (whiteDark && whiteLight) {
-			wscore += 28 + (8 - Long.bitCount(wPawns)) * 3;
-        }
-		if (blackDark && blackLight) {
-			bscore += 28 + (8 - Long.bitCount(bPawns)) * 3;
-        }
-    
         // Penalty for bishop trapped behind pawn at a2/h2/a7/h7
-        if (((wBishops | bBishops) & 0x0081000000008100L) != 0) {
+        if ((aBishops & 0x0081000000008100L) != 0) {
             if ((((1L<<48)& wBishops)!=0L) && // a7
                 (((1L<<41)& bPawns)!=0L) &&
                 (((1L<<50)& bPawns)!=0L))
@@ -129,82 +209,49 @@ public class LongEval extends FastEval {
         return wscore-bscore;
 	}
 
-	private int rookBonus() {
-        int wscore = 0,bscore=0;
-		long m = wRooks;
-        while (m != 0) {
-            int sq = Long.numberOfTrailingZeros(m);
-            final int x = BitBoard.sq2x(sq);
-            if ((wPawns & BitBoard.maskFile[x]) == 0) { // At least half-open file
-                wscore += (bPawns & BitBoard.maskFile[x]) == 0 ? 25 : 12;
-            }
-            long atk = BitBoard.rookAttacks(sq, aOccupied);
-            wAttacksBB |= atk;
-            wscore += RookMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))];
-            if ((atk & bKingZone) != 0)
-                bKingAttacks += Long.bitCount(atk & bKingZone);
-            m &= m-1;
-        }
-        long r7 = (wRooks >>> 48) & 0x00ffL;
-        if (((r7 & (r7 - 1)) != 0) && ((bKings & 0xff00000000000000L) != 0))
-            wscore += 30; // Two rooks on 7:th row
-        m = bRooks;
-        while (m != 0) {
-            int sq = Long.numberOfTrailingZeros(m);
-            final int x = BitBoard.sq2x(sq);
-            if ((bPawns & BitBoard.maskFile[x]) == 0) {
-                bscore += (wPawns & BitBoard.maskFile[x]) == 0 ? 25 : 12;
-            }
-            long atk = BitBoard.rookAttacks(sq, aOccupied);
-            bAttacksBB |= atk;
-            bscore += RookMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))];
-            if ((atk & wKingZone) != 0)
-                wKingAttacks += Long.bitCount(atk & wKingZone);
-            m &= m-1;
-        }
-        r7 = bRooks & 0xff00L;
-        if (((r7 & (r7 - 1)) != 0) && ((wKings & 0xffL) != 0))
-          bscore += 30; // Two rooks on 2:nd row
-        if(sb!=null){
-        	sb.append(f(wscore,4));
-        	sb.append(f(bscore,4));
-        }
-        return wscore-bscore;
+	private int rookOpenFileBonus(int sq,long own, long other) {
+        long mask = BitBoard.maskFile[BitBoard.sq2x(sq)];
+        return (own & mask) == 0L?(other & mask) == 0L ? 25 : 12:0;
 	}
 
 	private int threatBonus() {
-        long kMask = ~(aMinor& aMajor&~aSlider); 
-        return threatBonus(bOccupied, wOccupied & kMask) + threatBonus(wOccupied, bOccupied & kMask);
+        return threatBonus(bOccupied, wOccupied & ~aKings) + threatBonus(wOccupied, bOccupied & ~aKings);
 	}
 
 	private int threatBonus(long own, long enemy) {
-        long op = own&aPawns;
-        long on = own&aKnights;
-        long ob = own&aBishops;
-        long or = own&aRooks;
-        long oq = own&aQueens;
 		int s=threatOffset((wNext?wPawnAtks:bPawnAtks)&enemy);
-            
-        while(on!=0L){
-			int sq = Long.numberOfTrailingZeros(on);
-			s+=threatOffset(BitBoard.NMasks[sq]&enemy);
-			on^=1L << sq;
+		{
+	        long m = own&aKnights;
+	        while(m!=0L){
+				int sq = Long.numberOfTrailingZeros(m);
+				s+=threatOffset(BitBoard.NMasks[sq]&enemy);
+	            m &= m-1;
+			}
 		}
-		while(ob!=0L){
-			int sq = Long.numberOfTrailingZeros(ob);
-			s+=threatOffset(BitBoard.bishopAttacks(sq, aOccupied)&enemy);
-			ob^=1L << sq;
+        {
+            long m = own&aBishops;
+			while(m!=0L){
+				int sq = Long.numberOfTrailingZeros(m);
+				s+=threatOffset(BitBoard.bishopAttacks(sq, aOccupied)&enemy);
+	            m &= m-1;
+			}
 		}
-		while(or!=0L){
-			int sq = Long.numberOfTrailingZeros(or);
-			s+=threatOffset(BitBoard.rookAttacks(sq, aOccupied)&enemy);
-			or^=1L << sq;
+        {
+            long m = own&aRooks;
+			while(m!=0L){
+				int sq = Long.numberOfTrailingZeros(m);
+				s+=threatOffset(BitBoard.rookAttacks(sq, aOccupied)&enemy);
+	            m &= m-1;
+			}
 		}
-		while(oq!=0L){
-			int sq = Long.numberOfTrailingZeros(oq);
-			s+=threatOffset(BitBoard.bishopAttacks(sq, aOccupied)&enemy);
-			s+=threatOffset(BitBoard.rookAttacks(sq, aOccupied)&enemy);
-			oq^=1L << sq;
+        {
+            long m = own&aQueens;
+			while(m!=0L){
+				int sq = Long.numberOfTrailingZeros(m);
+				s+=threatOffset(BitBoard.bishopAttacks(sq, aOccupied)&enemy);
+				s+=threatOffset(BitBoard.rookAttacks(sq, aOccupied)&enemy);
+	            m &= m-1;
+			}
 		}
 		s /=64;
 		
@@ -214,16 +261,16 @@ public class LongEval extends FastEval {
 		return s;
 	}
 
-	private int threatOffset(long atk) {
+	private int threatOffset(long m) {
 		int score=0;
-		while(atk!=0L){
-			int sq = Long.numberOfTrailingZeros(atk);
+		while(m!=0L){
+			int sq = Long.numberOfTrailingZeros(m);
 			int type = type(sq);
 			if(type!=0){
 				int val = MBase.psqt(sq, type)[1];
 				score+=val+val*val/qV;
 			}
-			atk^=1L << sq;
+            m &= m-1;
 		}
 		return score;
 	}
@@ -244,9 +291,9 @@ public class LongEval extends FastEval {
 
     /** Implement the "when ahead trade pieces, when behind trade pawns" rule. */
 	private int tradeBonus() {
-        final int deltaScore = wMtrl - bMtrl;
-        int pBonus1 = interpolate((deltaScore > 0) ? wMtrlPawns : bMtrlPawns, 0, -30 * deltaScore / 100, 6 * pV, 0);
-        int pBonus2 = interpolate((deltaScore > 0) ? bMtrl : wMtrl, 0, 30 * deltaScore / 100, qV + 2 * rV + 2 * bV + 2 * nV, 0);
+        final int deltaScore = (wMtrl - bMtrl) * 30 / 100;
+        int pBonus1 = interpolate((deltaScore > 0) ? wMtrlPawns : bMtrlPawns, 0, -deltaScore, 6 * pV, 0);
+        int pBonus2 = interpolate((deltaScore > 0) ? bMtrl : wMtrl, 0, deltaScore, qV + 2 * rV + 2 * bV + 2 * nV, 0);
         if(sb!=null){
         	sb.append(f(pBonus1,3));
         	sb.append(f(pBonus2,3));
@@ -341,7 +388,7 @@ public class LongEval extends FastEval {
                 score += 6 * 15;
             }
         }
-        score += (bKingAttacks - wKingAttacks) * 4;
+        score += (bKingAtks - wKingAtks) * 4;
         final int kSafety = interpolate(m, minM, 0, maxM, score);
         if(sb!=null){
         	sb.append(f(kSafety,3));
@@ -439,7 +486,7 @@ public class LongEval extends FastEval {
         	sb.append(f(s,4));
 		return s;
     }
-    private int pawnBonus2() {
+    private int passedPawnAdditionalBonus() {
         final int hiMtrl = qV + rV;
         // Passed pawns are more dangerous if enemy king is far away
         int wscore = interpolate(bMtrl - bMtrlPawns, 0, 2 * passedBonusW, hiMtrl, passedBonusW);
@@ -559,7 +606,7 @@ public class LongEval extends FastEval {
         wBackward &= bPawnAtks;
         wBackward &= ~BitBoard.northFill(bPawnFiles);
         long bBackward = bPawns & ~(aPawns << 8) & (wPawnAtks << 8) & ~BitBoard.southFill(bPawnAtks);
-        bBackward &= ((bPawns&MaskBToHFiles)<<7) | ((bPawns&MaskAToGFiles)<<9);
+        bBackward &= wPawnAtks;
         bBackward &= ~BitBoard.northFill(wPawnFiles);
         score -= (Long.bitCount(wBackward) - Long.bitCount(bBackward)) * 15;
 

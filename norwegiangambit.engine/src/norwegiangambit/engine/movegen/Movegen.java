@@ -138,7 +138,7 @@ public class Movegen implements IConst{
 	}
 	
 	final public void capture(int md, int type, int victim, long bto) {
-		if(type<victim || (bto&eAttacked)==0L){ // Good
+		if(type<victim || (bto&eAttacked)==0){ // Good
 			sort1(md);
 		} else if(type==victim){ // Equal
 			sort2(md);
@@ -208,56 +208,68 @@ public class Movegen implements IConst{
 
 	public void generate() {
 		clear();
+
 		// Calculate checkers and pinners
-		pinners=0L;
-		long en=eOccupied & aKnights;
-		long ep=eOccupied & aPawns;
-		long ek=eOccupied & aKings;
-		long eb=eOccupied & aBishops;
-		long er=eOccupied & aRooks;
-		long eq=eOccupied & aQueens;
+		pinners=0;
+
 		// Regular checks
-		checkers=(en & BitBoard.NMasks[oKingpos]) | (ep & (wNext?MBP.REV[oKingpos]:MWP.REV[oKingpos]));
+		checkers=(eOccupied & aKnights & BitBoard.NMasks[oKingpos]) | (eOccupied & aPawns & (wNext?MBP.REV[oKingpos]:MWP.REV[oKingpos]));
+
 		// Slider checks
-		if((eOccupied & aSlider & BitBoard.QMasks[oKingpos]) !=0L){
+		if((eOccupied & aSlider & BitBoard.QMasks[oKingpos]) !=0){
 			long diagatks = eOccupied & aDiag & BitBoard.BMasks[oKingpos];
-			if (diagatks != 0L)
+			if (diagatks != 0)
 				diagPinners(diagatks);
 			long lineatks = eOccupied & aLine & BitBoard.RMasks[oKingpos];
-			if (lineatks != 0L)
+			if (lineatks != 0)
 				linePinners(lineatks);
 		}
 		// Calculate unsafe positions, those attacked by enemy
 		long pcs=aOccupied&~(oOccupied &  aKings);
 		eAttacked=wNext?wPawnAtkBy:bPawnAtkBy;
-		while(en!=0L){
-			int sq = Long.numberOfTrailingZeros(en);
-			eAttacked|=BitBoard.NMasks[sq];
-			en^=1L << sq;
+		{
+			long m=eOccupied & aKnights;
+			while(m!=0){
+				int sq = Long.numberOfTrailingZeros(m);
+				eAttacked|=BitBoard.NMasks[sq];
+				m &= m-1;
+			}
 		}
-		while(ek!=0L){
-			int sq = Long.numberOfTrailingZeros(ek);
-			eAttacked|=BitBoard.KMasks[sq];
-			ek^=1L << sq;
+		{
+			long m=eOccupied & aKings;
+			while(m!=0){
+				int sq = Long.numberOfTrailingZeros(m);
+				eAttacked|=BitBoard.KMasks[sq];
+				m &= m-1;
+			}
 		}
-		while(eb!=0L){
-			int sq = Long.numberOfTrailingZeros(eb);
-			eAttacked|=BitBoard.bishopAttacks(sq, pcs);
-			eb^=1L << sq;
+		{
+			long m=eOccupied & aBishops;
+			while(m!=0){
+				int sq = Long.numberOfTrailingZeros(m);
+				eAttacked|=BitBoard.bishopAttacks(sq, pcs);
+				m &= m-1;
+			}
 		}
-		while(er!=0L){
-			int sq = Long.numberOfTrailingZeros(er);
-			eAttacked|=BitBoard.rookAttacks(sq, pcs);
-			er^=1L << sq;
+		{
+			long m=eOccupied & aRooks;
+			while(m!=0){
+				int sq = Long.numberOfTrailingZeros(m);
+				eAttacked|=BitBoard.rookAttacks(sq, pcs);
+				m &= m-1;
+			}
 		}
-		while(eq!=0L){
-			int sq = Long.numberOfTrailingZeros(eq);
-			eAttacked|=BitBoard.bishopAttacks(sq, pcs);
-			eAttacked|=BitBoard.rookAttacks(sq, pcs);
-			eq^=1L << sq;
+		{
+			long m=eOccupied & aQueens;
+			while(m!=0){
+				int sq = Long.numberOfTrailingZeros(m);
+				eAttacked|=BitBoard.bishopAttacks(sq, pcs);
+				eAttacked|=BitBoard.rookAttacks(sq, pcs);
+				m &= m-1;
+			}
 		}
 
-		if(checkers==0L){
+		if(checkers==0){
 			nonevasive();
 		} else {
 			clear(); // not interested in pinned moves for evasive moves
@@ -273,7 +285,7 @@ public class Movegen implements IConst{
 			atks ^= attacker;
 			long between = BitBoard.BETWEEN[asq+64*oKingpos];
 			long bpcs = between&aOccupied;
-			if(bpcs==0L){
+			if(bpcs==0){
 				checkers|=attacker;
 			} else if(Long.bitCount(bpcs)==1){
 				// check for slide moves
@@ -290,13 +302,13 @@ public class Movegen implements IConst{
 					int ctype = ctype(attacker);
 					if(wNext){
 						MWP mwp = MWP.WP[from];
-						if(pinner<<7==attacker && (attacker&MaskHFile)==0L){
+						if(pinner<<7==attacker && (attacker&MaskHFile)==0){
 							if(from>47){
 								capturePromote(mwp.PL, ctype, attacker);
 							} else
 								capture(mwp.CL[ctype], 0, ctype, attacker);
 						}
-						if(pinner<<9==attacker && (attacker&MaskAFile)==0L){
+						if(pinner<<9==attacker && (attacker&MaskAFile)==0){
 							if(from>47){
 								capturePromote(mwp.PR, ctype, attacker);
 							} else
@@ -304,13 +316,13 @@ public class Movegen implements IConst{
 						}
 					} else {
 						MBP mbp = MBP.BP[from];
-						if(pinner>>9==attacker && (attacker&MaskHFile)==0L){
+						if(pinner>>9==attacker && (attacker&MaskHFile)==0){
 							if(from<16){
 								capturePromote(mbp.PL, ctype, attacker);
 							} else
 								capture(mbp.CL[ctype], 0, ctype, attacker);
 						}
-						if(pinner>>7==attacker && (attacker&MaskAFile)==0L){
+						if(pinner>>7==attacker && (attacker&MaskAFile)==0){
 							if(from<16){
 								capturePromote(mbp.PR, ctype, attacker);
 							} else
@@ -339,7 +351,7 @@ public class Movegen implements IConst{
 			atks ^= attacker;
 			long between = BitBoard.BETWEEN[asq+64*oKingpos];
 			long bpcs = between&aOccupied;
-			if(bpcs==0L){
+			if(bpcs==0){
 				checkers|=attacker;
 			} else if(Long.bitCount(bpcs)==1){
 				// check for slide moves
@@ -436,7 +448,7 @@ public class Movegen implements IConst{
 	}
 
 	public void loopMoves(long _b, MBase[] base, long mask) {
-		while(_b!=0L){
+		while(_b!=0){
 			int from = Long.numberOfTrailingZeros(_b);
 			_b ^= 1L << from;
 			base[from].genLegal(this,mask);
@@ -505,12 +517,12 @@ public class Movegen implements IConst{
 		if((slider & BitBoard.QMasks[king]) !=0){
 			long diag = bb_bit1 & slider;
 			if ((diag & BitBoard.BMasks[king]) != 0) {
-				if((diag & BitBoard.bishopAttacks(king, bb_piece))!=0L)
+				if((diag & BitBoard.bishopAttacks(king, bb_piece))!=0)
 					return false;
 			}
 			long line = bb_bit2 & slider;
 			if ((line & BitBoard.RMasks[king]) != 0) {
-				if((line & BitBoard.rookAttacks(king, bb_piece))!=0L)
+				if((line & BitBoard.rookAttacks(king, bb_piece))!=0)
 					return false;
 			}
 		}
@@ -550,10 +562,10 @@ public class Movegen implements IConst{
 		long sliders=oOccupied & aSlider & BitBoard.QMasks[eKingpos];
 		long diagsqrs = aDiag & BitBoard.BMasks[eKingpos];
 		long linesqrs = aLine & BitBoard.RMasks[eKingpos];
-		long hiders=0L;
-		if(sliders==0L){
+		long hiders=0;
+		if(sliders==0){
 			long diagatks = sliders & diagsqrs;
-			if (diagatks != 0L) {
+			if (diagatks != 0) {
 				int bits = Long.bitCount(diagatks);
 				for (int j = 0; j < bits; j++) {
 					int asq = Long.numberOfTrailingZeros(diagatks);
@@ -565,7 +577,7 @@ public class Movegen implements IConst{
 				}
 			}
 			long lineatks = sliders & linesqrs;
-			if (lineatks != 0L) {
+			if (lineatks != 0) {
 				int bits = Long.bitCount(lineatks);
 				for (int j = 0; j < bits; j++) {
 					int asq = Long.numberOfTrailingZeros(lineatks);
@@ -582,7 +594,7 @@ public class Movegen implements IConst{
     		// Hiders
     		int from = BITS.getFrom(md.bitmap);
     		long bfrom=1L<<from;
-    		if((bfrom&hiders)!=0L){
+    		if((bfrom&hiders)!=0){
 				addChecker(i);
     			continue;
     		}
@@ -591,7 +603,7 @@ public class Movegen implements IConst{
     		if((piece&4)==4){
         		// Diag
         		if((piece&1)==1){  
-        			if((bto & diagsqrs)!=0L){
+        			if((bto & diagsqrs)!=0){
         	    		if(isClear(md)){
         					addChecker(i);
         					continue;
@@ -600,7 +612,7 @@ public class Movegen implements IConst{
         		}
         		// Line
         		if((piece&2)==2){  
-        			if((bto & linesqrs)!=0L){
+        			if((bto & linesqrs)!=0){
         				if(isClear(md)){
         					addChecker(i);
         					continue;
@@ -611,19 +623,19 @@ public class Movegen implements IConst{
     			switch(piece){
     			case IConst.WN:
     			case IConst.BN:
-    				if((bto & BitBoard.NMasks[eKingpos])!=0L){
+    				if((bto & BitBoard.NMasks[eKingpos])!=0){
     					addChecker(i);
     					continue;
     				}
     				break;
 				case IConst.WP:
-					if((bto & MWP.REV[eKingpos])!=0L){
+					if((bto & MWP.REV[eKingpos])!=0){
 						addChecker(i);
 						continue;
 					}
 					break;
 				case IConst.BP:
-					if((bto & MBP.REV[eKingpos])!=0L){
+					if((bto & MBP.REV[eKingpos])!=0){
 						addChecker(i);
 						continue;
 					}
