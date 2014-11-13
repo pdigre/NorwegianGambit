@@ -6,22 +6,24 @@ import norwegiangambit.engine.movegen.MOVEDATA2;
 import norwegiangambit.engine.movegen.Movegen;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
+import static norwegiangambit.util.BITS.M;
+import static norwegiangambit.util.BITS.E;
+import static norwegiangambit.util.BITS.SS;
 
 public class FastEval extends Movegen {
 
 	final public static int MATE = -32000; 
 	final public static int STALE = 0; 
-    static final int pV = MBase.psqt.pVal(WP);
-    static final int nV = MBase.psqt.pVal(WN);
-    static final int bV = MBase.psqt.pVal(WB);
-    static final int rV = MBase.psqt.pVal(WR);
-    static final int qV = MBase.psqt.pVal(WQ);
-    static final int kV = MBase.psqt.pVal(WK); // Used by SEE algorithm, but not included in board material sums
+    static final int pV = M(MBase.psqt.pVal(WP));
+    static final int nV = M(MBase.psqt.pVal(WN));
+    static final int bV = M(MBase.psqt.pVal(WB));
+    static final int rV = M(MBase.psqt.pVal(WR));
+    static final int qV = M(MBase.psqt.pVal(WQ));
+    static final int kV = M(MBase.psqt.pVal(WK)); // Used by SEE algorithm, but not included in board material sums
 	
 	FastEval parent,deeper;
 
-	protected int midscore;
-	protected int endscore;
+	protected int mescore;
 	protected int pawnscore;
 	protected int score;
 	protected long zobrist;
@@ -36,21 +38,13 @@ public class FastEval extends Movegen {
 		parent.notifyPV(this, depth, lowerBound, upperBound, score);
 	}
 	
-	public int midScore(){
-		return midscore;
-	}
-
-	public int endScore(){
-		return endscore;
-	}
-
 	public int score(){
 		return wNext?score:-score;
 	}
 
 	public void fasteval(){
 		int popcnt=Long.bitCount(aOccupied);
-		score = ((popcnt)*midscore+(32-popcnt)*endscore)/32;
+		score = ((popcnt)*M(mescore)+(32-popcnt)*E(mescore))/32;
 	}
 	
 	public int whiteScore() {
@@ -76,8 +70,7 @@ public class FastEval extends Movegen {
 	public void evaluate(int i) {
 		curr_move=i;
 		MOVEDATA md = MBase.ALL[i];
-		midscore=parent.midScore()+md.mscore;
-		endscore=parent.endScore()+md.escore;
+		mescore=parent.mescore+SS(md.mescore);
 		if(parent instanceof FastEval){
 			zobrist_fwd=((FastEval) parent).zobrist_fwd^md.zobrist;
 			zobrist=zobrist_fwd;
@@ -103,21 +96,16 @@ public class FastEval extends Movegen {
 		int[] brd = FEN.boardFrom64(aMinor, aMajor, aSlider,bOccupied);
 		zobrist_fwd=MBase.zobrist.getKey(wNext, castling, epsq, brd);
 		zobrist=zobrist_fwd;
-		int[] score = getScore(brd);
-		midscore=score[0];
-		endscore=score[1];
+		mescore=getScore(brd);
 		fasteval();
 	}
 	
-	public static int[] getScore(int[] brd) {
-		int[] score=new int[]{0,0};
+	public static int getScore(int[] brd) {
+		int score=0;
 		for (int sq = 0; sq < 64; sq++) {
 			int piece = brd[sq];
-			if(piece!=0){
-				int[] pv = MBase.psqt(sq, piece);
-				score[0]+=pv[0];
-				score[1]+=pv[1];
-			}
+			if(piece!=0)
+				score+=SS(MBase.psqt(sq, piece));
 		}
 		return score;
 	}

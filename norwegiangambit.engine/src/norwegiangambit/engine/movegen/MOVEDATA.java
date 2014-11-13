@@ -5,16 +5,17 @@ import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 import norwegiangambit.util.polyglot.IZobristKey;
+import static norwegiangambit.util.BITS.SS;
 
 public class MOVEDATA {
 	final public long bitmap,bOccupied,aMinor,aMajor,aSlider;
 	final public long bto;
-	final public int mscore,escore;
+	final public int mescore;
 	final public long zobrist;
 	final public long pawnhash;
 
 	protected MOVEDATA(long bits) {
-		int score[]=new int[2];
+		int score=0;
 		this.bitmap = bits;
 		int piece = BITS.getPiece(bits);
 		int type = BITS.getType(bits);
@@ -34,23 +35,23 @@ public class MOVEDATA {
 			b_bit1 ^= ((piece & 1) != 0 ? 0 : bfrom);
 			b_bit2 ^= ((piece & 2) == 0 ? 0 : bfrom);
 			b_bit3 ^= ((piece & 4) == 0 ? 0 : bfrom);
-			sub(pawn,from,score);
+			score-=sub(pawn,from);
 			zobrist^=MBase.getZobrist(pawn,from);
 			pawnhash^=MBase.getZobrist(pawn,from);
 		} else {
-			sub(piece,from,score);
+			score-=sub(piece,from);
 			zobrist^=MBase.getZobrist(piece,from);
 			if(type==IConst.WP)
 				pawnhash^=MBase.getZobrist(piece,from);
 		}
-		add(piece,to,score);
+		score+=add(piece,to);
 	    if (BITS.isEnpassant(bits)) {
 			int victim=BITS.getCaptured(bits);
 			int enp = to + (to > from ? -8 : 8);
 			long e = 1L << enp;
 			b_bit1 ^= ((piece & 1) == 0 ? 0 : e);
 			b_black ^= ((piece & 8) != 0 ? 0 : e);
-			sub(victim,enp,score);
+			score-=sub(victim,enp);
 			zobrist^=MBase.getZobrist(victim,enp);
 			pawnhash^=MBase.getZobrist(victim,enp);
 	    } else if(BITS.isCapture(bits)){
@@ -59,7 +60,7 @@ public class MOVEDATA {
 			b_bit2 ^= ((victim & 2) == 0 ? 0 : bto);
 			b_bit3 ^= ((victim & 4) == 0 ? 0 : bto);
 			b_black ^= (white(victim) ? 0 : bto);
-			sub(victim,to,score);
+			score-=sub(victim,to);
 			zobrist^=MBase.getZobrist(victim,to);
 			if(victim%8==IConst.WP)
 				pawnhash^=MBase.getZobrist(victim,to);
@@ -78,8 +79,8 @@ public class MOVEDATA {
 			b_bit3 ^= cfromto;
 			b_black ^= (white(piece) ? 0 : cfromto);
 			int rook=white(piece)?IConst.WR:IConst.BR;
-			sub(rook,from,score);
-			add(rook,to,score);
+			score-=sub(rook,from);
+			score+=add(rook,to);
 			zobrist^=MBase.getZobrist(rook,from);
 			zobrist^=MBase.getZobrist(rook,to);
 		}
@@ -91,8 +92,7 @@ public class MOVEDATA {
 		this.aMajor=b_bit2;
 		this.aSlider=b_bit3;
 		this.bOccupied=b_black;
-		this.mscore=score[0];
-		this.escore=score[1];
+		this.mescore=score;
 		this.zobrist=zobrist;
 		this.pawnhash=pawnhash;
 	}
@@ -101,16 +101,13 @@ public class MOVEDATA {
 		return (piece & 8) == 0;
 	}
 
-	private void sub(int piece, int sq, int[] score) {
-		int[] pv = MBase.psqt(sq, piece);
-		score[0]-=pv[0];
-		score[1]-=pv[1];
+	private int sub(int piece, int sq) {
+		return SS(MBase.psqt(sq, piece));
 	}
 
-	private void add(int piece, int sq, int[] score) {
-		int[] pv = MBase.psqt(sq, piece);
-		score[0]+=pv[0];
-		score[1]+=pv[1];
+	private int add(int piece, int sq) {
+		return SS(MBase.psqt(sq, piece));
+		
 	}
 
 	public static void main(String[] args) {

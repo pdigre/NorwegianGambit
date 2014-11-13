@@ -2,6 +2,47 @@ package norwegiangambit.util;
 
 public class BITS implements IConst {
 
+	public static final int I2MSK = 0xFFFF;
+	public static final int I2MAX = 0x8000;
+	public static final int I2OFF = 0x80008000;
+
+	/**
+	 * Mid-game part of ShortInt Pair
+	 * @param b
+	 * @return
+	 */
+	public static int M(int b) {
+		return (b&I2MSK)-I2MAX;
+	}
+	/**
+	 * End-game part of ShortInt Pair
+	 * @param b
+	 * @return
+	 */
+	public static int E(int b) {
+		return ((b>>16)&I2MSK)-I2MAX;
+	}
+	/**
+	 * Prepare for add/minus of a ShortInt Pair
+	 * @param b
+	 * @return
+	 */
+	public static int SS(int b) {
+		return b-I2OFF;
+	}
+	/**
+	 * ShortInt Pair to int storage form
+	 * @param mid
+	 * @param end
+	 * @return
+	 */
+	public static int S(int mid, int end) {
+		return (mid+I2MAX)&I2MSK | (((end+I2MAX)&I2MSK)<<16);
+	}
+	
+	
+	
+	
 	final public static long assemble2(int piece, int from, int to, long extra) {
 		int score = 0;
 		return (piece << _PIECE) | (from << _FROM) | (to << _TO) | extra | ((score | 0L) << 32);

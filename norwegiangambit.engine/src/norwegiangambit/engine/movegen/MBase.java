@@ -17,7 +17,7 @@ public abstract class MBase implements IConst{
 	public static PSQT psqt; 
 	public static IZobristKey zobrist;
 
-	public static int[] psqt(int sq, int piece) {
+	public static int psqt(int sq, int piece) {
 		return psqt.psqt(sq, piece);
 	}
 

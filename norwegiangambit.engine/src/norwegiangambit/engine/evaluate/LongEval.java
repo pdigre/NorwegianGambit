@@ -1,18 +1,31 @@
 package norwegiangambit.engine.evaluate;
 
+import static norwegiangambit.util.BITS.M;
+import static norwegiangambit.util.BITS.S;
+import static norwegiangambit.util.BITS.SS;
 import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.BitBoard;
 
 public class LongEval extends FastEval {
+	
+	final static int[] KnightMobScore = {S(-65,-50), S(-42,-30), S(-9,-10), S( 3,  0), S(15, 10), S(27, 20), // Knight
+		  S( 37, 28), S( 42, 31), S(44, 33)};
+	final static int[] BishMobScore = {S(-52,-47), S(-28,-23), S( 6,  1), S(20, 15), S(34, 29), S(48, 43), // Bishop
+		  S( 60, 55), S( 68, 63), S(74, 68), S(77, 72), S(80, 75), S(82, 77), S( 84, 79), S( 86, 81)};
+	final static int[] RookMobScore = {S(-47,-53), S(-31,-26), S(-5,  0), S( 1, 16), S( 7, 32), S(13, 48), // Rooks
+	      S( 18, 64), S( 22, 80), S(26, 96), S(29,109), S(31,115), S(33,119),
+	      S( 35,122), S( 36,123), S(37,124)};
+    final static int[] QueenMobScore = {S(-42,-40), S(-28,-23), S(-5, -7), S( 0,  0), S( 6, 10), S(11, 19), // Queens
+	      S( 13, 29), S( 18, 38), S(20, 40), S(21, 41), S(22, 41), S(22, 41),
+	      S( 22, 41), S( 23, 41), S(24, 41), S(25, 41), S(25, 41), S(25, 41),
+	      S( 25, 41), S( 25, 41), S(25, 41), S(25, 41), S(25, 41), S(25, 41),
+	      S( 25, 41), S( 25, 41), S(25, 41), S(25, 41)};
 
-	static final int[] RookMobScore = {-10,-7,-4,-1,2,5,7,9,11,12,13,14,14,14,14};
-	static final int[] BishMobScore = {-15,-10,-6,-2,2,6,10,13,16,18,20,22,23,24};
-    static final int[] QueenMobScore = {-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,9,10,10,10,10,10,10,10,10,10,10,10,10};
+    final static int[] PawnThreat  = {S(0, 0), S(56, 70), S(56, 70), S(76, 99), S(86, 118)}; // pnbrq
 
-    static final int[] PawnThreat  = {0,80,80,117,127}; // pnbrq
-    static final int[] MinorThreat = {7,24,24,41,41}; // pnbrq
-    static final int[] MajorThreat = {15,15,15,15,24}; 
-    static final int   HANGING     = 23;
+    final static int[] MinorThreat = {S( 7, 39), S(24, 49), S(24, 49), S(41,100), S(41,100)}; // pnbrq
+    final static int[] MajorThreat = {S(15, 39), S(15, 45), S(15, 45), S(15, 45), S(24, 49)}; 
+    final static int   HANGING     = S(23,23);
 
     int wMtrl,wMtrlPawns,bMtrl,bMtrlPawns;
 	long wKnights,wBishops,wRooks,wQueens,wKings,bKnights,bBishops,bRooks,bQueens,bKings;
@@ -102,7 +115,7 @@ public class LongEval extends FastEval {
 	            int sq = Long.numberOfTrailingZeros(m);
 	            long atk = BitBoard.bishopAttacks(sq, aOccupied);
 	            wMinorAtks |= atk;
-	            wscore += BishMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))];
+	            wscore += SS(BishMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))]);
 	            if ((atk & bKingZone) != 0)
 	                bKingAtks += Long.bitCount(atk & bKingZone);
 	            m &= m-1;
@@ -115,7 +128,7 @@ public class LongEval extends FastEval {
 				wscore+=rookOpenFileBonus(sq,wPawns,bPawns);
 	            long atk = BitBoard.rookAttacks(sq, aOccupied);
 	            wMajorAtks |= atk;
-	            wscore += RookMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))];
+	            wscore += SS(RookMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))]);
 	            if ((atk & bKingZone) != 0)
 	                bKingAtks += Long.bitCount(atk & bKingZone);
 	            m &= m-1;
@@ -128,7 +141,7 @@ public class LongEval extends FastEval {
 				wscore+=rookOpenFileBonus(sq,wPawns,bPawns);
 	            long atk = BitBoard.rookAttacks(sq, aOccupied) | BitBoard.bishopAttacks(sq, aOccupied);
 	            wMajorAtks |= atk;
-	            wscore += QueenMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))];
+	            wscore += SS(QueenMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))]);
 	            if ((atk & bKingZone) != 0)
 	                bKingAtks += Long.bitCount(atk & bKingZone);
 	            m &= m-1;
@@ -140,7 +153,7 @@ public class LongEval extends FastEval {
 	            int sq = Long.numberOfTrailingZeros(m);
 	            long atk = BitBoard.bishopAttacks(sq, aOccupied);
 	            bMinorAtks |= atk;
-	            bscore += BishMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))];
+	            bscore += SS(BishMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))]);
 	            if ((atk & wKingZone) != 0)
 	                wKingAtks += Long.bitCount(atk & wKingZone);
 	            m &= m-1;
@@ -153,7 +166,7 @@ public class LongEval extends FastEval {
 				bscore+=rookOpenFileBonus(sq,bPawns,wPawns);
 	            long atk = BitBoard.rookAttacks(sq, aOccupied);
 	            bMajorAtks |= atk;
-	            bscore += RookMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))];
+	            bscore += SS(RookMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))]);
 	            if ((atk & wKingZone) != 0)
 	                wKingAtks += Long.bitCount(atk & wKingZone);
 	            m &= m-1;
@@ -166,7 +179,7 @@ public class LongEval extends FastEval {
 				bscore+=rookOpenFileBonus(sq,bPawns,wPawns);
 	            long atk = BitBoard.rookAttacks(sq, aOccupied) | BitBoard.bishopAttacks(sq, aOccupied);
 	            bMajorAtks |= atk;
-	            bscore += QueenMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))];
+	            bscore += SS(QueenMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))]);
 	            if ((atk & wKingZone) != 0)
 	                wKingAtks += Long.bitCount(atk & wKingZone);
 	            m &= m-1;
@@ -177,7 +190,7 @@ public class LongEval extends FastEval {
         	sb.append(f(wscore,4));
         	sb.append(f(bscore,4));
         }
-        return wscore-bscore;
+        return wscore-SS(bscore);
 	}
 
 	private int special() {
@@ -267,7 +280,7 @@ public class LongEval extends FastEval {
 			int sq = Long.numberOfTrailingZeros(m);
 			int type = type(sq);
 			if(type!=0){
-				int val = MBase.psqt(sq, type)[1];
+				int val = M(MBase.psqt(sq, type));
 				score+=val+val*val/qV;
 			}
             m &= m-1;
@@ -279,7 +292,7 @@ public class LongEval extends FastEval {
      * Interpolate between (x1,y1) and (x2,y2).
      * If x < x1, return y1, if x > x2 return y2. Otherwise, use linear interpolation.
      */
-    static final int interpolate(int x, int x1, int y1, int x2, int y2) {
+    final static int interpolate(int x, int x1, int y1, int x2, int y2) {
         if (x > x2) {
             return y2;
         } else if (x < x1) {
@@ -301,7 +314,7 @@ public class LongEval extends FastEval {
 		return pBonus1+pBonus2;
 	}
 
-    private static final int[] castleFactor;
+    private final static int[] castleFactor;
     static {
         castleFactor = new int[256];
         for (int i = 0; i < 256; i++) {

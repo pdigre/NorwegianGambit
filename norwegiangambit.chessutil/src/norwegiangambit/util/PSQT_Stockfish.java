@@ -6,9 +6,9 @@ import static norwegiangambit.util.BITS.S;
  * Simplified Evaluation Function 
  *
  */
-public class PSQT_Cuckoo extends PSQT{
+public class PSQT_Stockfish extends PSQT{
 
-	public PSQT_Cuckoo(){
+	public PSQT_Stockfish(){
 		super(
 			new int[]{WP,WN,WB,WR,WQ,WK}, 
 			new int[]{S(92,92),S(385,385),S(385,385),S(593,593),S(1244,1244),S(9900,9900)}, 
