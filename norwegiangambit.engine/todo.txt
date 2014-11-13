@@ -8,20 +8,25 @@
     PV ==key + lvls2leaf + score  
 	Kill==key + lvls2leaf + cutoff score
 4. Expire & Better TT
-5. Solve MATE and Stalemate score
+-. Solve MATE and Stalemate score
+-. Check Equal and Loosing captures for SQ_ATK_BY
+-. BT 2450
+-. Iterative deepening & concurrency
+-. Magic numbers
+5. ShortInt Pairs
 
-*** FIX SSE ***
-a. Check Equal and Loosing captures for SQ_ATK_BY
+==== Evaluation ====
+5. Eval - Compare Stockfish
+  - Mobility
+  - Threat
+-. Pawn hash / Pawn eval
+-. King push, etc
 
-5. BT 2450
-5. Iterative deepening & concurrency
-5. Eval - Stockfish
-6. Pawn hash / Pawn eval
-7. King push, etc
+6. Negascout
+-. Futility pruning
 
-6. UCI
-7. Run Bayeselo
-8. Magic numbers?? How
+7. UCI
+-. Run Bayeselo
 9. Improve evasions
 
 

@@ -3,7 +3,7 @@ package norwegiangambit.util;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EngineStockfish extends WrapUCI implements IDivide{
+public class EngineStockfish extends WrapUCI implements IDivide, IEvalStat{
 
 	public static String DEFAULT_EXEPATH = "C:/chess/stockfish.exe";
 
@@ -38,4 +38,11 @@ public class EngineStockfish extends WrapUCI implements IDivide{
 		return lines[lines.length-1].split(" ")[1];
 	}
 	
+	@Override
+	public String eval(String fen){
+		waitFor("isready", "readyok");
+		command("position fen "+fen);
+		String res = waitFor("eval", "Total Evaluation:");
+		return res;
+	}
 }

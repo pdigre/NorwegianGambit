@@ -21,11 +21,24 @@ public class LongEval extends FastEval {
 	      S( 25, 41), S( 25, 41), S(25, 41), S(25, 41), S(25, 41), S(25, 41),
 	      S( 25, 41), S( 25, 41), S(25, 41), S(25, 41)};
 
-    final static int[] PawnThreat  = {S(0, 0), S(56, 70), S(56, 70), S(76, 99), S(86, 118)}; // pnbrq
+    final static int[] PawnThreat  = {S(0, 0), S(87, 118), S(84, 122), S(114, 203), S(121, 217)}; // pnbrq
 
-    final static int[] MinorThreat = {S( 7, 39), S(24, 49), S(24, 49), S(41,100), S(41,100)}; // pnbrq
-    final static int[] MajorThreat = {S(15, 39), S(15, 45), S(15, 45), S(15, 45), S(24, 49)}; 
-    final static int   HANGING     = S(23,23);
+    final static int[] ProtectedMinorThreat = {S( 0, 0), S(19, 37), S(24, 37), S(44, 97), S(35,106)}; // pnbrq
+    final static int[] ProtectedMajorThreat = {S( 0, 0), S( 9, 14), S( 9, 14), S( 7, 14), S(24, 48)}; 
+    final static int[] WeakMinorThreat = {S( 0,32), S(33, 41), S(31, 50), S(41,100), S(35,104)}; // pnbrq
+    final static int[] WeakMajorThreat = {S( 0,27), S(26, 57), S(26, 57), S(0 , 43), S(23, 51)}; 
+    
+    // Assorted Bonuses
+    final static int KingOnOne        = SS(2 , 58);
+    final static int KingOnMany       = SS(6 ,125);
+    final static int RookOnPawn       = SS(7 , 27);
+    final static int RookOpenFile     = SS(43, 21);
+    final static int RookSemiOpenFile = SS(19, 10);
+    final static int BishopPawns      = SS( 8, 12);
+    final static int MinorBehindPawn  = SS(16,  0);
+    final static int TrappedRook      = SS(92,  0);
+    final static int Unstoppable      = SS( 0, 20);
+    final static int Hanging     	  = SS(31, 26);
 
     int wMtrl,wMtrlPawns,bMtrl,bMtrlPawns;
 	long wKnights,wBishops,wRooks,wQueens,wKings,bKnights,bBishops,bRooks,bQueens,bKings;
@@ -224,7 +237,7 @@ public class LongEval extends FastEval {
 
 	private int rookOpenFileBonus(int sq,long own, long other) {
         long mask = BitBoard.maskFile[BitBoard.sq2x(sq)];
-        return (own & mask) == 0L?(other & mask) == 0L ? 25 : 12:0;
+        return (own & mask) == 0L?(other & mask) == 0L ? RookOpenFile : RookSemiOpenFile:0;
 	}
 
 	private int threatBonus() {

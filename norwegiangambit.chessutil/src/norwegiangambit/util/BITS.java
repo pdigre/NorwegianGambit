@@ -30,6 +30,17 @@ public class BITS implements IConst {
 	public static int SS(int b) {
 		return b-I2OFF;
 	}
+
+	/**
+	 * Short for SS(S(mid,end))
+	 * @param mid
+	 * @param end
+	 * @return
+	 */
+	public static int SS(int mid, int end) {
+		return S(mid,end)-I2OFF;
+	}
+
 	/**
 	 * ShortInt Pair to int storage form
 	 * @param mid
