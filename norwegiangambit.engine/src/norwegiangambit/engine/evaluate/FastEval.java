@@ -1,25 +1,19 @@
 package norwegiangambit.engine.evaluate;
 
+import static norwegiangambit.util.BITS.E;
+import static norwegiangambit.util.BITS.M;
+import static norwegiangambit.util.BITS.SS;
 import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.engine.movegen.MOVEDATA2;
 import norwegiangambit.engine.movegen.Movegen;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
-import static norwegiangambit.util.BITS.M;
-import static norwegiangambit.util.BITS.E;
-import static norwegiangambit.util.BITS.SS;
 
 public class FastEval extends Movegen {
 
 	final public static int MATE = -32000; 
 	final public static int STALE = 0; 
-    static final int pV = M(MBase.psqt.pVal(WP));
-    static final int nV = M(MBase.psqt.pVal(WN));
-    static final int bV = M(MBase.psqt.pVal(WB));
-    static final int rV = M(MBase.psqt.pVal(WR));
-    static final int qV = M(MBase.psqt.pVal(WQ));
-    static final int kV = M(MBase.psqt.pVal(WK)); // Used by SEE algorithm, but not included in board material sums
 	
 	FastEval parent,deeper;
 
@@ -42,9 +36,15 @@ public class FastEval extends Movegen {
 		return wNext?score:-score;
 	}
 
+	/**
+	 * Fast eval based on simple evaluation of mid and endgame score.
+	 * Only useful for testing Search results with PSQT_SEF
+	 */
 	public void fasteval(){
 		int popcnt=Long.bitCount(aOccupied);
-		score = ((popcnt)*M(mescore)+(32-popcnt)*E(mescore))/32;
+		
+		score = interpolate(popcnt, 2, E(mescore),32, M(mescore));
+//		score = ((popcnt)*M(mescore)+(32-popcnt)*E(mescore))/32;
 	}
 	
 	public int whiteScore() {
@@ -147,4 +147,18 @@ public class FastEval extends Movegen {
 		return getHistory1()+getHistory2();
 	}
 	
+    /**
+     * Interpolate between (x1,y1) and (x2,y2).
+     * If x < x1, return y1, if x > x2 return y2. Otherwise, use linear interpolation.
+     */
+    final static public int interpolate(int x, int x1, int y1, int x2, int y2) {
+        if (x > x2) {
+            return y2;
+        } else if (x < x1) {
+            return y1;
+        } else {
+            return (x - x1) * (y2 - y1) / (x2 - x1) + y1;
+        }
+    }
+
 }

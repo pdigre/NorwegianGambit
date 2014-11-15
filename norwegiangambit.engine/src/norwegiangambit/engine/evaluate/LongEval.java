@@ -8,7 +8,16 @@ import norwegiangambit.util.BitBoard;
 
 public class LongEval extends FastEval {
 	
-	final static int[] KnightMobScore = {S(-65,-50), S(-42,-30), S(-9,-10), S( 3,  0), S(15, 10), S(27, 20), // Knight
+    static final int pV = M(MBase.psqt.pVal(WP));
+    static final int nV = M(MBase.psqt.pVal(WN));
+    static final int bV = M(MBase.psqt.pVal(WB));
+    static final int rV = M(MBase.psqt.pVal(WR));
+    static final int qV = M(MBase.psqt.pVal(WQ));
+    static final int kV = M(MBase.psqt.pVal(WK)); // Used by SEE algorithm, but not included in board material sums
+    static final int mgBalance = 15581;
+    static final int egBalance = 3998;
+
+    final static int[] KnightMobScore = {S(-65,-50), S(-42,-30), S(-9,-10), S( 3,  0), S(15, 10), S(27, 20), // Knight
 		  S( 37, 28), S( 42, 31), S(44, 33)};
 	final static int[] BishMobScore = {S(-52,-47), S(-28,-23), S( 6,  1), S(20, 15), S(34, 29), S(48, 43), // Bishop
 		  S( 60, 55), S( 68, 63), S(74, 68), S(77, 72), S(80, 75), S(82, 77), S( 84, 79), S( 86, 81)};
@@ -50,11 +59,7 @@ public class LongEval extends FastEval {
 
 	StringBuilder sb;
 	
-	public void longeval() {
-		eval();
-	}
-
-	public void eval() {
+	public void longEval() {
         if(sb!=null)
         	sb.append(f(score,5));
         int plus= initAdjustments() + pawnBonus1() + passedPawnAdditionalBonus()+mob_atks()+special()+
@@ -73,7 +78,7 @@ public class LongEval extends FastEval {
 	
 	public String printEval() {
 		sb=new StringBuilder();
-		eval();
+		longEval();
 		return sb.toString();
 	}
 
@@ -301,19 +306,6 @@ public class LongEval extends FastEval {
 		return score;
 	}
 
-    /**
-     * Interpolate between (x1,y1) and (x2,y2).
-     * If x < x1, return y1, if x > x2 return y2. Otherwise, use linear interpolation.
-     */
-    final static int interpolate(int x, int x1, int y1, int x2, int y2) {
-        if (x > x2) {
-            return y2;
-        } else if (x < x1) {
-            return y1;
-        } else {
-            return (x - x1) * (y2 - y1) / (x2 - x1) + y1;
-        }
-    }
 
     /** Implement the "when ahead trade pieces, when behind trade pawns" rule. */
 	private int tradeBonus() {

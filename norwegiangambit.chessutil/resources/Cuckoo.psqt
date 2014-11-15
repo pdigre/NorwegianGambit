@@ -1,6 +1,6 @@
 // Top row Start & Middle game
 // Bottom row end game
-PSQT: Classic       Base:   100
+PSQT: Cuckoo      Base:   100
 MidLimit: 7000 EndLimit: 2000
 
 Piece: Pawn    MidGame:  92   EndGame: 92         

@@ -151,7 +151,7 @@ public class SearchTesterTT extends AbstractTester{
 		@Override
 		public int search(int alpha, int beta) {
 			eval.count++;
-			longeval();
+			longEval();
 			int score2 = score();
 			int type=TranspositionTable.T_EXACT;
 			if(score2<=alpha)

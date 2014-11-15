@@ -1,10 +1,10 @@
 // Top row Start & Middle game
 // Bottom row end game
 PSQT: StockFish       Base:   200
-MidLimit: 15881 EndLimit: 3998
+MidLimit: 15581 EndLimit: 3998
 
-Piece: Pawn    MidGame:  198  EndGame: 258
-	 A    B    C    D    E    F    G    H
+Piece: Pawn MidGame:198 EndGame:258
+     A    B    C    D    E    F    G    H
 
 8    0    0    0    0    0    0    0    0
      0    0    0    0    0    0    0    0
@@ -30,8 +30,8 @@ Piece: Pawn    MidGame:  198  EndGame: 258
 1    0    0    0    0    0    0    0    0
      0    0    0    0    0    0    0    0
 
-Piece: Knight  MidGame:  817  EndGame:846
-	 A    B    C    D    E    F    G    H
+Piece: Knight MidGame:817 EndGame:846
+     A    B    C    D    E    F    G    H
 
 8 -200  -65  -41  -29  -29  -41  -65 -200
    -98  -83  -51  -16  -16  -51  -83  -98
@@ -57,8 +57,8 @@ Piece: Knight  MidGame:  817  EndGame:846
 1 -144 -109  -85  -73  -73  -85 -109 -144
    -98  -83  -51  -16  -16  -51  -83  -98
 
-Piece: Bishop  MidGame:  836  EndGame:857
-	 A    B    C    D    E    F    G    H
+Piece: Bishop MidGame:836 EndGame:857
+     A    B    C    D    E    F    G    H
 
 8  -49  -22  -29  -38  -38  -29  -22  -49
    -65  -42  -44  -26  -26  -44  -42  -65
@@ -84,9 +84,8 @@ Piece: Bishop  MidGame:  836  EndGame:857
 1  -54  -27  -34  -43  -43  -34  -27  -54
    -65  -42  -44  -26  -26  -44  -42  -65
 
-
-Piece: Rook    MidGame: 1270  EndGame:1278
-	 A    B    C    D    E    F    G    H
+Piece: Rook MidGame:1270 EndGame:1278
+     A    B    C    D    E    F    G    H
 
 8  -22  -17  -12   -8   -8  -12  -17  -22
      3    3    3    3    3    3    3    3
@@ -112,9 +111,8 @@ Piece: Rook    MidGame: 1270  EndGame:1278
 1  -22  -17  -12   -8   -8  -12  -17  -22
      3    3    3    3    3    3    3    3
 
-
-Piece: Queen   MidGame: 2521  EndGame:2558
-	 A    B    C    D    E    F    G    H
+Piece: Queen MidGame:2521 EndGame:2558
+     A    B    C    D    E    F    G    H
 
 8   -2   -2   -2   -2   -2   -2   -2   -2
    -80  -54  -42  -30  -30  -42  -54  -80
@@ -140,32 +138,3 @@ Piece: Queen   MidGame: 2521  EndGame:2558
 1   -2   -2   -2   -2   -2   -2   -2   -2
    -80  -54  -42  -30  -30  -42  -54  -80
 
-
-Piece:  King   MidGame: 50000 EndGame: 50000
-	 A    B    C    D    E    F    G    H
-
-8   98  132   73   25   25   73  132   98
-    27   81  108  116  116  108   81   27
-
-7  119  153   94   46   46   94  153  119
-    74  128  155  163  163  155  128   74
-
-6  146  180  121   73   73  121  180  146
-   111  165  192  200  200  192  165  111
-
-5  173  207  148  100  100  148  207  173
-   135  189  216  224  224  216  189  135
-
-4  196  230  171  123  123  171  230  196
-   135  189  216  224  224  216  189  135
-
-3  224  258  199  151  151  199  258  224
-   111  165  192  200  200  192  165  111
-
-2  287  321  262  214  214  262  321  287
-    74  128  155  163  163  155  128   74
-
-1  298  332  273  225  225  273  332  298
-    27   81  108  116  116  108   81   27
-
-   
