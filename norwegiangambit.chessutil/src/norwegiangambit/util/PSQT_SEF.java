@@ -1,6 +1,6 @@
 package norwegiangambit.util;
 
-import static norwegiangambit.util.BITS.S;
+import static norwegiangambit.util.ShortIntPairs.*;
 /**
  * Simplified Evaluation Function 
  *
@@ -13,7 +13,7 @@ public class PSQT_SEF extends PSQT{
 			new int[]{S(100,100),S(320,320),S(330,330),S(500,500),S(900,900),S(20000,20000)}, 
 			new int[][]{ //
 		{ // Pawn
-		 BITS.S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0),
+		 S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0),
 		 S(   5,   5), S(  10,  10), S(  10,  10), S( -20, -20), S( -20, -20), S(  10,  10), S(  10,  10), S(   5,   5),
 		 S(   5,   5), S(  -5,  -5), S( -10, -10), S(   0,   0), S(   0,   0), S( -10, -10), S(  -5,  -5), S(   5,   5),
 		 S(   0,   0), S(   0,   0), S(   0,   0), S(  20,  20), S(  20,  20), S(   0,   0), S(   0,   0), S(   0,   0),

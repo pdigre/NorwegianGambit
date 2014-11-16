@@ -84,7 +84,22 @@ public abstract class AbstractTest {
 		assertEquals("Wrong score", expected2, actual2);
 	}
 
+	public static void testEval(LongEval leaf,String fen,String expected) {
+		StartGame pos = new StartGame(fen);
+		LongEval root = new LongEval();
+		root.setChild(leaf);
+		leaf.setParent(root);
+		root.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		root.evaluate();
+		assertEquals("Wrong score", expected, root.printEval());
+	}
+
 	public static void testEval(LongEval inst,String input) {
+		String[] in=input.replace("\r","").split("\n");
+		testEval(inst, in[0], Arrays.copyOfRange(in, 1, in.length));
+	}
+
+	public static void testFen(LongEval inst,String input) {
 		String[] in=input.replace("\r","").split("\n");
 		testEval(inst, in[0], Arrays.copyOfRange(in, 1, in.length));
 	}

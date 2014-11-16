@@ -5,7 +5,7 @@ import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 import norwegiangambit.util.polyglot.IZobristKey;
-import static norwegiangambit.util.BITS.SS;
+import static norwegiangambit.util.ShortIntPairs.*;
 
 public class MOVEDATA {
 	final public long bitmap,bOccupied,aMinor,aMajor,aSlider;

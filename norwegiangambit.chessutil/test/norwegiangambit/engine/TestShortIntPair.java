@@ -1,11 +1,11 @@
 package norwegiangambit.engine;
 
 import static org.junit.Assert.assertEquals;
-import norwegiangambit.util.BITS;
+import static norwegiangambit.util.ShortIntPairs.*;
 
 import org.junit.Test;
 
-public class TestShortIntPair extends BITS{
+public class TestShortIntPair{
 
 
 	public class TestS{

@@ -2,10 +2,7 @@ package norwegiangambit.util;
 
 import java.util.HashMap;
 
-import static norwegiangambit.util.BITS.M;
-import static norwegiangambit.util.BITS.E;
-import static norwegiangambit.util.BITS.S;
-import static norwegiangambit.util.BITS.SS;
+import static norwegiangambit.util.ShortIntPairs.*;
 
 public class PSQT implements IConst{
 	

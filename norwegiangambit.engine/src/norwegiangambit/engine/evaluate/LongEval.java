@@ -1,8 +1,9 @@
 package norwegiangambit.engine.evaluate;
 
-import static norwegiangambit.util.BITS.M;
-import static norwegiangambit.util.BITS.S;
-import static norwegiangambit.util.BITS.SS;
+import static norwegiangambit.util.ShortIntPairs.*;
+
+import java.util.Arrays;
+
 import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.BitBoard;
 
@@ -16,6 +17,9 @@ public class LongEval extends FastEval {
     static final int kV = M(MBase.psqt.pVal(WK)); // Used by SEE algorithm, but not included in board material sums
     static final int mgBalance = 15581;
     static final int egBalance = 3998;
+    public static final int WM=0,BM=8;	// Used for Mobility bonus
+    public static final int WX=4,BX=12;	// Used for Threat bonus
+    public static final int WS=16,BS=17;	// Used for Space bonus
 
     final static int[] KnightMobScore = {S(-65,-50), S(-42,-30), S(-9,-10), S( 3,  0), S(15, 10), S(27, 20), // Knight
 		  S( 37, 28), S( 42, 31), S(44, 33)};
@@ -56,33 +60,104 @@ public class LongEval extends FastEval {
     // King safety variables
     long wKingZone, bKingZone;      // Squares close to king that are worth attacking
     int wKingAtks, bKingAtks; 		// Number of attacks close to white/black king
+    
+    int[] bonus=new int[18];
+	int materialBonus,imbalanceBonus, pawnBonus;
 
 	StringBuilder sb;
 	
-	public void longEval() {
-        if(sb!=null)
-        	sb.append(f(score,5));
-        int plus= initAdjustments() + pawnBonus1() + passedPawnAdditionalBonus()+mob_atks()+special()+
-        		castleBonus()+ tradeBonus()+ threatBonus()+kingSafety()+endGameEval(score);
-        score+=plus;
-        if(sb!=null){
-        	sb.append(f(plus,5));
-        	sb.append(f(score,5));
-        }
+	public final static String f(int in,int i){
+		return f(String.valueOf(in),i);
 	}
-
-	public static String f(int in,int i){
-		String all="           "+in;
+	
+	public final static String f(String in,int i){
+		String all="                             "+in;
 		return all.substring(all.length()-i);
 	}
 	
+	public final static String d(int i){
+		String in=String.valueOf(i);
+		int d=in.replace("-","").trim().length();
+		if(d<3)
+			in=in.substring(0,in.length()-d)+"000".substring(d)+in.substring(in.length()-d);
+		String all="           "+in;
+		all=all.substring(0,all.length()-2)+"."+all.substring(all.length()-2);
+		return all.substring(all.length()-6);
+	}
+	
+	public final static String line1(String lbl,int score) {
+		return f(lbl,20)+" |   ---   --- |   ---   --- |"+dpair(score)+" \n";
+	}
+
+	public final static String line2(String lbl,int wnb, int bnb) {
+		return f(lbl,20)+" |"+dpair(wnb)+" |"+dpair(bnb)+" |"+dpair(wnb-SS(bnb))+" \n";
+	}
+
+	public final static String dpair(int pair) {
+		return d(M(pair)*10000/M(pV))+d(E(pair)*10000/E(pV));
+	}
+
+	/**
+	 * Prints positional eval in Stockfish format 
+	 * 
+	 * 
+	 * @return
+	 */
 	public String printEval() {
+		int materialBonus=ZERO,imbalanceBonus=ZERO, pawnBonus=ZERO;
 		sb=new StringBuilder();
-		longEval();
+		sb.append("           Eval term |    White    |    Black    |    Total    \n");
+		sb.append("                     |   MG    EG  |   MG    EG  |   MG    EG  \n");
+		sb.append("---------------------+-------------+-------------+-------------\n");
+		int tot = longEval();
+		sb.append(line1("Material, PST, Tempo",materialBonus));
+		sb.append(line1("Material imbalance",imbalanceBonus));
+		sb.append(line1("Pawns",pawnBonus));
+		sb.append(line2("Knights",bonus[WN], bonus[BN]));
+		sb.append(line2("Bishops",bonus[WN], bonus[BN]));
+		sb.append(line2("Rooks",bonus[WN], bonus[BN]));
+		sb.append(line2("Queens",bonus[WN], bonus[BN]));
+    	sb.append(line2("Mobility",bonus[WM],bonus[BM]));
+    	sb.append(line2("King safety",bonus[WK],bonus[BK]));
+    	sb.append(line2("Threats",bonus[WX],bonus[BX]));
+    	sb.append(line2("Passed pawns",bonus[WP],bonus[BP]));
+    	sb.append(line2("Space",bonus[WS],bonus[BS]));
+		sb.append("---------------------+-------------+-------------+-------------\n");
+		sb.append(line1("Total",tot));
+		sb.append("\nTotal Evaluation: "+d(score)+" (white side)\n");
 		return sb.toString();
 	}
 
-	public int initAdjustments() {
+	public int longEval() {
+        initAdjustments();
+        pawnBonus1();
+        passedPawnAdditionalBonus();
+        mob_atks();
+        special();
+        castleBonus();
+        tradeBonus();
+        threatBonus();
+        kingSafety();
+        threatBonus();
+		int tot=ZERO;
+        tot+=SS(bonus[WN])-SS(bonus[BN]);
+        tot+=SS(bonus[WB])-SS(bonus[BB]);
+        tot+=SS(bonus[WR])-SS(bonus[BR]);
+        tot+=SS(bonus[WQ])-SS(bonus[BQ]);
+        tot+=SS(bonus[WM])-SS(bonus[BM]);
+        tot+=SS(bonus[WK])-SS(bonus[BK]);
+        tot+=SS(bonus[WX])-SS(bonus[BX]);
+        tot+=SS(bonus[WP])-SS(bonus[BP]);	
+        tot+=SS(bonus[WS])-SS(bonus[BS]);
+        endGameEval(tot);
+        // Weight adjusted to game phase
+        int popcnt=Long.bitCount(aOccupied);
+		score = interpolate(popcnt, 2, E(tot),32, M(tot));
+		return tot;
+	}
+
+	public void initAdjustments() {
+		Arrays.fill(bonus, ZERO);
 		wKnights = wOccupied & aKnights;
         wBishops = wOccupied & aBishops;
         wRooks   = wOccupied & aRooks;
@@ -107,33 +182,28 @@ public class LongEval extends FastEval {
 		bKingZone=BitBoard.KMasks[bkingpos];
 		
 		// Bishop Pair Bonus
-		int bishopPair= bishopPairBonus(wBishopNum, wPawnNum) - bishopPairBonus(bBishopNum, bPawnNum);
+		bonus[WB]=bishopPairBonus(wBishopNum, wPawnNum);
+		bonus[BB]=bishopPairBonus(bBishopNum, bPawnNum);
 		
 		// Rook on enemy pawn row bonus
-		int rookEnemyRow=(wRookNum==2 && (wRooks &  ~0xff000000000000L)==0L && (bKings & ~0xff00000000000000L) == 0L ? 30:0)
-				    -(bRookNum==2 && (bRooks &  ~0x0000000000ff00L)==0L && (wKings & ~0x00000000000000ffL) == 0L ? 30:0);
-		
-		if(sb!=null){
-        	sb.append(f(bishopPair,3));
-        	sb.append(f(rookEnemyRow,3));
-        }
-		return bishopPair+rookEnemyRow;
+		bonus[WR]=(wRookNum==2 && (wRooks &  ~0xff000000000000L)==0L && (bKings & ~0xff00000000000000L) == 0L ? 30:0);
+		bonus[BR]=(bRookNum==2 && (bRooks &  ~0x0000000000ff00L)==0L && (wKings & ~0x00000000000000ffL) == 0L ? 30:0);
 	}
 
 	private final static int bishopPairBonus(int wBishopNum, int wPawnNum) {
-		return wBishopNum==2?28 + (8 - wPawnNum) * 3:0;
+		int v = wBishopNum==2?28 + (8 - wPawnNum) * 3:0;
+		return S(v,v);
 	}
 
 
-	private int mob_atks() {
-        int wscore = 0, bscore = 0;
+	private void mob_atks() {
         {
 	        long m = wBishops;
 	        while (m != 0L) {
 	            int sq = Long.numberOfTrailingZeros(m);
 	            long atk = BitBoard.bishopAttacks(sq, aOccupied);
 	            wMinorAtks |= atk;
-	            wscore += SS(BishMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))]);
+	            bonus[WM] += SS(BishMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))]);
 	            if ((atk & bKingZone) != 0)
 	                bKingAtks += Long.bitCount(atk & bKingZone);
 	            m &= m-1;
@@ -143,10 +213,10 @@ public class LongEval extends FastEval {
 			long m = wRooks;
 	        while (m != 0) {
 	            int sq = Long.numberOfTrailingZeros(m);
-				wscore+=rookOpenFileBonus(sq,wPawns,bPawns);
+				bonus[WR]+=rookOpenFileBonus(sq,wPawns,bPawns);
 	            long atk = BitBoard.rookAttacks(sq, aOccupied);
 	            wMajorAtks |= atk;
-	            wscore += SS(RookMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))]);
+	            bonus[WM] += SS(RookMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))]);
 	            if ((atk & bKingZone) != 0)
 	                bKingAtks += Long.bitCount(atk & bKingZone);
 	            m &= m-1;
@@ -156,10 +226,9 @@ public class LongEval extends FastEval {
 			long m = wQueens;
 	        while (m != 0) {
 	            int sq = Long.numberOfTrailingZeros(m);
-				wscore+=rookOpenFileBonus(sq,wPawns,bPawns);
 	            long atk = BitBoard.rookAttacks(sq, aOccupied) | BitBoard.bishopAttacks(sq, aOccupied);
 	            wMajorAtks |= atk;
-	            wscore += SS(QueenMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))]);
+	            bonus[WM] += SS(QueenMobScore[Long.bitCount(atk & ~(wOccupied | bPawnAtks))]);
 	            if ((atk & bKingZone) != 0)
 	                bKingAtks += Long.bitCount(atk & bKingZone);
 	            m &= m-1;
@@ -171,7 +240,7 @@ public class LongEval extends FastEval {
 	            int sq = Long.numberOfTrailingZeros(m);
 	            long atk = BitBoard.bishopAttacks(sq, aOccupied);
 	            bMinorAtks |= atk;
-	            bscore += SS(BishMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))]);
+	            bonus[BM] += SS(BishMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))]);
 	            if ((atk & wKingZone) != 0)
 	                wKingAtks += Long.bitCount(atk & wKingZone);
 	            m &= m-1;
@@ -181,10 +250,10 @@ public class LongEval extends FastEval {
 	        long m = bRooks;
 	        while (m != 0) {
 	            int sq = Long.numberOfTrailingZeros(m);
-				bscore+=rookOpenFileBonus(sq,bPawns,wPawns);
+	            bonus[BR]+=rookOpenFileBonus(sq,bPawns,wPawns);
 	            long atk = BitBoard.rookAttacks(sq, aOccupied);
 	            bMajorAtks |= atk;
-	            bscore += SS(RookMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))]);
+	            bonus[BM] += SS(RookMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))]);
 	            if ((atk & wKingZone) != 0)
 	                wKingAtks += Long.bitCount(atk & wKingZone);
 	            m &= m-1;
@@ -194,50 +263,36 @@ public class LongEval extends FastEval {
 	        long m = bQueens;
 	        while (m != 0) {
 	            int sq = Long.numberOfTrailingZeros(m);
-				bscore+=rookOpenFileBonus(sq,bPawns,wPawns);
 	            long atk = BitBoard.rookAttacks(sq, aOccupied) | BitBoard.bishopAttacks(sq, aOccupied);
 	            bMajorAtks |= atk;
-	            bscore += SS(QueenMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))]);
+	            bonus[BM] += SS(QueenMobScore[Long.bitCount(atk & ~(bOccupied | wPawnAtks))]);
 	            if ((atk & wKingZone) != 0)
 	                wKingAtks += Long.bitCount(atk & wKingZone);
 	            m &= m-1;
 	        }
         }
-
-        if(sb!=null){
-        	sb.append(f(wscore,4));
-        	sb.append(f(bscore,4));
-        }
-        return wscore-SS(bscore);
 	}
 
-	private int special() {
-        int wscore = 0,bscore=0;
-
+	private void special() {
         // Penalty for bishop trapped behind pawn at a2/h2/a7/h7
         if ((aBishops & 0x0081000000008100L) != 0) {
             if ((((1L<<48)& wBishops)!=0L) && // a7
                 (((1L<<41)& bPawns)!=0L) &&
                 (((1L<<50)& bPawns)!=0L))
-                bscore += 150;
+                bonus[BB] += 150;
             if ((((1L<<55)& wBishops)!=0L) && // h7
                 (((1L<<46)& bPawns)!=0L) &&
                 (((1L<<53)& bPawns)!=0L))
-                bscore += (wQueens != 0) ? pV : pV * 3 / 2;
+            	bonus[BB] += (wQueens != 0) ? pV : pV * 3 / 2;
             if ((((1L<<8)& bBishops)!=0L) &&  // a2
                 (((1L<<17)& wPawns)!=0L) &&
                 (((1L<<10)& wPawns)!=0L))
-                wscore += 150;
+            	bonus[WB] += 150;
             if ((((1L<<15)& bBishops)!=0L) && // h2
                 (((1L<<22)& wPawns)!=0L) &&
                 (((1L<<13)& wPawns)!=0L))
-                wscore += (bQueens != 0) ? pV : pV * 3 / 2;
+            	bonus[WB] += (bQueens != 0) ? pV : pV * 3 / 2;
         }
-        if(sb!=null){
-        	sb.append(f(wscore,4));
-        	sb.append(f(bscore,4));
-        }
-        return wscore-bscore;
 	}
 
 	private int rookOpenFileBonus(int sq,long own, long other) {
@@ -245,8 +300,9 @@ public class LongEval extends FastEval {
         return (own & mask) == 0L?(other & mask) == 0L ? RookOpenFile : RookSemiOpenFile:0;
 	}
 
-	private int threatBonus() {
-        return threatBonus(bOccupied, wOccupied & ~aKings) + threatBonus(wOccupied, bOccupied & ~aKings);
+	private void threatBonus() {
+        bonus[WX] = threatBonus(bOccupied, wOccupied & ~aKings);
+        bonus[BX] = threatBonus(wOccupied, bOccupied & ~aKings);
 	}
 
 	private int threatBonus(long own, long enemy) {
@@ -285,10 +341,6 @@ public class LongEval extends FastEval {
 			}
 		}
 		s /=64;
-		
-        if(sb!=null){
-        	sb.append(f(s,5));
-        }
 		return s;
 	}
 
@@ -312,10 +364,6 @@ public class LongEval extends FastEval {
         final int deltaScore = (wMtrl - bMtrl) * 30 / 100;
         int pBonus1 = interpolate((deltaScore > 0) ? wMtrlPawns : bMtrlPawns, 0, -deltaScore, 6 * pV, 0);
         int pBonus2 = interpolate((deltaScore > 0) ? bMtrl : wMtrl, 0, deltaScore, qV + 2 * rV + 2 * bV + 2 * nV, 0);
-        if(sb!=null){
-        	sb.append(f(pBonus1,3));
-        	sb.append(f(pBonus2,3));
-        }
 		return pBonus1+pBonus2;
 	}
 
@@ -362,22 +410,16 @@ public class LongEval extends FastEval {
 //        final int bBonus = (castleValue * castleFactor[tmp]) >> 10;
 //
 //        return wBonus - bBonus;
-        if(sb!=null){
-        	sb.append(f(0,3));
-        	sb.append(f(0,3));
-        }
     	return 0;
     }
-	private int kingSafety() {
+	private void kingSafety() {
         final int minM = rV + bV;
         final int m = (wMtrl - wMtrlPawns + bMtrl - bMtrlPawns) / 2;
         if (m <= minM)
-            return 0;
+            return;
         final int maxM = qV + 2 * rV + 2 * bV + 2 * nV;
         int score = kingSafetyKPPart();
-        if(sb!=null){
-        	sb.append(f(score,3));
-        }
+        
         if (BitBoard.sq2y(wkingpos) == 0) {
             if (((wKings & 0x60L) != 0) && // King on f1 or g1
                 ((wRooks & 0xC0L) != 0) && // Rook on g1 or h1
@@ -392,6 +434,7 @@ public class LongEval extends FastEval {
                 score -= 6 * 15;
             }
         }
+        
         if (BitBoard.sq2y(bkingpos) == 7) {
             if (((bKings & 0x6000000000000000L) != 0) && // King on f8 or g8
                 ((bRooks & 0xC000000000000000L) != 0) && // Rook on g8 or h8
@@ -408,10 +451,6 @@ public class LongEval extends FastEval {
         }
         score += (bKingAtks - wKingAtks) * 4;
         final int kSafety = interpolate(m, minM, 0, maxM, score);
-        if(sb!=null){
-        	sb.append(f(kSafety,3));
-        }
-        return kSafety;
 	}
 
     private final int kingSafetyKPPart() {
@@ -485,7 +524,7 @@ public class LongEval extends FastEval {
     int passedBonusW,passedBonusB;
     long passedPawnsW,passedPawnsB;
     
-    private int pawnBonus1() {
+    private void pawnBonus1() {
         long key = pawnhash;
         int i = PawnHashTable.get(key);
         long data=0L;
@@ -500,11 +539,10 @@ public class LongEval extends FastEval {
             data=PawnHashTable.data[i];
         }
         int s = PawnHashTable.getScore(data);
-        if(sb!=null)
-        	sb.append(f(s,4));
-		return s;
+        pawnBonus=S(s,s);
     }
-    private int passedPawnAdditionalBonus() {
+    
+    private void passedPawnAdditionalBonus() {
         final int hiMtrl = qV + rV;
         // Passed pawns are more dangerous if enemy king is far away
         int wscore = interpolate(bMtrl - bMtrlPawns, 0, 2 * passedBonusW, hiMtrl, passedBonusW);
@@ -591,11 +629,8 @@ public class LongEval extends FastEval {
                 wscore += 500;
         } else if (bestBPromSq >= 0)
             bscore += 500;
-        if(sb!=null){
-        	sb.append(f(wscore,3));
-        	sb.append(f(bscore,3));
-        }
-        return wscore-bscore;
+        bonus[WP]=S(wscore,wscore);
+        bonus[BP]=S(bscore,bscore);
 	}
 	
 	private int computePawnHashData(long key) {
@@ -662,9 +697,6 @@ public class LongEval extends FastEval {
 	}
 
 	private int endGameEval(int score) {
-        if(sb!=null){
-        	sb.append(f(0,4));
-        }
 		return 0;
 	}
 

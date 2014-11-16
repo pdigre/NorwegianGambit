@@ -1,6 +1,6 @@
 package norwegiangambit.engine.iterate;
 
-import static norwegiangambit.util.BITS.M;
+import static norwegiangambit.util.ShortIntPairs.*;
 import norwegiangambit.engine.fen.Position;
 import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.BITS;

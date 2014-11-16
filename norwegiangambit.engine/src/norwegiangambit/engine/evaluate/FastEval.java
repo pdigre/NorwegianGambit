@@ -1,8 +1,6 @@
 package norwegiangambit.engine.evaluate;
 
-import static norwegiangambit.util.BITS.E;
-import static norwegiangambit.util.BITS.M;
-import static norwegiangambit.util.BITS.SS;
+import static norwegiangambit.util.ShortIntPairs.*;
 import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.engine.movegen.MOVEDATA2;
@@ -32,6 +30,10 @@ public class FastEval extends Movegen {
 		parent.notifyPV(this, depth, lowerBound, upperBound, score);
 	}
 	
+	/**
+	 * Score as positive seen from the side to move
+	 * @return
+	 */
 	public int score(){
 		return wNext?score:-score;
 	}
@@ -42,9 +44,7 @@ public class FastEval extends Movegen {
 	 */
 	public void fasteval(){
 		int popcnt=Long.bitCount(aOccupied);
-		
 		score = interpolate(popcnt, 2, E(mescore),32, M(mescore));
-//		score = ((popcnt)*M(mescore)+(32-popcnt)*E(mescore))/32;
 	}
 	
 	public int whiteScore() {

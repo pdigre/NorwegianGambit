@@ -1,6 +1,6 @@
 package norwegiangambit.util;
 
-import static norwegiangambit.util.BITS.S;
+import static norwegiangambit.util.ShortIntPairs.*;
 
 /**
  * Simplified Evaluation Function 

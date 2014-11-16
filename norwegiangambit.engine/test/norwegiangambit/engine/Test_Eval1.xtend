@@ -10,13 +10,25 @@ import org.junit.BeforeClass
 import org.junit.Test
 
 import static norwegiangambit.engine.movegen.MBase.*
+import norwegiangambit.util.EngineStockfish
+import norwegiangambit.util.IEvalStat
 
 class Test_Eval1 extends AbstractTest {
+	
+	static IEvalStat validator;
 
 	@BeforeClass
 	def static void prepare() {
+		validator = new EngineStockfish(EngineStockfish.DEFAULT_EXEPATH)
 		MBase.zobrist=new ZobristPolyglot
 		MBase.psqt=new PSQT_Cuckoo
+	}
+	
+	
+	@Test
+	def void eval_kiwipete() {
+		val fen = "rq2r1k1/5pp1/p7/4bNP1/1p2P2P/5Q2/PP4K1/5R1R w - - 0 1";
+		testEval(new LongEval(),fen,validator.eval(fen))
 	}
 	
 	@Test
