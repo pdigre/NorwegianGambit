@@ -41,8 +41,6 @@ public abstract class MBase implements IConst{
 		this.from = from;
 	}
 
-	public abstract void genLegal(Movegen gen,long mask);
-
 	public int[] makeArray(ArrayList<Integer> list) {
 		int[] arr = new int[list.size()];
 		for (int i = 0; i < list.size(); i++)
@@ -215,8 +213,6 @@ public abstract class MBase implements IConst{
 
 		}
 		if (isWhite) {
-//			if(allw==20434)
-//				System.out.println("hi");
 			ALL[allw++] = md;
 			return allw-1;
 		} else {
