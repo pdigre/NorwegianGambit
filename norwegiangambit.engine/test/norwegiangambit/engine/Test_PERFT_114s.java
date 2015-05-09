@@ -13,6 +13,11 @@ import org.junit.Test;
  *  4.8 sec Dell 28.10.2014 Introducing Magic numbers and "unsafe" map
  *  3.5 sec Dell_Work 29.10.2014
  *
+ *
+ *  4.8 sec Dell 10.05.2015
+ *  5.7 sec Dell 10.05.2015 using Lambda bitscan
+ *  4.7 sec Dell 11.05.2015
+ *  
  */
 public class Test_PERFT_114s extends PerftTest{
 

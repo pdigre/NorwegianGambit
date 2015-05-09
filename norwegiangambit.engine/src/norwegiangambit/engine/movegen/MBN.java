@@ -5,9 +5,10 @@ import java.util.List;
 
 import norwegiangambit.util.IConst;
 
-public class MBN extends MBase {
+public class MBN extends MSimple {
 
-	final static MBase[] MOVES;
+	final static MSimple[] MOVES;
+
 	static {
 		MOVES=new MBN[64];
 		for (int from = 0; from < 64; from++)
@@ -36,29 +37,4 @@ public class MBN extends MBase {
 			}
 		}
 	}
-	
-	final int[][] M;
-
-	public void genLegal(Movegen gen,long mask) {
-		long all = gen.aOccupied;
-		long enemy = gen.wOccupied;
-		for (int[] m : M){
-			long bto = getBTo(m[5]);
-			if ((all & bto) == 0) {
-				if((bto & mask)!=0L)
-					gen.move(m[5]);
-			} else {
-				if ((enemy & bto & mask) != 0) {
-					int c = gen.ctype(bto);
-					if(c==3 && bto==1L<<IConst.WR_KING_STARTPOS && (gen.castling&CANCASTLE_WHITEKING)!=0)
-						gen.capture(K, 1, c, bto);
-					else if(c==3 && bto==1L<<IConst.WR_QUEEN_STARTPOS && (gen.castling&CANCASTLE_WHITEKING)!=0)
-						gen.capture(Q, 1, c, bto);
-					else
-						gen.capture(m[c], 1, c, bto);
-				}
-			}
-		}
-	}
-
 }

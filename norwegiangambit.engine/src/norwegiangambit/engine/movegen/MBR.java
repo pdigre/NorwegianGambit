@@ -7,9 +7,8 @@ import norwegiangambit.util.IConst;
 
 public class MBR extends MSlider{
 
-	final static int[][] QLINE,KLINE;
-	final int[][] LINE;
-	final static int Q2, K2;
+	final static MSlider QLINE,KLINE;
+//	final static int Q2, K2;
 
 	final static MBR[] MOVES=new MBR[64];
 	static {
@@ -17,14 +16,16 @@ public class MBR extends MSlider{
 			MOVES[from] = new MBR(from);
 
 		MBR q = MOVES[BR_QUEEN_STARTPOS];
-		QLINE=cline(q.LINE,CANCASTLE_BLACKQUEEN);
-		q.Q=q.LINE[1][39];
-		Q2=MOVEDATAX.create(ALL[q.Q].bitmap^CANCASTLE_BLACKKING,CANCASTLE_BLACKQUEEN|CANCASTLE_WHITEQUEEN);
+		QLINE=new MSliderSpecial();
+		QLINE.SLIDES=cline(q.SLIDES,CANCASTLE_BLACKQUEEN);
+		q.Q=q.SLIDES[1][39];
+		QLINE.Q=MOVEDATAX.create(ALL[q.Q].bitmap^CANCASTLE_BLACKKING,CANCASTLE_BLACKQUEEN|CANCASTLE_WHITEQUEEN);
 
 		MBR k = MOVES[BR_KING_STARTPOS];
-		KLINE=cline(k.LINE,CANCASTLE_BLACKKING);
-		k.K=k.LINE[1][39];
-		K2=MOVEDATAX.create(ALL[k.K].bitmap^CANCASTLE_BLACKQUEEN,CANCASTLE_BLACKKING|CANCASTLE_WHITEKING);
+		KLINE=new MSliderSpecial();
+		KLINE.SLIDES=cline(k.SLIDES,CANCASTLE_BLACKKING);
+		k.K=k.SLIDES[1][39];
+		KLINE.K=MOVEDATAX.create(ALL[k.K].bitmap^CANCASTLE_BLACKQUEEN,CANCASTLE_BLACKKING|CANCASTLE_WHITEKING);
 	}
 
 	public static int[][] cline(int[][] l,long castling) {
@@ -33,7 +34,7 @@ public class MBR extends MSlider{
 
 	public MBR(int from) {
 		super(from);
-		LINE=new int[][]{slide(UP),slide(DOWN), slide(LEFT),slide(RIGHT)};
+		SLIDES=new int[][]{slide(UP),slide(DOWN), slide(LEFT),slide(RIGHT)};
 	}
 
 	private int[] slide(int offset) {
@@ -50,47 +51,5 @@ public class MBR extends MSlider{
 			to+=offset;
 		}
 		return makeArray(list);
-	}
-
-	public void genLegal(Movegen gen,long mask){
-		if(from==IConst.BR_QUEEN_STARTPOS){
-			if((gen.castling & IConst.CANCASTLE_BLACKQUEEN) != 0 ){
-				bslide2(gen,QLINE, mask);
-				return;
-			}
-		} else if(from==IConst.BR_KING_STARTPOS){
-			if((gen.castling & IConst.CANCASTLE_BLACKKING) != 0 ){
-				bslide2(gen,KLINE, mask);
-				return;
-			}
-		}
-		bslide(gen,LINE, 3,Q,K, mask);
-	}
-
-	public void bslide2(Movegen gen, int[][] moves,long mask) {
-		long occ = gen.aOccupied;
-		long enemy = gen.wOccupied;
-		for (int[] m : moves) {
-			int i = 0;
-			while (i < m.length) {
-				long bto = getBTo(m[i + 5]);
-				if ((occ & bto) != 0) {
-					if ((enemy & bto & mask) != 0) {
-						int c = gen.ctype(bto);
-						if(c==3 && bto==1L<<IConst.WR_KING_STARTPOS)
-							gen.capture(K2, 3, c, bto);
-						else if(c==3 && bto==1L<<IConst.WR_QUEEN_STARTPOS)
-							gen.capture(Q2, 3, c, bto);
-						else
-							gen.capture(m[i + c], 3, c, bto);
-					}
-					break;
-				} else {
-					if((bto & mask)!=0)
-						gen.move(m[i + 5]);
-					i += 6;
-				}
-			}
-		}
 	}
 }

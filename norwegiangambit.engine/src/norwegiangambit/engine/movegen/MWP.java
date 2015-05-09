@@ -2,25 +2,25 @@ package norwegiangambit.engine.movegen;
 
 import norwegiangambit.util.IConst;
 
-public class MWP extends MBase{
+public class MWP extends MPawn{
 
-	final int[] CL,CR;	// Capture
-	final int EL,ER;  // Enpassant
-	final int M1,M2;   // Forward
-	final int[] P1,PL,PR;   // Promotion
-	static int[] PQ,PK;  // Promotion & Capture rook
+	static int PQ,PK;  // Promotion & Capture rook
 	static long[] REV=new long[64];
 	final static MWP[] WP;
+	static MPCapture[] L,R;
 	static {
+		L=new MPCapture[64];
+		R=new MPCapture[64];
 		WP=new MWP[64];
+		
 		for (int from = 0; from < 64; from++)
 			WP[from] = new MWP(from);
 	}
 
 	public MWP(int from) {
 		super(from);
-		int[] CL=null,CR=null,P1=null,PL=null,PR=null;	
-		int EL=0,ER=0,M1=0,M2=0;
+		int[] CL=null,CR=null;	
+		int EL=0,ER=0,M1=0,M2=0,P1=0,PL=0,PR=0;
 		if(from>7 && from < 56){
 			if (from < 48) {
 				M1=move(from + 8);
@@ -59,15 +59,19 @@ public class MWP extends MBase{
 				}
 			}
 		}
-		this.CL=CL;
-		this.CR=CR;
-		this.EL=EL;
-		this.ER=ER;
+		MPCapture L=new MPCapture();
+		MWP.L[from]=L;
+		MPCapture R=new MPCapture();
+		MWP.R[from]=R;
+		L.C=CL;
+		R.C=CR;
+		L.E=EL;
+		R.E=ER;
 		this.M1=M1;
 		this.M2=M2;
 		this.P1=P1;
-		this.PL=PL;
-		this.PR=PR;
+		L.P=PL;
+		R.P=PR;
 	}
 
 	private int move(int to) {
@@ -92,117 +96,25 @@ public class MWP extends MBase{
 		return captures;
 	}
 
-	private int[] promotes(int to) {
+	private int promotes(int to) {
 		int[] promotes=new int[4];
 		for (int p = 0; p < 4; p++)
 			promotes[p]=MOVEDATA.create(assemblePromote(IConst.WP, WPROMOTES[p], from, to, CASTLING_STATE | SPECIAL));
-		return promotes;
+		return promotes[0];
 	}
 
-	private int[] cpromotes(int to) {
+	private int cpromotes(int to) {
 		int[] promotes=new int[20];
-		for (int p = 0; p < 4; p++)
-			for (int i = 0; i < 5; i++) {
-				promotes[p*5+i]=MOVEDATA.cpromote(from,to, WPROMOTES[p], IConst.WP, WCAPTURES[i]);
-			}
-		return promotes;
+		for (int i = 0; i < 20; i++)
+			promotes[i]=MOVEDATA.cpromote(from,to, WPROMOTES[i%4], IConst.WP, WCAPTURES[i/4]);
+		return promotes[0];
 	}
 
-	private int[] cpromotesx(int to) {
+	private int cpromotesx(int to) {
 		int[] promotes=new int[4];
 		for (int p = 0; p < 4; p++){
 			promotes[p]=MOVEDATAX.cpromote(from,to, WPROMOTES[p], IConst.WP, IConst.BR); 
 		}
-		return promotes;
-	}
-
-	public static <X extends MBase> void genSingle(final Movegen gen,long b, long occupancy) {
-		long m1=b&~(occupancy>>8);
-		int pop = Long.bitCount(m1);
-		for (int j = 0; j < pop; j++) {
-			int from = Long.numberOfTrailingZeros(m1);
-			m1 ^= 1L << from;
-			if(from>47){
-				gen.promote(WP[from].P1[0],1);
-				gen.promote(WP[from].P1[1],2);
-				gen.promote(WP[from].P1[2],3);
-				gen.promote(WP[from].P1[3],4);
-			} else {
-				gen.move(WP[from].M1);
-			}
-		}
-	}
-	public static <X extends MBase> void genDouble(final Movegen gen,long b, long occupancy) {
-		long occ=~(occupancy>>8);
-		long m2 = b&occ&0xFF00L&(occ>>8);
-		int pop = Long.bitCount(m2);
-		for (int j = 0; j < pop; j++) {
-			int from = Long.numberOfTrailingZeros(m2);
-			m2 ^= 1L << from;
-			gen.move(WP[from].M2);
-		}
-	}
-	public static <X extends MBase> void genCaptures(final Movegen gen,long b, long enemy) {
-		final int enp = gen.epsq;
-		long e=enemy|(1L<<enp);
-		long cl = (b & MaskBToHFiles) &(e>>7);
-		int pop = Long.bitCount(cl);
-		for (int j = 0; j < pop; j++) {
-			int from = Long.numberOfTrailingZeros(cl);
-			cl ^= 1L << from;
-			int to=from+7;
-			if (to == enp) {
-				int md=WP[from].EL;
-				if(gen.isSafeMove(md))
-					gen.enpassant(md);
-			} else {
-				long bto = 1L << to;
-				int ctype=gen.ctype(bto);
-				if(from<48){
-					gen.capture(WP[from].CL[ctype], 0, ctype, bto);
-				} else {
-					if(from+7==BR_QUEEN_STARTPOS && (gen.castling & CANCASTLE_BLACKQUEEN)!=0){
-						gen.capturePromote(MWP.PQ[0], 1, ctype, bto);
-						gen.capturePromote(MWP.PQ[1], 2, ctype, bto);
-						gen.capturePromote(MWP.PQ[2], 3, ctype, bto);
-						gen.capturePromote(MWP.PQ[3], 4, ctype, bto);
-					} else {
-						gen.capturePromote(WP[from].PL, ctype,bto);
-					}
-				}
-			}
-		}
-
-		long cr = (b & MaskAToGFiles) &(e>>9);
-		pop = Long.bitCount(cr);
-		for (int j = 0; j < pop; j++) {
-			int from = Long.numberOfTrailingZeros(cr);
-			cr ^= 1L << from;
-			int to=from+9;
-			if (to == enp) {
-				int md=WP[from].ER;
-				if(gen.isSafeMove(md))
-					gen.enpassant(md);
-			} else {
-				long bto = 1L << to;
-				int ctype=gen.ctype(bto);
-				if(from<48){
-					gen.capture(WP[from].CR[ctype], 0, ctype, bto);
-				} else {
-					if(from+9==BR_KING_STARTPOS && (gen.castling & CANCASTLE_BLACKKING)!=0){
-						gen.capturePromote(MWP.PK[0], 1, ctype, bto);
-						gen.capturePromote(MWP.PK[1], 2, ctype, bto);
-						gen.capturePromote(MWP.PK[2], 3, ctype, bto);
-						gen.capturePromote(MWP.PK[3], 4, ctype, bto);
-					} else {
-						gen.capturePromote(WP[from].PR, ctype,bto);
-					}
-				}
-			}
-		}
-	}
-
-	@Override
-	public void genLegal(Movegen gen, long mask) {
+		return promotes[0];
 	}
 }

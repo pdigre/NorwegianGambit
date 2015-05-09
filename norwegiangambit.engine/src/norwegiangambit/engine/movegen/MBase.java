@@ -41,8 +41,6 @@ public abstract class MBase implements IConst{
 		this.from = from;
 	}
 
-	public abstract void genLegal(Movegen gen,long mask);
-
 	public int[] makeArray(ArrayList<Integer> list) {
 		int[] arr = new int[list.size()];
 		for (int i = 0; i < list.size(); i++)
@@ -118,7 +116,8 @@ public abstract class MBase implements IConst{
 		return true;
 	}
 
-	final public static MOVEDATA[] ALL = new MOVEDATA[50000];
+	final public static int BLACK_OFFSET=25000; // Not actually this high
+	final public static MOVEDATA[] ALL = new MOVEDATA[BLACK_OFFSET*2];
 
 	public static int allw = 1, allb = 1;
 
@@ -215,8 +214,6 @@ public abstract class MBase implements IConst{
 
 		}
 		if (isWhite) {
-//			if(allw==20434)
-//				System.out.println("hi");
 			ALL[allw++] = md;
 			return allw-1;
 		} else {

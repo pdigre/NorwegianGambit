@@ -61,13 +61,23 @@ public interface IConst {
 	int WR_KING_STARTPOS = 7;
 	int WR_QUEEN_STARTPOS = 0;
 
-	long CWQ = 7L << WK_STARTPOS - 3;
-	long CWK = 3L << WK_STARTPOS + 1;
-	long CBQ = 7L << BK_STARTPOS - 3;
-	long CBK = 3L << BK_STARTPOS + 1;
+	// Spaces next to King that must be empty for castling
+	long CWQ_FREE = 7L << WK_STARTPOS - 3;
+	long CWK_FREE = 3L << WK_STARTPOS + 1;
+	long CBQ_FREE = 7L << BK_STARTPOS - 3;
+	long CBK_FREE = 3L << BK_STARTPOS + 1;
+
+	// Space next to King that cannot be attacked for castling
+	long CWQ_MASK=(1L<<WK_STARTPOS - 1) | (1L<<WK_STARTPOS - 2);
+	long CWK_MASK=(1L<<WK_STARTPOS + 1) | (1L<<WK_STARTPOS + 2);
+	long CBQ_MASK=(1L<<BK_STARTPOS - 1) | (1L<<BK_STARTPOS - 2);
+	long CBK_MASK=(1L<<BK_STARTPOS + 1) | (1L<<BK_STARTPOS + 2);
 
 	long MaskAFile = 0x0101010101010101L;
 	long MaskHFile = 0x8080808080808080L;
+	long MaskRow2 = 0xFF00L;
+	long MaskRow7 = 0x00FF000000000000L;
+	long MaskGoal = 0xFF000000000000FFL;
 	long MaskBToHFiles = ~MaskAFile;
 	long MaskAToGFiles = ~MaskHFile;
     long MaskDarkSq    = 0xAA55AA55AA55AA55L;

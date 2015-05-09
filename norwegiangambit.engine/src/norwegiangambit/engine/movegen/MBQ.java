@@ -6,7 +6,6 @@ import norwegiangambit.util.IConst;
 public class MBQ extends MSlider{
 
 	final int[][] DIAG,LINE;
-	final int QD,KD;
 
 	final static MBQ[] MOVES;
 	static {
@@ -18,13 +17,7 @@ public class MBQ extends MSlider{
 	public MBQ(int from) {
 		super(from);
 		DIAG=new int[][]{slide(IConst.BQ, UP + LEFT),slide(IConst.BQ, UP + RIGHT),slide(IConst.BQ, DOWN + LEFT),slide(IConst.BQ, DOWN + RIGHT)};
-		QD=Q;
-		KD=K;
 		LINE=new int[][]{slide(IConst.BQ, UP),slide(IConst.BQ, DOWN), slide(IConst.BQ, LEFT),slide(IConst.BQ, RIGHT)};
-	}
-
-	public void genLegal(Movegen gen,long mask){
-		bslide(gen,DIAG, 4,QD,KD, mask);
-		bslide(gen,LINE, 4,Q,K, mask);
+		SLIDES=new int[][]{DIAG[0],DIAG[1],DIAG[2],DIAG[3],LINE[0],LINE[1],LINE[2],LINE[3]};
 	}
 }

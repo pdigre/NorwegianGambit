@@ -1,6 +1,7 @@
 package norwegiangambit.engine.movegen;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.BitBoard;
@@ -22,9 +23,12 @@ import norwegiangambit.util.IConst;
  */
 public class Movegen implements IConst{
 	public boolean wNext=false;
+	public boolean ecq, eck, ocq, ock;
 	public long bOccupied,aMinor,aMajor,aSlider;
 	public long aOccupied,castling;
-	public int wkingpos,bkingpos,epsq;
+	public int wkingpos,bkingpos;
+	public int epsq;
+	public int erq,erk,orq,ork; // Enemy and own Rook Queen side or King side
 	public long wOccupied, oOccupied, eOccupied,aPawns,aKnights,aBishops,aRooks,aQueens,aKings,aLine,aDiag;
 	public long checkers, pinners, oAttacked, eAttacked;
 	public long wPawns,bPawns,wPawnAtks,bPawnAtks,wPawnAtkBy,bPawnAtkBy;
@@ -47,10 +51,10 @@ public class Movegen implements IConst{
 		return FEN.board2fen(FEN.boardFrom64(aMinor, aMajor, aSlider, bOccupied)) + " " +(wNext?"w":"b") + " " + FEN.getFenCastling(castling) + " "+ FEN.pos2string(epsq);
 	}
 
-	public void make(int md_num,boolean wNext, long castling, int wkingpos, int bkingpos, long b1, long b2, long b3, long bb) {
+	public void make(int md_num,boolean wLast, long castling, int wkingpos, int bkingpos, long b1, long b2, long b3, long bb) {
 		MOVEDATA md 	= MBase.ALL[md_num];
 		this.pv			= md_num;
-		this.wNext		= !wNext;
+		this.wNext		= !wLast;
 		this.bOccupied 	= bb^md.bOccupied;
 		this.aMinor 	= b1^md.aMinor;
 		this.aMajor 	= b2^md.aMajor;
@@ -82,6 +86,15 @@ public class Movegen implements IConst{
 	}
 
 	public void init() {
+		erk        	= wNext?BR_KING_STARTPOS:WR_KING_STARTPOS;
+		erq        	= wNext?BR_QUEEN_STARTPOS:WR_QUEEN_STARTPOS;
+		ecq			= (castling & (wNext?CANCASTLE_BLACKQUEEN:CANCASTLE_WHITEQUEEN)) != 0;
+		eck			= (castling & (wNext?CANCASTLE_BLACKKING:CANCASTLE_WHITEKING)) != 0;
+		ork 		= wNext?WR_KING_STARTPOS:BR_KING_STARTPOS;
+		orq 		= wNext?WR_QUEEN_STARTPOS:BR_QUEEN_STARTPOS;
+		ocq 		= (castling & (wNext?CANCASTLE_WHITEQUEEN:CANCASTLE_BLACKQUEEN)) != 0;
+		ock 		= (castling & (wNext?CANCASTLE_WHITEKING:CANCASTLE_BLACKKING)) != 0;
+		
 		aOccupied 	= aMinor | aMajor | aSlider;
 		wOccupied 	= aOccupied ^ bOccupied;
 		aPawns 		=  aMinor & ~aMajor & ~aSlider;
@@ -102,6 +115,11 @@ public class Movegen implements IConst{
 		bPawnAtks 	= (((bPawns & MaskBToHFiles) >> 9) | ((bPawns & MaskAToGFiles) >> 7));  // Left - Right
 		wPawnAtkBy 	= (((bPawns & MaskBToHFiles) >> 9) | ((bPawns & MaskAToGFiles) >> 7));  // Left - Right
 		bPawnAtkBy 	= (((wPawns & MaskBToHFiles) << 7) | ((wPawns & MaskAToGFiles) << 9));  // Left - Right
+
+		boolean start=oKingpos==(wNext?WK_STARTPOS:BK_STARTPOS);
+		if(!start && (ock || ocq))
+			System.out.println("Wrong FEN");
+
 	}
 
 	public void undo(MOVEDATA md){
@@ -109,75 +127,70 @@ public class Movegen implements IConst{
 	}
 	
 	/**
-	 * - 1 - 
-	 * good
-	 * promoteCapture
-	 * promote
-	 * 
-	 * - 2 -
-	 * equal
-	 * enpassant
-	 * 
-	 * - 3 -
-	 * bad
-	 * castling
-	 * quiet
-	 * 
-	 * - iAll -
-	 * 
-	 * 
+	 * Add capture, check value of victim
 	 * @param md
-	 * @param bto TODO
+	 * @param type
+	 * @param victim
+	 * @param bto
 	 */
-	final public void capturePromote(int md, int type, int victim, long bto) {
-		sort1(md);
-	}
-
-	final public void promote(int md,int type) {
-		sort1(md);
-	}
-	
 	final public void capture(int md, int type, int victim, long bto) {
 		if(type<victim || (bto&eAttacked)==0){ // Good
-			sort1(md);
+			add1(md);
 		} else if(type==victim){ // Equal
-			sort2(md);
+			add2(md);
 		} else { // Bad
-			sort3(md);
+			add3(md);
 		}
 	}
 
-	final private void sort1(int md) {
+	/**
+	 * Good move <br>
+	 * Winning capture, promotion, checks
+	 * @param md
+	 */
+	final void add1(int md) {
 		moves[iAll++] = moves[lvl3];
 		moves[lvl3++] = moves[lvl2];
 		moves[lvl2++] = moves[lvl1];
 		moves[lvl1++]=md;
 	}
 	
-	final private void sort2(int md) {
+	/**
+	 * Add promotion 
+	 * @param promo
+	 * @param ctype
+	 */
+	public void add1_promo(int md) {
+		add1(md);
+		add1(md+1);
+		add1(md+2);
+		add1(md+3);
+	}
+	
+	/**
+	 * Equal capture
+	 * @param md
+	 */
+	final void add2(int md) {
 		moves[iAll++] = moves[lvl3];
 		moves[lvl3++] = moves[lvl2];
 		moves[lvl2++]=md;
 	}
 	
-	final private void sort3(int md) {
+	/**
+	 * Loosing capture
+	 * @param md
+	 */
+	final void add3(int md) {
 		moves[iAll++] = moves[lvl3];
 		moves[lvl3++]=md;
 	}
 
-	final public void enpassant(int md) {
-		sort2(md);
-	}
-	
-	final public void move(int md) {
-		moves[iAll++] = md;
-	}
-	
-	final public void castling(int md) {
-		moves[iAll++] = md;
-	}
-	
-	final public void quiet(int md) {
+	/**
+	 * Silent move
+	 * @param md
+	 */
+	final public void add4(int md) {
 		moves[iAll++] = md;
 	}
 	
@@ -218,15 +231,115 @@ public class Movegen implements IConst{
 		// Slider checks
 		if((eOccupied & aSlider & BitBoard.QMasks[oKingpos]) !=0){
 			long diagatks = eOccupied & aDiag & BitBoard.BMasks[oKingpos];
-			if (diagatks != 0)
-				diagPinners(diagatks);
+			if (diagatks != 0){
+				int bits = Long.bitCount(diagatks);
+				for (int j = 0; j < bits; j++) {
+					int asq = Long.numberOfTrailingZeros(diagatks);
+					long attacker = 1L << asq;
+					diagatks ^= attacker;
+					long between = BitBoard.BETWEEN[asq+64*oKingpos];
+					long bpcs = between&aOccupied;
+					if(bpcs==0){
+						checkers|=attacker;
+					} else if(Long.bitCount(bpcs)==1){
+						// check for slide moves
+						long pinner = between&oOccupied;
+						int from = Long.numberOfTrailingZeros(pinner);
+						pinners|=pinner;
+						if((pinner&aDiag)!=0){	// BISHOP / QUEEN
+							if((pinner&aQueens)!=0){  	// QUEEN
+								slide(wNext?MWQ.MOVES[from].DIAG:MBQ.MOVES[from].DIAG,wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 4);
+							} else {
+								slide(wNext?MWB.MOVES[from].SLIDES:MBB.MOVES[from].SLIDES,wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 2);
+							}
+						} else if((pinner&aPawns)!=0){  // PAWN CAPTURE
+							int ctype = ctype(attacker);
+							if(wNext){
+								if(pinner<<7==attacker && (attacker&MaskHFile)==0){
+									MPCapture l = MWP.L[from];
+									if(from>47){
+										add1_promo(l.P+ctype*4);
+									} else
+										capture(l.C[ctype], 0, ctype, attacker);
+								}
+								if(pinner<<9==attacker && (attacker&MaskAFile)==0){
+									MPCapture r = MWP.R[from];
+									if(from>47){
+										add1_promo(r.P+ctype*4);
+									} else
+										capture(r.C[ctype], 0, ctype, attacker);
+								}
+							} else {
+								if(pinner>>9==attacker && (attacker&MaskHFile)==0){
+									MPCapture l = MBP.L[from];
+									if(from<16){
+										add1_promo(l.P+ctype*4);
+									} else
+										capture(l.C[ctype], 0, ctype, attacker);
+								}
+								if(pinner>>7==attacker && (attacker&MaskAFile)==0){
+									MPCapture r = MBP.R[from];
+									if(from<16){
+										add1_promo(r.P+ctype*4);
+									} else
+										capture(r.C[ctype], 0, ctype, attacker);
+								}
+							}
+						}
+					}
+				}
+			}
 			long lineatks = eOccupied & aLine & BitBoard.RMasks[oKingpos];
-			if (lineatks != 0)
-				linePinners(lineatks);
+			if (lineatks != 0){
+				int bits = Long.bitCount(lineatks);
+				for (int j = 0; j < bits; j++) {
+					int asq = Long.numberOfTrailingZeros(lineatks);
+					long attacker = 1L << asq;
+					lineatks ^= attacker;
+					long between = BitBoard.BETWEEN[asq+64*oKingpos];
+					long bpcs = between&aOccupied;
+					if(bpcs==0){
+						checkers|=attacker;
+					} else if(Long.bitCount(bpcs)==1){
+						// check for slide moves
+						long pinner = between&oOccupied;
+						int from = Long.numberOfTrailingZeros(pinner);
+						pinners|=pinner;
+						if((pinner&aLine)!=0){		// ROOK / QUEEN
+							if((pinner&aQueens)!=0){	// QUEEN
+								slide(wNext?MWQ.MOVES[from].LINE:MBQ.MOVES[from].LINE,wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 4);
+							} else {
+								slide(wNext?MWR.MOVES[from].SLIDES:MBR.MOVES[from].SLIDES,wNext?MWR.MOVES[from]:MBR.MOVES[from],attacker,between, 3);
+							}
+						} else if((pinner&aPawns)!=0){  // PAWN FORWARD
+							if(wNext){
+								if(((pinner<<8)&between)!=0){
+									add4(MWP.WP[from].M1);
+									if(from<16 && ((pinner<<16)&between)!=0)
+										add4(MWP.WP[from].M2);
+								}
+							} else {
+								if(((pinner>>8)&between)!=0){
+									add4(MBP.BP[from].M1);
+									if(from>47 && ((pinner>>16)&between)!=0)
+										add4(MBP.BP[from].M2);
+								}
+							}
+						}
+					}
+				}
+			}
 		}
+		
 		// Calculate unsafe positions, those attacked by enemy
 		long pcs=aOccupied&~(oOccupied &  aKings);
 		eAttacked=wNext?wPawnAtkBy:bPawnAtkBy;
+//		bitscan(eOccupied & aKnights, sq -> eAttacked|=BitBoard.NMasks[sq]);
+//		bitscan(eOccupied & aKings, sq -> eAttacked|=BitBoard.KMasks[sq]);
+//		bitscan(eOccupied & aBishops, sq -> eAttacked|=BitBoard.bishopAttacks(sq, pcs));
+//		bitscan(eOccupied & aRooks, sq -> eAttacked|=BitBoard.rookAttacks(sq, pcs));
+//		bitscan(eOccupied & aQueens, sq -> eAttacked|=BitBoard.bishopAttacks(sq, pcs)|BitBoard.rookAttacks(sq, pcs));
+
 		{
 			long m=eOccupied & aKnights;
 			while(m!=0){
@@ -270,198 +383,266 @@ public class Movegen implements IConst{
 		}
 
 		if(checkers==0){
-			nonevasive();
-		} else {
-			clear(); // not interested in pinned moves for evasive moves
-			evasive();
-		}
-	}
-
-	final private  void diagPinners(long atks) {
-		int bits = Long.bitCount(atks);
-		for (int j = 0; j < bits; j++) {
-			int asq = Long.numberOfTrailingZeros(atks);
-			long attacker = 1L << asq;
-			atks ^= attacker;
-			long between = BitBoard.BETWEEN[asq+64*oKingpos];
-			long bpcs = between&aOccupied;
-			if(bpcs==0){
-				checkers|=attacker;
-			} else if(Long.bitCount(bpcs)==1){
-				// check for slide moves
-				long pinner = between&oOccupied;
-				int from = Long.numberOfTrailingZeros(pinner);
-				pinners|=pinner;
-				if((pinner&aDiag)!=0){	// BISHOP / QUEEN
-					if((pinner&aQueens)!=0){  	// QUEEN
-						slide(wNext?MWQ.MOVES[from].DIAG:MBQ.MOVES[from].DIAG,wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 4);
-					} else {
-						slide(wNext?MWB.MOVES[from].DIAG:MBB.MOVES[from].DIAG,wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 2);
-					}
-				} else if((pinner&aPawns)!=0){  // PAWN CAPTURE
-					int ctype = ctype(attacker);
-					if(wNext){
-						MWP mwp = MWP.WP[from];
-						if(pinner<<7==attacker && (attacker&MaskHFile)==0){
-							if(from>47){
-								capturePromote(mwp.PL, ctype, attacker);
-							} else
-								capture(mwp.CL[ctype], 0, ctype, attacker);
-						}
-						if(pinner<<9==attacker && (attacker&MaskAFile)==0){
-							if(from>47){
-								capturePromote(mwp.PR, ctype, attacker);
-							} else
-								capture(mwp.CR[ctype], 0, ctype, attacker);
-						}
-					} else {
-						MBP mbp = MBP.BP[from];
-						if(pinner>>9==attacker && (attacker&MaskHFile)==0){
-							if(from<16){
-								capturePromote(mbp.PL, ctype, attacker);
-							} else
-								capture(mbp.CL[ctype], 0, ctype, attacker);
-						}
-						if(pinner>>7==attacker && (attacker&MaskAFile)==0){
-							if(from<16){
-								capturePromote(mbp.PR, ctype, attacker);
-							} else
-								capture(mbp.CR[ctype], 0, ctype, attacker);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public void capturePromote(int[] mvs, int ctype,long bto) {
-		if(mvs==null || ctype==-1)
-			return;
-		capturePromote(mvs[ctype], 1, ctype, bto);
-		capturePromote(mvs[ctype+5], 2, ctype, bto);
-		capturePromote(mvs[ctype+10], 3, ctype, bto);
-		capturePromote(mvs[ctype+15], 4, ctype, bto);
-	}
-
-	final private void linePinners(long atks) {
-		int bits = Long.bitCount(atks);
-		for (int j = 0; j < bits; j++) {
-			int asq = Long.numberOfTrailingZeros(atks);
-			long attacker = 1L << asq;
-			atks ^= attacker;
-			long between = BitBoard.BETWEEN[asq+64*oKingpos];
-			long bpcs = between&aOccupied;
-			if(bpcs==0){
-				checkers|=attacker;
-			} else if(Long.bitCount(bpcs)==1){
-				// check for slide moves
-				long pinner = between&oOccupied;
-				int from = Long.numberOfTrailingZeros(pinner);
-				pinners|=pinner;
-				if((pinner&aLine)!=0){		// ROOK / QUEEN
-					if((pinner&aQueens)!=0){	// QUEEN
-						slide(wNext?MWQ.MOVES[from].LINE:MBQ.MOVES[from].LINE,wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 4);
-					} else {
-						slide(wNext?MWR.MOVES[from].LINE:MBR.MOVES[from].LINE,wNext?MWR.MOVES[from]:MBR.MOVES[from],attacker,between, 3);
-					}
-				} else if((pinner&aPawns)!=0){  // PAWN FORWARD
-					if(wNext){
-						if(((pinner<<8)&between)!=0){
-							move(MWP.WP[from].M1);
-							if(from<16 && ((pinner<<16)&between)!=0)
-								move(MWP.WP[from].M2);
-						}
-					} else {
-						if(((pinner>>8)&between)!=0){
-							move(MBP.BP[from].M1);
-							if(from>47 && ((pinner>>16)&between)!=0)
-								move(MBP.BP[from].M2);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	final public void evasive() {
-		int num = Long.bitCount(checkers);
-		if(num==1){
-			int atk_sq = Long.numberOfTrailingZeros(checkers);
-			long between=BitBoard.BETWEEN[atk_sq*64+oKingpos];
-			long mask = between|checkers;
+			// Non-Evasive moves
+			long mask = ~0L;
 			long free = oOccupied & ~pinners;
 			long pfree = free & aPawns;
+			genKnight(free & aKnights, aOccupied,eOccupied,mask);
+			genBishop(free & aBishops, aOccupied,eOccupied,mask);
+			genRook(free & aRooks, aOccupied,eOccupied,mask);
+			genQueen(free & aQueens, aOccupied,eOccupied,mask);
+			genKing();
 			if (wNext) {
-				loopMoves(free & aKnights, MWN.MOVES, mask);
-				loopMoves(free & aBishops, MWB.MOVES, mask);
-				loopMoves(free & aRooks,   MWR.MOVES, mask);
-				loopMoves(free & aQueens,  MWQ.MOVES, mask);
-				MWP.genSingle(this,pfree, ~between);
-				MWP.genDouble(this,pfree & (between>>16), aOccupied);
-				MWP.genCaptures(this,pfree, checkers);
+				long open1 = pfree&~(aOccupied>>8);
+				long open2 = open1&0xFF00L&(~(aOccupied>>8)>>8);
+				genPawn(pfree,open1,open2,eOccupied);
+
+				// Castling
+				if (ocq && ((CWQ_FREE & aOccupied) | (CWQ_MASK&eAttacked))==0) {
+					add4(ock?MWK.CQ:MWK.CQ2);
+				}
+				if (ock && ((CWK_FREE & aOccupied) | (CWK_MASK&eAttacked))==0) {
+					add4(ocq?MWK.CK:MWK.CK2);
+				}
+
 			} else {
-				loopMoves(free & aKnights, MBN.MOVES, mask);
-				loopMoves(free & aBishops, MBB.MOVES, mask);
-				loopMoves(free & aRooks,   MBR.MOVES, mask);
-				loopMoves(free & aQueens,  MBQ.MOVES, mask);
-				MBP.genSingle(this,pfree, ~between);
-				MBP.genDouble(this,pfree & (between<<16), aOccupied);
-				MBP.genCaptures(this,pfree, checkers);
+				long open1 = pfree&~(aOccupied<<8);
+				long open2 = open1&0x00FF000000000000L&(~(aOccupied<<8)<<8);
+				genPawn(pfree,open1,open2,eOccupied);
+
+				// Castling
+				if (ocq && ((CBQ_FREE & aOccupied) | (CBQ_MASK&eAttacked))==0) {
+					add4(ock?MBK.CQ:MBK.CQ2);
+				}
+				if (ock && ((CBK_FREE & aOccupied) | (CBK_MASK&eAttacked))==0) {
+					add4(ocq?MBK.CK:MBK.CK2);
+				}
+			}
+		} else {
+			// Evasive moves
+			clear(); // dont need pinned moves for evasive moves calculation
+			int num = Long.bitCount(checkers);
+			if(num==1){
+				int atk_sq = Long.numberOfTrailingZeros(checkers);
+				long between=BitBoard.BETWEEN[atk_sq*64+oKingpos];
+				long mask = between|checkers;
+				long free = oOccupied & ~pinners;
+				genKnight(free & aKnights, aOccupied,eOccupied,mask);
+				genBishop(free & aBishops, aOccupied,eOccupied,mask);
+				genRook(free & aRooks, aOccupied,eOccupied,mask);
+				genQueen(free & aQueens, aOccupied,eOccupied,mask);
+				
+				long pfree = free & aPawns;
+				if (wNext) {
+					long open1 = pfree&~(~between>>8);
+					long open2 = pfree & (between>>16)&~(aOccupied>>8)&MaskRow2&(~(aOccupied>>8)>>8);
+					genPawn(pfree,open1,open2,checkers);
+				} else {
+					long open1 = pfree&~(~between<<8);
+					long open2 = pfree&(between<<16)&~(aOccupied<<8)&MaskRow7&(~(aOccupied<<8)<<8);
+					genPawn(pfree,open1,open2,checkers);
+				}
+			}
+			genKing();
+		}
+	}
+
+
+	public void genKing() {
+		if(wNext){
+			MWK mvs=MWK.MOVES[oKingpos]; 
+			int[][] mvs1 = oKingpos==WK_STARTPOS?ocq?(ock?MWK.X:MWK.XQ):(ock?MWK.XK:mvs.M):mvs.M;
+			genKingMoves(mvs1, mvs.K, mvs.Q);
+		} else {
+			MBK mvs=MBK.MOVES[oKingpos];
+			int[][] mvs1 = oKingpos == BK_STARTPOS?ocq?(ock?MBK.X:MBK.XQ):(ock?MBK.XK:mvs.M):mvs.M;
+			genKingMoves(mvs1, mvs.K, mvs.Q);
+		}
+	}
+
+	private void genKingMoves(int[][] mvs1, int k, int q) {
+		for (int[] m : mvs1){
+			long bto = MBase.getBTo(m[5]);
+			if ((aOccupied & bto) == 0) {
+				if((bto&~eAttacked)!=0L)
+					add4(m[5]);
+			} else {
+				if ((eOccupied & bto & ~eAttacked) != 0) {
+					int c = ctype(bto);
+					if(c==3 && bto==1L<<erk && eck)
+						add4(k); // Enemy Rook -> no castling king side
+					else if(c==3 && bto==1L<<erq && ecq)
+						add4(q); // Enemy Rook -> no castling queen side
+					else
+						add4(m[c]);
+				}
 			}
 		}
-		if (wNext) {
-			MWK.MOVES[wkingpos].genLegal(this,~eAttacked);
+	}
+
+	private void genQueen(long from, long occupied,long capture,long mask) {
+		MSlider[] mvs = wNext?MWQ.MOVES:MBQ.MOVES;
+		while(from!=0){
+			int sq = Long.numberOfTrailingZeros(from);
+			from ^= 1L << sq;
+			genSlides(occupied, capture, mask, mvs[sq],4);
+		}
+	}
+
+	private void genBishop(long from, long occupied,long capture,long mask) {
+		MSlider[] mvs = wNext?MWB.MOVES:MBB.MOVES;
+		while(from!=0){
+			int sq = Long.numberOfTrailingZeros(from);
+			from ^= 1L << sq;
+			genSlides(occupied, capture, mask, mvs[sq],2);
+		}
+	}
+
+	private void genRook(long from, long occupied,long capture,long mask) {
+		MSlider[] mvs = wNext?MWR.MOVES:MBR.MOVES;
+		MSlider kline = wNext?MWR.KLINE:MBR.KLINE;
+		MSlider qline = wNext?MWR.QLINE:MBR.QLINE;
+		while(from!=0){
+			int sq = Long.numberOfTrailingZeros(from);
+			from ^= 1L << sq;
+			// If castling opportunities will be broken then special Zobrist
+			if(sq==orq){
+				if(ocq ){
+					genSlides(occupied, capture, mask, qline,3);
+					continue;
+				}
+			} else if(sq==ork){
+				if(ock ){
+					genSlides(occupied, capture, mask, kline,3);
+					continue;
+				}
+			}
+			genSlides(occupied, capture, mask, mvs[sq],3);
+		}
+	}
+	
+	public void genSlides(long occupied, long capture, long mask, MSlider mv, int val) {
+		for (int[] m : mv.SLIDES) {
+			int i = 0;
+			while (i < m.length) {
+				long bto = MBase.getBTo(m[i + 5]);
+				if ((occupied & bto) != 0) {
+					if ((capture & bto & mask) != 0) {
+						int c = ctype(bto);
+						if(c==3 && bto==1L<<erk  && eck){ // Enemy Rook -> no castling king side
+							capture(mv.K, val, c, bto);
+						}else if(c==3 && bto==1L<<erq && ecq){ // Enemy Rook -> no castling queen side
+							capture(mv.Q, val, c, bto);
+						}else{
+							capture(m[i + c], val, c, bto);
+						}
+					}
+					break;
+				} else {
+					if((bto&mask)!=0)
+						add4(m[i + 5]);
+					i += 6;
+				}
+			}
+		}
+	}
+
+	private void genKnight(long from, long occupied,long capture,long mask) {
+		MSimple[] mvs = wNext?MWN.MOVES:MBN.MOVES;
+		while(from!=0){
+			int sq = Long.numberOfTrailingZeros(from);
+			from ^= 1L << sq;
+			MSimple mv = mvs[sq];
+			for (int[] m : mv.M){
+				long bto = MBase.getBTo(m[5]);
+				if ((occupied & bto) == 0L) {
+					if((bto & mask)!=0L)
+						add4(m[5]);
+				} else {
+					if ((capture & bto & mask) != 0) {
+						int c = ctype(bto);
+						if(c==3 && bto==1L<<erk && eck) // Enemy Rook -> no castling king side
+							capture(mv.K, 1, c, bto);
+						else {
+							if(c==3 && bto==1L<<erq && ecq) // Enemy Rook -> no castling queen side
+								capture(mv.Q, 1, c, bto);
+							else
+								capture(m[c], 1, c, bto);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void genPawn(long from, long open1, long open2, long captures) {
+		MPawn[] mvs = wNext?MWP.WP:MBP.BP;
+		while(open1!=0){
+			int sq = Long.numberOfTrailingZeros(open1);
+			if(wNext?sq>47:sq<16){
+				add1_promo(mvs[sq].P1);
+			} else {
+				add4(mvs[sq].M1);
+			}
+			open1 &= open1-1;
+		}
+		while(open2!=0){
+			int sq = Long.numberOfTrailingZeros(open2);
+			add4(mvs[sq].M2);
+			open2 &= open2-1;
+		}
+		long e=captures|(1L<<epsq);
+		if(wNext){
+			pwnCaptures(MWP.L, MWP.PQ, (from & MaskBToHFiles) &(e>>7), 7, erq, ecq);
+			pwnCaptures(MWP.R, MWP.PK, (from & MaskAToGFiles) &(e>>9), 9, erk, eck);
 		} else {
-			MBK.MOVES[bkingpos].genLegal(this,~eAttacked);
+			pwnCaptures(MBP.L, MBP.PQ, (from & MaskBToHFiles) &(e<<9), -9, erq, ecq);
+			pwnCaptures(MBP.R, MBP.PK, (from & MaskAToGFiles) &(e<<7), -7, erk, eck);
 		}
 	}
 
-	protected void nonevasive() {
-		long mask = ~0L;
-		if (wNext) {
-			long free = wOccupied & ~pinners;
-			loopMoves(free & aKnights, MWN.MOVES, mask);
-			loopMoves(free & aBishops, MWB.MOVES, mask);
-			loopMoves(free & aRooks,   MWR.MOVES, mask);
-			loopMoves(free & aQueens,  MWQ.MOVES, mask);
-			MWK.MOVES[wkingpos].genLegal(this,~eAttacked);
-			long _p = free & aPawns;
-			MWP.genSingle(this, _p, this.aOccupied);
-			MWP.genDouble(this, _p, this.aOccupied);
-			MWP.genCaptures(this, _p, this.bOccupied);
-			if(wkingpos==WK_STARTPOS)
-				MWK.genCastling(this,eAttacked);
-		} else {
-			long free = bOccupied & ~pinners;
-			loopMoves(free & aKnights, MBN.MOVES, mask);
-			loopMoves(free & aBishops, MBB.MOVES, mask);
-			loopMoves(free & aRooks,   MBR.MOVES, mask);
-			loopMoves(free & aQueens,  MBQ.MOVES, mask);
-			MBK.MOVES[bkingpos].genLegal(this,~eAttacked);
-			long _p = free & aPawns;
-			MBP.genSingle(this, _p, this.aOccupied);
-			MBP.genDouble(this, _p, this.aOccupied);
-			MBP.genCaptures(this, _p, this.wOccupied);
-			if(bkingpos==BK_STARTPOS)
-				MBK.genCastling(this,eAttacked);
+	public void pwnCaptures(MPCapture[] mvs, int pc, long m, int step, int cs, boolean cc) {
+		while(m!=0){
+			int sq = Long.numberOfTrailingZeros(m);
+			m &= m-1;
+			int to=sq+step;
+			MPCapture mv = mvs[sq];
+			if (to == epsq) {
+				int md=mv.E;
+				if(isSafeMove(md))	// Check for safety since there may be a covered check wit en-passant
+					add2(md);
+			} else {
+				long bto = 1L << to;
+				int ctype=ctype(bto);
+				if((bto & MaskGoal)==0L){
+					capture(mv.C[ctype], 0, ctype, bto);
+				} else {
+					if(cc && sq+step==cs){
+						add1_promo(pc);
+					} else {
+						int p = mv.P;
+						add1_promo(p+ctype*4);
+					}
+				}
+			}
 		}
 	}
 
-	public void loopMoves(long _b, MBase[] base, long mask) {
-		while(_b!=0){
-			int from = Long.numberOfTrailingZeros(_b);
-			_b ^= 1L << from;
-			base[from].genLegal(this,mask);
+	final static void bitscan(long m, Consumer<Integer> c){
+		while(m!=0){
+			int sq = Long.numberOfTrailingZeros(m);
+			c.accept(sq);
+			m &= m-1;
 		}
 	}
-
+	
 	private void slide(int[][] mm,MBase b,long attacker,long between, int type) {
 		for (int[] m : mm) {
 			int i = 0;
 			while (i < m.length) {
 				long bto = MBase.getBTo(m[i + 5]);
 				if((between&bto)!=0){
-					move(m[i + 5]);
+					add4(m[i + 5]);
 					i += 6;
 					continue;
 				}
@@ -469,16 +650,16 @@ public class Movegen implements IConst{
 					int c = ctype(bto);
 					if(c==3){
 						if(wNext){
-							if(bto==1L<<BR_KING_STARTPOS && (castling&CANCASTLE_BLACKKING)!=0)
+							if(bto==1L<<erk && eck)
 								capture(b.K, type, c, bto);
-							 else if(bto==1L<<BR_QUEEN_STARTPOS && (castling&CANCASTLE_BLACKQUEEN)!=0)
+							 else if(bto==1L<<erq && ecq)
 								capture(b.Q, type, c, bto);
 							 else 
 								capture(m[i + c], type, c, bto);
 						} else {
-							if(bto==1L<<WR_KING_STARTPOS && (castling&CANCASTLE_WHITEKING)!=0)
+							if(bto==1L<<erk && eck)
 								capture(b.K, type, c, bto);
-							 else if(bto==1L<<WR_QUEEN_STARTPOS && (castling&CANCASTLE_WHITEQUEEN)!=0)
+							 else if(bto==1L<<erq && ecq)
 								capture(b.Q, type, c, bto);
 							 else 
 								capture(m[i + c], type, c, bto);
@@ -495,7 +676,7 @@ public class Movegen implements IConst{
 
 	@Override
 	public String toString() {
-		return FEN.board2string(this.aMinor, this.aMajor, this.aSlider, this.bOccupied) + "\n";
+		return FEN.board2string(aMinor, aMajor, aSlider, bOccupied) + "\n";
 	}
 
 	public boolean isSafeMove(int md) {
