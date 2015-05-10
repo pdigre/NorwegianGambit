@@ -153,8 +153,8 @@ public abstract class AbstractTest {
 		assertEquals("Wrong score "+String.join(" ",moves),expected, gen.whiteScore());
 	}
 
-	public static void testElo(ISearch inst, String fen,long time) {
-		long time0 = System.currentTimeMillis();
+	public static void testElo(final ISearch inst, String fen,long time) {
+		final long time0 = System.currentTimeMillis();
 		Timer timer=new Timer("Test");
 		timer.schedule(new TimerTask() {
 			
