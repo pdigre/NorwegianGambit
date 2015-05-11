@@ -7,11 +7,10 @@ import norwegiangambit.util.IConst;
 
 public class MBR extends MSlider{
 
-	final static MSlider QLINE,KLINE;
-//	final static int Q2, K2;
+	static MSlider QLINE,KLINE;
 
-	final static MBR[] MOVES=new MBR[64];
-	static {
+	static MBR[] MOVES=new MBR[64];
+	public static void init() {
 		for (int from = 0; from < 64; from++)
 			MOVES[from] = new MBR(from);
 
@@ -19,13 +18,13 @@ public class MBR extends MSlider{
 		QLINE=new MSliderSpecial();
 		QLINE.SLIDES=cline(q.SLIDES,CANCASTLE_BLACKQUEEN);
 		q.Q=q.SLIDES[1][39];
-		QLINE.Q=MOVEDATAX.create(ALL[q.Q].bitmap^CANCASTLE_BLACKKING,CANCASTLE_BLACKQUEEN|CANCASTLE_WHITEQUEEN);
+		QLINE.Q=MOVEDATAX.create(MOVEDATA.ALL[q.Q].bitmap^CANCASTLE_BLACKKING,CANCASTLE_BLACKQUEEN|CANCASTLE_WHITEQUEEN);
 
 		MBR k = MOVES[BR_KING_STARTPOS];
 		KLINE=new MSliderSpecial();
 		KLINE.SLIDES=cline(k.SLIDES,CANCASTLE_BLACKKING);
 		k.K=k.SLIDES[1][39];
-		KLINE.K=MOVEDATAX.create(ALL[k.K].bitmap^CANCASTLE_BLACKQUEEN,CANCASTLE_BLACKKING|CANCASTLE_WHITEKING);
+		KLINE.K=MOVEDATAX.create(MOVEDATA.ALL[k.K].bitmap^CANCASTLE_BLACKQUEEN,CANCASTLE_BLACKKING|CANCASTLE_WHITEKING);
 	}
 
 	public static int[][] cline(int[][] l,long castling) {

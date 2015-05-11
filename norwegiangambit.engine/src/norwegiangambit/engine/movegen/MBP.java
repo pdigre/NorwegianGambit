@@ -5,10 +5,10 @@ import norwegiangambit.util.IConst;
 public class MBP  extends MPawn{
 
 	static int PQ,PK;  // Promotion & Capture rook
-	final static long[] REV=new long[64];
-	final static MBP[] BP;
+	static long[] REV=new long[64];
+	static MBP[] BP;
 	static MPCapture[] L,R;
-	static {
+	public static void init() {
 		L=new MPCapture[64];
 		R=new MPCapture[64];
 		BP=new MBP[64];
@@ -78,7 +78,7 @@ public class MBP  extends MPawn{
 	}
 
 	private int move2(int to,int enp) {
-		return MOVEDATA2.create(assemble(IConst.BP, from, to, CASTLING_STATE),enp);
+		return ENPASSANT.create(assemble(IConst.BP, from, to, CASTLING_STATE),enp);
 	}
 
 	private int enpassant(int to) {

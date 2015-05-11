@@ -6,13 +6,13 @@ public class MWP extends MPawn{
 
 	static int PQ,PK;  // Promotion & Capture rook
 	static long[] REV=new long[64];
-	final static MWP[] WP;
+	static MWP[] WP;
 	static MPCapture[] L,R;
-	static {
+	
+	public static void init(){
 		L=new MPCapture[64];
 		R=new MPCapture[64];
 		WP=new MWP[64];
-		
 		for (int from = 0; from < 64; from++)
 			WP[from] = new MWP(from);
 	}
@@ -79,7 +79,7 @@ public class MWP extends MPawn{
 	}
 
 	private int move2(int to,int enp) {
-		return MOVEDATA2.create(assemble(IConst.WP, from, to, CASTLING_STATE),enp);
+		return ENPASSANT.create(assemble(IConst.WP, from, to, CASTLING_STATE),enp);
 	}
 
 	private int enpassant(int to) {

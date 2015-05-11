@@ -7,6 +7,7 @@ import java.util.concurrent.RecursiveTask;
 
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.movegen.MBase;
+import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
 import norwegiangambit.util.PSQT_SEF;
@@ -37,7 +38,7 @@ public class FastPerft implements IDivide{
 		if(levels<4 || !useConcurrency){
 			if(levels==1){
 		        for (int i = 0; i < root.iAll; i++)
-		        	map.add(new Eval(FEN.move2literal(MBase.ALL[root.moves[i]].bitmap),1,0));
+		        	map.add(new Eval(FEN.move2literal(MOVEDATA.ALL[root.moves[i]].bitmap),1,0));
 		        return map;
 			}
 		    for (int i = 0; i < root.iAll; i++) {
@@ -56,7 +57,7 @@ public class FastPerft implements IDivide{
 				movegen[0].make(md,root.wNext,root.castling,root.wkingpos,root.bkingpos,root.aMinor,root.aMajor,root.aSlider,root.bOccupied);
 				movegen[0].evaluate(md);
 				movegen[0].run();
-				map.add(new Eval(FEN.move2literal(MBase.ALL[md].bitmap),(int)count[i],0));
+				map.add(new Eval(FEN.move2literal(MOVEDATA.ALL[md].bitmap),(int)count[i],0));
 			}
 		    return map;
 		}
@@ -74,7 +75,7 @@ public class FastPerft implements IDivide{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			map.add(new Eval(FEN.move2literal(MBase.ALL[root.moves[i]].bitmap),(int) count[i],0));
+			map.add(new Eval(FEN.move2literal(MOVEDATA.ALL[root.moves[i]].bitmap),(int) count[i],0));
 		}
 		return map;
 	}

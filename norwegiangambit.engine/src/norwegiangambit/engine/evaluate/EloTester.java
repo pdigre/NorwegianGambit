@@ -5,6 +5,7 @@ import java.util.concurrent.ForkJoinPool;
 
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.movegen.MBase;
+import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.PSQT;
 import norwegiangambit.util.polyglot.IZobristKey;
@@ -62,7 +63,7 @@ public class EloTester extends SearchTesterTT {
 		evals = new RootEval[rooteval.iAll];
 		tasks = new CountTask[evals.length];
 		for (int i = 0; i < evals.length; i++) {
-			evals[i]=new RootEval(FEN.move2literal(MBase.ALL[rooteval.moves[i]].bitmap), 0, 0);
+			evals[i]=new RootEval(FEN.move2literal(MOVEDATA.ALL[rooteval.moves[i]].bitmap), 0, 0);
 		}
 		int depth=6;
 		while(isRunning){

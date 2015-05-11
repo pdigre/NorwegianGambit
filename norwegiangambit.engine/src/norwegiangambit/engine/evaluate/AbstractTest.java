@@ -29,7 +29,7 @@ public abstract class AbstractTest {
 		StringBuilder sb=new StringBuilder();
 		for (int i : m) {
 			if(i>0){
-				MOVEDATA md=MBase.ALL[i];
+				MOVEDATA md=MOVEDATA.ALL[i];
 				if(sb.length()!=0)
 					sb.append(" ");
 				sb.append(md.id());
@@ -74,7 +74,7 @@ public abstract class AbstractTest {
 			int md = root.moves[i1];
 			root.make(md);
 			leaf.evaluate(md);
-			lines.add(","+MBase.ALL[md].id()+leaf.printEval());
+			lines.add(","+MOVEDATA.ALL[md].id()+leaf.printEval());
 		}
 		for (String line : lines)
 			sb.append(line);
@@ -140,7 +140,7 @@ public abstract class AbstractTest {
 				gen.generate();
 				for (int i = 0; i < gen.iAll; i++) {
 					int m = gen.moves[i];
-					MOVEDATA md2 = MBase.ALL[m];
+					MOVEDATA md2 = MOVEDATA.ALL[m];
 					if(md2.id().equals(move))
 						mv=m;
 				}

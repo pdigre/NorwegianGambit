@@ -2,6 +2,7 @@ package norwegiangambit.engine;
 
 import norwegiangambit.engine.evaluate.FastPerft;
 import norwegiangambit.engine.movegen.MBase;
+import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.EngineStockfish;
 import norwegiangambit.util.PerftTest;
 
@@ -160,7 +161,7 @@ public class Test_PERFT_5300ms extends PerftTest{
 	
 	@AfterClass
 	public static void finish() {
-		MBase.stats();
+		MOVEDATA.stats();
 	}
 	
 

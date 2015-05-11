@@ -21,7 +21,7 @@ public class RootEval extends Eval {
 			return "null";
 		StringBuilder sb=new StringBuilder();
 		for (int i : m) {
-			MOVEDATA md=MBase.ALL[i];
+			MOVEDATA md=MOVEDATA.ALL[i];
 			if(sb.length()!=0)
 				sb.append(" ");
 			sb.append(md.id());

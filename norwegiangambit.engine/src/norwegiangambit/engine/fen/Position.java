@@ -240,7 +240,7 @@ public class Position implements IConst, Comparable<Position> {
 	}
 	
 	public void make(int i,long p_castling) {
-		MOVEDATA m=MBase.ALL[i];
+		MOVEDATA m=MOVEDATA.ALL[i];
 		bitmap=m.bitmap&(~CASTLING_STATE | p_castling);
 		bb_black ^=m.bOccupied;
 		bb_bit1 ^=m.aMinor;

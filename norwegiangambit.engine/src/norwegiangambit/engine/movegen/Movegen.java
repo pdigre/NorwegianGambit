@@ -22,6 +22,12 @@ import norwegiangambit.util.IConst;
  *
  */
 public class Movegen implements IConst{
+	
+	static{
+		int i=MOVEDATA.ALL.length;
+		assert i>0;
+	}
+
 	public boolean wNext=false;
 	public boolean ecq, eck, ocq, ock;
 	public long bOccupied,aMinor,aMajor,aSlider;
@@ -52,7 +58,7 @@ public class Movegen implements IConst{
 	}
 
 	public void make(int md_num,boolean wLast, long castling, int wkingpos, int bkingpos, long b1, long b2, long b3, long bb) {
-		MOVEDATA md 	= MBase.ALL[md_num];
+		MOVEDATA md 	= MOVEDATA.ALL[md_num];
 		this.pv			= md_num;
 		this.wNext		= !wLast;
 		this.bOccupied 	= bb^md.bOccupied;
@@ -61,7 +67,7 @@ public class Movegen implements IConst{
 		this.aSlider 	= b3^md.aSlider;
 		this.wkingpos   = wkingpos;
 		this.bkingpos   = bkingpos;
-		this.epsq 		= md instanceof MOVEDATA2?((MOVEDATA2)md).epsq:-1;
+		this.epsq 		= md instanceof ENPASSANT?((ENPASSANT)md).epsq:-1;
 		this.castling	= castling;
 		int type  = BITS.getPiece(md.bitmap);
 		if(type==IConst.WK)
@@ -449,23 +455,21 @@ public class Movegen implements IConst{
 
 
 	public void genKing() {
-		if(wNext){
-			MWK mvs=MWK.MOVES[oKingpos]; 
-			int[][] mvs1 = oKingpos==WK_STARTPOS?ocq?(ock?MWK.X:MWK.XQ):(ock?MWK.XK:mvs.M):mvs.M;
-			genKingMoves(mvs1, mvs.K, mvs.Q);
-		} else {
-			MBK mvs=MBK.MOVES[oKingpos];
-			int[][] mvs1 = oKingpos == BK_STARTPOS?ocq?(ock?MBK.X:MBK.XQ):(ock?MBK.XK:mvs.M):mvs.M;
-			genKingMoves(mvs1, mvs.K, mvs.Q);
+		MSimple mvs=wNext?MWK.MOVES[oKingpos]:MBK.MOVES[oKingpos]; 
+		if(oKingpos!= (wNext?WK_STARTPOS:BK_STARTPOS) || !(ock || ocq))
+			genKingMoves(mvs.B,mvs.E, mvs.K, mvs.Q);
+		else {
+			int i=(ocq?(ock?MWK.XB:MWK.XQB):(ock?MWK.XKB:0))+(wNext?0:MOVEDATA.BLACK_OFFSET);
+			genKingMoves(i,i+30, mvs.K, mvs.Q);
 		}
 	}
 
-	private void genKingMoves(int[][] mvs1, int k, int q) {
-		for (int[] m : mvs1){
-			long bto = MBase.getBTo(m[5]);
+	private void genKingMoves(int B, int E, int k, int q) {
+		for (int s=B;s<E;s+=6){
+			long bto = MOVEDATA.getBTo(s);
 			if ((aOccupied & bto) == 0) {
 				if((bto&~eAttacked)!=0L)
-					add4(m[5]);
+					add4(s);
 			} else {
 				if ((eOccupied & bto & ~eAttacked) != 0) {
 					int c = ctype(bto);
@@ -474,7 +478,7 @@ public class Movegen implements IConst{
 					else if(c==3 && bto==1L<<erq && ecq)
 						add4(q); // Enemy Rook -> no castling queen side
 					else
-						add4(m[c]);
+						add4(s+1+c);
 				}
 			}
 		}
@@ -525,7 +529,7 @@ public class Movegen implements IConst{
 		for (int[] m : mv.SLIDES) {
 			int i = 0;
 			while (i < m.length) {
-				long bto = MBase.getBTo(m[i + 5]);
+				long bto = MOVEDATA.getBTo(m[i + 5]);
 				if ((occupied & bto) != 0) {
 					if ((capture & bto & mask) != 0) {
 						int c = ctype(bto);
@@ -553,11 +557,11 @@ public class Movegen implements IConst{
 			int sq = Long.numberOfTrailingZeros(from);
 			from ^= 1L << sq;
 			MSimple mv = mvs[sq];
-			for (int[] m : mv.M){
-				long bto = MBase.getBTo(m[5]);
+			for (int s=mv.B;s<mv.E;s+=6){
+				long bto = MOVEDATA.getBTo(s);
 				if ((occupied & bto) == 0L) {
 					if((bto & mask)!=0L)
-						add4(m[5]);
+						add4(s);
 				} else {
 					if ((capture & bto & mask) != 0) {
 						int c = ctype(bto);
@@ -567,7 +571,7 @@ public class Movegen implements IConst{
 							if(c==3 && bto==1L<<erq && ecq) // Enemy Rook -> no castling queen side
 								capture(mv.Q, 1, c, bto);
 							else
-								capture(m[c], 1, c, bto);
+								capture(s+1+c, 1, c, bto);
 						}
 					}
 				}
@@ -640,7 +644,7 @@ public class Movegen implements IConst{
 		for (int[] m : mm) {
 			int i = 0;
 			while (i < m.length) {
-				long bto = MBase.getBTo(m[i + 5]);
+				long bto = MOVEDATA.getBTo(m[i + 5]);
 				if((between&bto)!=0){
 					add4(m[i + 5]);
 					i += 6;
@@ -680,7 +684,7 @@ public class Movegen implements IConst{
 	}
 
 	public boolean isSafeMove(int md) {
-		MOVEDATA m=MBase.ALL[md];
+		MOVEDATA m=MOVEDATA.ALL[md];
 		return isSafe(wNext,oKingpos,bOccupied^m.bOccupied, aMinor^m.aMinor, aMajor^m.aMajor, aSlider^m.aSlider);
 	}
 
@@ -771,7 +775,7 @@ public class Movegen implements IConst{
 			}
 		}
     	for (int i = lvl1; i < iAll; i++) {
-    		MOVEDATA md = MBase.ALL[moves[i]];
+    		MOVEDATA md = MOVEDATA.ALL[moves[i]];
     		// Hiders
     		int from = BITS.getFrom(md.bitmap);
     		long bfrom=1L<<from;

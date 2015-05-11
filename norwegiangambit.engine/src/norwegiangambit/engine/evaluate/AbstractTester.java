@@ -8,6 +8,7 @@ import java.util.concurrent.RecursiveTask;
 import norwegiangambit.engine.evaluate.EloTester.RootGen;
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.movegen.MBase;
+import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
 import norwegiangambit.util.PSQT;
@@ -53,7 +54,7 @@ public abstract class AbstractTester implements IDivide, ISearch{
 		CountTask[] tasks = new CountTask[root.iAll];
 		for (int i1 = 0; i1 < root.iAll; i1++) {
 			int md = root.moves[i1];
-        	RootEval eval = new RootEval(FEN.move2literal(MBase.ALL[md].bitmap),0,0);
+        	RootEval eval = new RootEval(FEN.move2literal(MOVEDATA.ALL[md].bitmap),0,0);
         	map.add(eval);
 			CountTask task=new CountTask(md,eval,levels,root);
 			tasks[i1]=task;

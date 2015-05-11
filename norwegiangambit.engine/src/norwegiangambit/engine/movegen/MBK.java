@@ -1,25 +1,27 @@
 package norwegiangambit.engine.movegen;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import norwegiangambit.util.IConst;
 
-public class MBK extends MBase {
+public class MBK extends MSimple {
 
-	final int[][] M;
-	final static int CQ,CK,CQ2,CK2;
-	final static int[][] X,XQ,XK;
+	static int CQ,CK,CQ2,CK2;
+	static int XB,XE,XQB,XQE,XKB,XKE; // Castling breakers
 	
-	final static MBK[] MOVES;
-	static {
+	static MBK[] MOVES;
+	public static void init() {
 		MOVES=new MBK[64];
 		for (int from = 0; from < 64; from++)
 			MOVES[from] = new MBK(from);
-		int[][] M=MOVES[BK_STARTPOS].M;
-		X=castlingKing(M,CANCASTLE_BLACK);
-		XQ=castlingKing(M,CANCASTLE_BLACKQUEEN);
-		XK=castlingKing(M,CANCASTLE_BLACKKING);
+		MBK m = MOVES[BK_STARTPOS];
+		XB=MOVEDATA.brk_cnt;
+		castlingKing(m.B,m.E,CANCASTLE_BLACK);
+		XE=MOVEDATA.brk_cnt;
+		XQB=MOVEDATA.brk_cnt;
+		castlingKing(m.B,m.E,CANCASTLE_BLACKQUEEN);
+		XQE=MOVEDATA.brk_cnt;
+		XKB=MOVEDATA.brk_cnt;
+		castlingKing(m.B,m.E,CANCASTLE_BLACKKING);
+		XKE=MOVEDATA.brk_cnt;
 		long cq = assemble(IConst.BK, BK_STARTPOS, BK_STARTPOS - 2, CANCASTLE_WHITE | SPECIAL);
 		CQ=MOVEDATAX.create(cq,CANCASTLE_BLACK);
 		CQ2=MOVEDATAX.create(cq,CANCASTLE_BLACKQUEEN);
@@ -30,26 +32,23 @@ public class MBK extends MBase {
 
 	public MBK(int from) {
 		super(from);
-		M=addMoves(new int[]{UP,DOWN,LEFT,RIGHT,UP + LEFT,UP + RIGHT,DOWN + LEFT,DOWN + RIGHT});
+		addMoves(new int[]{UP,DOWN,LEFT,RIGHT,UP + LEFT,UP + RIGHT,DOWN + LEFT,DOWN + RIGHT});
 	}
 
-	public int[][] addMoves(int[] mvs) {
-		ArrayList<int[]> list=new ArrayList<int[]>();
+	public void addMoves(int[] mvs) {
 		for (int i : mvs)
-			add(i,list);
-		return list.toArray(new int[list.size()][]);
+			add(i);
 	}
 
-	protected void add(int offset, List<int[]> list) {
+	protected void add(int offset) {
 		int to = from + offset;
 		if (inside(to, from)){
-			int[] m=new int[6];
-			list.add(m);
+			E+=6;
 			long bitmap = assemble(IConst.BK, from, to, CANCASTLE_WHITE | HALFMOVES);
-			m[5]=MOVEDATA.create(bitmap);
+			MOVEDATA.create(bitmap);
 			for (int i = 0; i < 5; i++){
 				int c = BCAPTURES[i];
-				m[i]=MOVEDATA.capture(bitmap, c); 
+				MOVEDATA.capture(bitmap, c); 
 				rookCapture(to, bitmap, c);
 			}
 		}

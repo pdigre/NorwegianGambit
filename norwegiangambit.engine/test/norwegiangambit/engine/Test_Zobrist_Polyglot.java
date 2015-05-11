@@ -104,7 +104,7 @@ public class Test_Zobrist_Polyglot {
 	public int getMove(String id, FastEval eval) {
 		eval.generate();
 		for (int m : eval.moves) {
-			MOVEDATA md=MBase.ALL[m];
+			MOVEDATA md=MOVEDATA.ALL[m];
 			String id2 = md.id();
 			if(id.equals(id2)){
 				return m;

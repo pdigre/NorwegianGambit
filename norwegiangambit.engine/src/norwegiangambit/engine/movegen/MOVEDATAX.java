@@ -23,12 +23,12 @@ public class MOVEDATAX extends MOVEDATA implements IConst{
 	}
 
 	public static int create(long bitmap,long cstl){
-		return MBase.add(new MOVEDATAX(bitmap,cstl));
+		return MOVEDATA.add(new MOVEDATAX(bitmap,cstl));
 	}
 	
 	public static int createRook(long bitmap){
 		long cstl = findCastling(bitmap);
-		return MBase.add(new MOVEDATAX((bitmap | CASTLING_STATE) ^cstl,cstl));
+		return MOVEDATA.add(new MOVEDATAX((bitmap | CASTLING_STATE) ^cstl,cstl));
 	}
 	
 	private static long findCastling(long bitmap) {

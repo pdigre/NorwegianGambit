@@ -5,8 +5,8 @@ import norwegiangambit.util.IConst;
 
 public class MWB extends MSlider{
 
-	final static MWB[] MOVES;
-	static {
+	static MWB[] MOVES;
+	public static void init() {
 		MOVES=new MWB[64];
 		for (int from = 0; from < 64; from++)
 			MOVES[from] = new MWB(from);

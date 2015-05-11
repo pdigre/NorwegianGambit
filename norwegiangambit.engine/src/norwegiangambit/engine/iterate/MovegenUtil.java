@@ -1,7 +1,7 @@
 package norwegiangambit.engine.iterate;
 
 import norwegiangambit.engine.fen.StartGame;
-import norwegiangambit.engine.movegen.MBase;
+import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.engine.movegen.Movegen;
 
 public class MovegenUtil {
@@ -13,7 +13,7 @@ public class MovegenUtil {
 		int[] mds = mg.legalmoves();
 		String[] moves=new String[mds.length];
 		for (int i = 0; i < mds.length; i++)
-			moves[i]=MBase.ALL[mds[i]].id();
+			moves[i]=MOVEDATA.ALL[mds[i]].id();
 		return moves;
 	}
 	

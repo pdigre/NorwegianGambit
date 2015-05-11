@@ -5,10 +5,10 @@ import norwegiangambit.util.IConst;
 
 public class MWQ extends MSlider{
 
-	final int[][] DIAG,LINE;
+	int[][] DIAG,LINE;
 
-	final static MWQ[] MOVES;
-	static {
+	static MWQ[] MOVES;
+	public static void init() {
 		MOVES=new MWQ[64];
 		for (int from = 0; from < 64; from++)
 			MOVES[from] = new MWQ(from);
