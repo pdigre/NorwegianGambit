@@ -8,7 +8,6 @@ import norwegiangambit.util.IConst;
 public class MWR extends MSlider{
 
 	static MSlider QLINE,KLINE;
-//	final static int Q2, K2;
 
 	static MWR[] MOVES=new MWR[64];
 	public static void init() {
@@ -18,12 +17,14 @@ public class MWR extends MSlider{
 		MWR q = MOVES[WR_QUEEN_STARTPOS];
 		QLINE=new MSliderSpecial();
 		QLINE.SLIDES=cline(q.SLIDES,CANCASTLE_WHITEQUEEN);
+		QLINE.register();
 		q.Q=q.SLIDES[0][39];
 		QLINE.Q=MOVEDATAX.create(MOVEDATA.ALL[q.Q].bitmap^CANCASTLE_WHITEKING,CANCASTLE_BLACKQUEEN|CANCASTLE_WHITEQUEEN);
 
 		MWR k = MOVES[WR_KING_STARTPOS];
 		KLINE=new MSliderSpecial();
 		KLINE.SLIDES=cline(k.SLIDES,CANCASTLE_WHITEKING);
+		KLINE.register();
 		k.K=k.SLIDES[0][39];
 		KLINE.K=MOVEDATAX.create(MOVEDATA.ALL[k.K].bitmap^CANCASTLE_WHITEQUEEN,CANCASTLE_BLACKKING|CANCASTLE_WHITEKING);
 	}

@@ -254,9 +254,11 @@ public class Movegen implements IConst{
 						pinners|=pinner;
 						if((pinner&aDiag)!=0){	// BISHOP / QUEEN
 							if((pinner&aQueens)!=0){  	// QUEEN
-								slide(wNext?MWQ.MOVES[from].DIAG:MBQ.MOVES[from].DIAG,wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 4);
+//								slide(wNext?MWQ.MOVES[from].DIAG:MBQ.MOVES[from].DIAG,wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 4);
+								slide2(wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 4,0,4);
 							} else {
-								slide(wNext?MWB.MOVES[from].SLIDES:MBB.MOVES[from].SLIDES,wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 2);
+//								slide(wNext?MWB.MOVES[from].SLIDES:MBB.MOVES[from].SLIDES,wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 2);
+								slide2(wNext?MWB.MOVES[from]:MBB.MOVES[from],attacker,between, 4,0,4);
 							}
 						} else if((pinner&aPawns)!=0){  // PAWN CAPTURE
 							int ctype = ctype(attacker);
@@ -313,9 +315,9 @@ public class Movegen implements IConst{
 						pinners|=pinner;
 						if((pinner&aLine)!=0){		// ROOK / QUEEN
 							if((pinner&aQueens)!=0){	// QUEEN
-								slide(wNext?MWQ.MOVES[from].LINE:MBQ.MOVES[from].LINE,wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 4);
+								slide2(wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 4,4,8);
 							} else {
-								slide(wNext?MWR.MOVES[from].SLIDES:MBR.MOVES[from].SLIDES,wNext?MWR.MOVES[from]:MBR.MOVES[from],attacker,between, 3);
+								slide2(wNext?MWR.MOVES[from]:MBR.MOVES[from],attacker,between, 3,0,4);
 							}
 						} else if((pinner&aPawns)!=0){  // PAWN FORWARD
 							if(wNext){
@@ -526,13 +528,10 @@ public class Movegen implements IConst{
 	}
 	
 	private void genSlides(long occupied, long capture, long mask, MSlider mv, int val) {
-		int n = mv.SLIDES.length;
-		try{
+		int n = mv.B.length;
 		for (int j = 0; j < n; j++) {
-			int[] m = mv.SLIDES[j];
 			int b = mv.B[j];
 			int e = mv.E[j];
-//			int i = 0;
 			while (b < e) {
 				long bto = MOVEDATA.getBTo(b+5);
 				if ((occupied & bto) != 0) {
@@ -554,9 +553,6 @@ public class Movegen implements IConst{
 					b += 6;
 				}
 			}
-		}
-		} catch(Exception e){
-			e.printStackTrace();
 		}
 	}
 
@@ -649,14 +645,15 @@ public class Movegen implements IConst{
 		}
 	}
 	
-	private void slide(int[][] mm,MBase b,long attacker,long between, int type) {
-		for (int[] m : mm) {
-			int i = 0;
-			while (i < m.length) {
-				long bto = MOVEDATA.getBTo(m[i + 5]);
+	private void slide2(MSlider mv,long attacker,long between, int type,int from,int to) {
+		for (int j = from; j < to; j++) {
+			int b = mv.B[j];
+			int e = mv.E[j];
+			while (b < e) {
+				long bto = MOVEDATA.getBTo(b + 5);
 				if((between&bto)!=0){
-					add4(m[i + 5]);
-					i += 6;
+					add4(b + 5);
+					b += 6;
 					continue;
 				}
 				if ((attacker & bto) != 0){
@@ -664,28 +661,27 @@ public class Movegen implements IConst{
 					if(c==3){
 						if(wNext){
 							if(bto==1L<<erk && eck)
-								capture(b.K, type, c, bto);
+								capture(mv.K, type, c, bto);
 							 else if(bto==1L<<erq && ecq)
-								capture(b.Q, type, c, bto);
+								capture(mv.Q, type, c, bto);
 							 else 
-								capture(m[i + c], type, c, bto);
+								capture(b+c, type, c, bto);
 						} else {
 							if(bto==1L<<erk && eck)
-								capture(b.K, type, c, bto);
+								capture(mv.K, type, c, bto);
 							 else if(bto==1L<<erq && ecq)
-								capture(b.Q, type, c, bto);
+								capture(mv.Q, type, c, bto);
 							 else 
-								capture(m[i + c], type, c, bto);
+								capture(b + c, type, c, bto);
 						}
 					} else {
-						capture(m[i + c], type, c, bto);
+						capture(b + c, type, c, bto);
 					}
 				}
 				break;
 			}
 		}
 	}
-
 
 	@Override
 	public String toString() {
