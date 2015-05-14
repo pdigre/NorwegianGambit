@@ -525,11 +525,16 @@ public class Movegen implements IConst{
 		}
 	}
 	
-	public void genSlides(long occupied, long capture, long mask, MSlider mv, int val) {
-		for (int[] m : mv.SLIDES) {
-			int i = 0;
-			while (i < m.length) {
-				long bto = MOVEDATA.getBTo(m[i + 5]);
+	private void genSlides(long occupied, long capture, long mask, MSlider mv, int val) {
+		int n = mv.SLIDES.length;
+		try{
+		for (int j = 0; j < n; j++) {
+			int[] m = mv.SLIDES[j];
+			int b = mv.B[j];
+			int e = mv.E[j];
+//			int i = 0;
+			while (b < e) {
+				long bto = MOVEDATA.getBTo(b+5);
 				if ((occupied & bto) != 0) {
 					if ((capture & bto & mask) != 0) {
 						int c = ctype(bto);
@@ -538,16 +543,20 @@ public class Movegen implements IConst{
 						}else if(c==3 && bto==1L<<erq && ecq){ // Enemy Rook -> no castling queen side
 							capture(mv.Q, val, c, bto);
 						}else{
-							capture(m[i + c], val, c, bto);
+							capture(b + c, val, c, bto);
 						}
 					}
 					break;
 				} else {
-					if((bto&mask)!=0)
-						add4(m[i + 5]);
-					i += 6;
+					if((bto&mask)!=0){
+						add4(b+5);
+					}
+					b += 6;
 				}
 			}
+		}
+		} catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 

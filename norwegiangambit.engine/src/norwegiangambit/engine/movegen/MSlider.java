@@ -7,9 +7,12 @@ import norwegiangambit.util.IConst;
 public abstract class MSlider extends MBase {
 
 	int[][] SLIDES;
+	int[] B, E;
+	int n;
 
 	public MSlider(int from) {
 		super(from);
+		n=this instanceof MSliderSpecial?MOVEDATA.brk_cnt:MOVEDATA.nrm_cnt;
 	}
 
 	public int[] slide(int type, int offset) {
@@ -26,5 +29,15 @@ public abstract class MSlider extends MBase {
 			to += offset;
 		}
 		return makeArray(list);
+	}
+
+	public void register() {
+		B=new int[SLIDES.length];
+		E=new int[SLIDES.length];
+		for (int i = 0; i < SLIDES.length; i++) {
+			B[i]=n;
+			n+=SLIDES[i].length;
+			E[i]=n;
+		}
 	}
 }

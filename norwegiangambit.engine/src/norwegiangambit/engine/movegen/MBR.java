@@ -34,6 +34,7 @@ public class MBR extends MSlider{
 	public MBR(int from) {
 		super(from);
 		SLIDES=new int[][]{slide(UP),slide(DOWN), slide(LEFT),slide(RIGHT)};
+		register();
 	}
 
 	private int[] slide(int offset) {

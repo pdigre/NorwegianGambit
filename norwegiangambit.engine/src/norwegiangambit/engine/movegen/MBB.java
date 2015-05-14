@@ -15,5 +15,6 @@ public class MBB extends MSlider{
 	public MBB(int from) {
 		super(from);
 		SLIDES=new int[][]{slide(IConst.BB, UP + LEFT),slide(IConst.BB, UP + RIGHT),slide(IConst.BB, DOWN + LEFT),slide(IConst.BB, DOWN + RIGHT)};
+		register();
 	}
 }
