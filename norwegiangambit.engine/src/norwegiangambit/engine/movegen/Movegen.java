@@ -254,10 +254,8 @@ public class Movegen implements IConst{
 						pinners|=pinner;
 						if((pinner&aDiag)!=0){	// BISHOP / QUEEN
 							if((pinner&aQueens)!=0){  	// QUEEN
-//								slide(wNext?MWQ.MOVES[from].DIAG:MBQ.MOVES[from].DIAG,wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 4);
 								slide(wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 4,0,4);
 							} else {
-//								slide(wNext?MWB.MOVES[from].SLIDES:MBB.MOVES[from].SLIDES,wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 2);
 								slide(wNext?MWB.MOVES[from]:MBB.MOVES[from],attacker,between, 4,0,4);
 							}
 						} else if((pinner&aPawns)!=0){  // PAWN CAPTURE
