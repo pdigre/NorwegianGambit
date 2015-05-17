@@ -1,5 +1,7 @@
 package norwegiangambit.util;
 
+import java.util.Arrays;
+
 
 
 
@@ -136,11 +138,9 @@ public class BitBoard implements IConst{
 	}
 
 
-	final public static long[] 
-			bMasks = new long[64],  // Inner Mask
-			rMasks = new long[64],  // Inner Mask
-			BMasks = new long[64],  // Outer Mask
-			RMasks = new long[64],  // Outer Mask
+	final public static long[]  // Outer Mask
+			BMasks = new long[64],
+			RMasks = new long[64],  
 			QMasks = new long[64],
 			KMasks = new long[64],
 			NMasks = new long[64];
@@ -187,7 +187,9 @@ public class BitBoard implements IConst{
  * Magic number implementation    
  **********************************/
     
-    public final static long[][] rTables=new long[64][];
+    public final static long[] magics=new long[90624+128 + 4800+128];
+    public final static int[] offsets=new int[64*4];
+    public final static int[] rOffsets=new int[64];
 
     public final static int[] rBits = { 
     	12, 11, 11, 11, 11, 11, 11, 12,
@@ -218,7 +220,7 @@ public class BitBoard implements IConst{
         0x000ffff5fff338e6L, 0x0007fffdfffe24f6L, 0x0003ffef27eebe74L, 0x0001ffff23ff605eL
     };
 
-    public final static long[][] bTables=new long[64][];;
+    public final static int[] bOffsets=new int[64];
     public final static int[] bBits = { 
     	5, 4, 5, 5, 5, 5, 4, 5,
         4, 4, 5, 5, 5, 5, 4, 4,
@@ -300,45 +302,56 @@ public class BitBoard implements IConst{
     }
 
     static{
-	    // Rook magics
+    	int tot=0;
+    	int off=0;
+    	Arrays.fill(magics, -1);
 	    for (int sq = 0; sq < 64; sq++) {
-	        int x = sq & 7;
-	        int y = sq >> 3;
-	        rMasks[sq] = addRookRays(x, y, 0L, true);
-	        int tableSize = 1 << rBits[sq];
-	        long[] table = new long[tableSize];
-	        for (int i = 0; i < tableSize; i++) table[i] = -1;
-	        int nPatterns = 1 << Long.bitCount(rMasks[sq]);
-	        for (int i = 0; i < nPatterns; i++) {
-	            long p = createPattern(i, rMasks[sq]);
-	            int entry = (int)((p * rMagics[sq]) >>> (64 - rBits[sq]));
-	            if (table[entry] == -1)
-	                table[entry] = addRookRays(x, y, p, false);
-	        }
-	        rTables[sq] = table;
-	    }
-	    // Bishop magics
-	    for (int sq = 0; sq < 64; sq++) {
-	        int x = sq & 7;
-	        int y = sq >> 3;
-	        bMasks[sq] = addBishopRays(x, y, 0L, true);
-	        int tableSize = 1 << bBits[sq];
-	        long[] table = new long[tableSize];
-	        for (int i = 0; i < tableSize; i++) table[i] = -1;
-	        int nPatterns = 1 << Long.bitCount(bMasks[sq]);
-	        for (int i = 0; i < nPatterns; i++) {
-	            long p = createPattern(i, bMasks[sq]);
-	            int entry = (int)((p * bMagics[sq]) >>> (64 - bBits[sq]));
-	            if (table[entry] == -1)
-	                table[entry] = addBishopRays(x, y, p, false);
-	        }
-	        bTables[sq] = table;
+	        int x = sq % 8;
+	        int y = sq / 8;
+            {
+    		    // Rook magics
+                int bits = rBits[sq];
+				long mask = addRookRays(x, y, 0L, true);
+		        long magix = rMagics[sq];
+				magics[tot++]=magix;
+		        magics[tot++]=mask;
+		        rOffsets[sq]=tot;
+		        offsets[off++]=tot;
+		        offsets[off++]=64 - bits;
+		        int nPatterns = 1 << Long.bitCount(mask);
+		        for (int i = 0; i < nPatterns; i++) {
+		            long p = createPattern(i, mask);
+					magics[tot+(int)((p * magix) >>> 64 - bits)] = addRookRays(x, y, p, false);
+		        }
+		        tot+=1 << bits;
+            }
+            {
+    		    // Bishop magics
+                int bits = bBits[sq];
+				long mask = addBishopRays(x, y, 0L, true);
+		        long magix = bMagics[sq];
+				magics[tot++]=magix;
+		        magics[tot++]=mask;
+		        bOffsets[sq]=tot;
+		        offsets[off++]=tot;
+		        offsets[off++]=64 - bits;
+		        int nPatterns = 1 << Long.bitCount(mask);
+		        for (int i = 0; i < nPatterns; i++) {
+		            long p = createPattern(i, mask);
+					magics[tot+(int)((p * magix) >>> 64 - bits)] = addBishopRays(x, y, p, false);
+		        }
+		        tot+=1 << bits;
+            }
 	    }
     }
-    
+    public static final long rookAttacks(int sq, long occupied) {		return magicAtks(occupied, sq*4);    }
+
     public static final long bishopAttacks(int sq, long occupied) {
-        return bTables[sq][(int)(((occupied & bMasks[sq]) * bMagics[sq]) >>> (64 - bBits[sq]))];    }    public static final long rookAttacks(int sq, long occupied) {        return rTables[sq][(int)(((occupied & rMasks[sq]) * rMagics[sq]) >>> (64 - rBits[sq]))];    }
+		return magicAtks(occupied, sq*4+2);
+    }
 
-
-    
-}
+	private final static long magicAtks(long occupied, int i) {
+		int offset = offsets[i];
+        return magics[offset+(int)(((occupied & magics[offset-1]) * magics[offset-2]) >>> offsets[i+1])];
+	}
+}

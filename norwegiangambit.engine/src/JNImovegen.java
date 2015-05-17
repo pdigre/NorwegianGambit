@@ -11,12 +11,10 @@ public class JNImovegen {
 		int i=MOVEDATA.ALL.length;
 		assert i>0;
 		instance=new JNImovegen();
-		instance.copyMagic(
-				BitBoard.bMasks,BitBoard.bBits,BitBoard.bTables,BitBoard.bMagics,
-				BitBoard.rMasks,BitBoard.rBits,BitBoard.rTables,BitBoard.rMagics);
+		instance.copyMagic(BitBoard.offsets,BitBoard.magics);
 	}
 
-	private native void copyMagic(long[] bmasks, int[] bbits, long[][] btables, long[] bmagics, long[] rmasks, int[] rbits, long[][] rtables, long[] rmagics);
+	private native void copyMagic(int[] offsets, long[] magics);
 	private native void copyMovedata(MOVEDATA[] all);
 	private native void config(Movegen gen);
 	private native void init(Movegen gen);
