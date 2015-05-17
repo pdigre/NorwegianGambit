@@ -1,6 +1,5 @@
 package norwegiangambit.engine.evaluate;
 
-import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.IDivide.Eval;
 

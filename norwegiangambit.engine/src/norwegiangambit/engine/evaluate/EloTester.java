@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.concurrent.ForkJoinPool;
 
 import norwegiangambit.engine.fen.StartGame;
-import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.PSQT;

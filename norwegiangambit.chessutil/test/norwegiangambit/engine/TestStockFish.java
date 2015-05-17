@@ -1,7 +1,5 @@
 package norwegiangambit.engine;
 
-import static org.junit.Assert.assertEquals;
-import norwegiangambit.util.BITS;
 import norwegiangambit.util.EngineStockfish;
 
 import org.junit.Test;

@@ -1,5 +1,5 @@
 # Define a variable for classpath
-CLASS_PATH = ../bin
+CLASS_PATH = ../bin;../../norwegiangambit.chessutil/bin
 
 # Define a virtual path for .class in the bin directory
 vpath %.class $(CLASS_PATH)
@@ -15,8 +15,8 @@ JNImovegen.o : JNImovegen.c JNImovegen.h
 	gcc -I"C:\Program Files\Java\jdk1.8.0_05\include" -I"C:\Program Files\Java\jdk1.8.0_05\include\win32" -c $< -o $@
 
 # $* matches the target filename without the extension
-JNImovegen.h : JNImovegen.class
-	javah -classpath $(CLASS_PATH) $*
+JNImovegen.h : ../bin/JNImovegen.class
+	javah -classpath "$(CLASS_PATH)" JNImovegen
 
 clean :
 	rm JNImovegen.h JNImovegen.o movegen.dll
