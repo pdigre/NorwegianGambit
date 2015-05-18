@@ -17,8 +17,8 @@ public class JNImovegen {
 
 	private native void copyMagic(int[] offsets, long[] magics);
 	private native void copyMovedata(MOVEDATA[] all);
-	private native void config(Movegen gen);
 	private native void init(Movegen gen);
+	private native void calculateEnemyAttacks(Movegen gen);
 	private native void movegen();
 
 	// Test Driver
@@ -36,4 +36,5 @@ public class JNImovegen {
 
     private native long magicAtks(long occupied, int i);
 
+    
 }

@@ -26,9 +26,10 @@ JNIEXPORT void JNICALL Java_jni_JNImovegen_copyMagic(JNIEnv *env, jobject thisOb
 
 JNIEXPORT jlong JNICALL Java_jni_JNImovegen_magicAtks(JNIEnv *env, jobject thisObj, jlong occupied, jint i){
 	int offset = offsets[i];
-	int bits = offsets[i+1];
-	unsigned long long magic = magics[offset-2];
-	unsigned long long mask = magics[offset-1];
-	return magics[offset + (int)(((occupied & mask) * magic) >> bits)];
+	return magics[offset + (int)(((occupied & magics[offset-1]) * magics[offset-2]) >> offsets[i+1])];
+}
+
+JNIEXPORT void JNICALL Java_jni_JNImovegen_calculateEnemyAttacks(JNIEnv *env, jobject o1, jobject o2){
+
 }
 
