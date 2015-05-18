@@ -15,8 +15,8 @@ JNImovegen.o : JNImovegen.c JNImovegen.h
 	gcc -I"C:\Program Files\Java\jdk1.8.0_05\include" -I"C:\Program Files\Java\jdk1.8.0_05\include\win32" -c $< -o $@
 
 # $* matches the target filename without the extension
-JNImovegen.h : ../bin/JNImovegen.class
-	javah -classpath "$(CLASS_PATH)" JNImovegen
+JNImovegen.h : ../bin/jni/JNImovegen.class
+	javah -classpath "$(CLASS_PATH)" -o JNImovegen.h jni.JNImovegen
 
 clean :
 	rm JNImovegen.h JNImovegen.o movegen.dll

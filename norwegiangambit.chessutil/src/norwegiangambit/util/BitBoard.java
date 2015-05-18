@@ -350,7 +350,7 @@ public class BitBoard implements IConst{
 		return magicAtks(occupied, sq*4+2);
     }
 
-	private final static long magicAtks(long occupied, int i) {
+	public final static long magicAtks(long occupied, int i) {
 		int offset = offsets[i];
         return magics[offset+(int)(((occupied & magics[offset-1]) * magics[offset-2]) >>> offsets[i+1])];
 	}

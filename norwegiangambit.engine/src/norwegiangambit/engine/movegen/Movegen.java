@@ -3,6 +3,7 @@ package norwegiangambit.engine.movegen;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+import jni.JNImovegen;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.BitBoard;
 import norwegiangambit.util.FEN;
@@ -439,7 +440,7 @@ public class Movegen implements IConst{
 			long m=eOccupied & aBishops;
 			while(m!=0){
 				int sq = Long.numberOfTrailingZeros(m);
-				eAttacked|=BitBoard.bishopAttacks(sq, pcs);
+				eAttacked|=JNImovegen.bishopAttacks(sq, pcs);
 				m &= m-1;
 			}
 		}
@@ -447,7 +448,7 @@ public class Movegen implements IConst{
 			long m=eOccupied & aRooks;
 			while(m!=0){
 				int sq = Long.numberOfTrailingZeros(m);
-				eAttacked|=BitBoard.rookAttacks(sq, pcs);
+				eAttacked|=JNImovegen.rookAttacks(sq, pcs);
 				m &= m-1;
 			}
 		}
@@ -455,8 +456,8 @@ public class Movegen implements IConst{
 			long m=eOccupied & aQueens;
 			while(m!=0){
 				int sq = Long.numberOfTrailingZeros(m);
-				eAttacked|=BitBoard.bishopAttacks(sq, pcs);
-				eAttacked|=BitBoard.rookAttacks(sq, pcs);
+				eAttacked|=JNImovegen.bishopAttacks(sq, pcs);
+				eAttacked|=JNImovegen.rookAttacks(sq, pcs);
 				m &= m-1;
 			}
 		}
