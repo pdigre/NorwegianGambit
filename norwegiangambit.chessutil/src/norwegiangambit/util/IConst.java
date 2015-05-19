@@ -75,11 +75,11 @@ public interface IConst {
 
 	long MaskAFile = 0x0101010101010101L;
 	long MaskHFile = 0x8080808080808080L;
+	long MaskBToHFiles = ~MaskAFile;
+	long MaskAToGFiles = ~MaskHFile;
 	long MaskRow2 = 0xFF00L;
 	long MaskRow7 = 0x00FF000000000000L;
 	long MaskGoal = 0xFF000000000000FFL;
-	long MaskBToHFiles = ~MaskAFile;
-	long MaskAToGFiles = ~MaskHFile;
     long MaskDarkSq    = 0xAA55AA55AA55AA55L;
     long MaskLightSq   = 0x55AA55AA55AA55AAL;
 

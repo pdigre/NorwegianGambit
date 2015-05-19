@@ -17,6 +17,22 @@ JNIEXPORT void JNICALL Java_norwegiangambit_engine_Movegen_copyMagic
 
 /*
  * Class:     norwegiangambit_engine_Movegen
+ * Method:    copyMaps
+ * Signature: ([J[J)V
+ */
+JNIEXPORT void JNICALL Java_norwegiangambit_engine_Movegen_copyMaps
+  (JNIEnv *, jobject, jlongArray, jlongArray);
+
+/*
+ * Class:     norwegiangambit_engine_Movegen
+ * Method:    initVariables
+ * Signature: (ZJJJJIJ)V
+ */
+JNIEXPORT void JNICALL Java_norwegiangambit_engine_Movegen_initVariables
+  (JNIEnv *, jobject, jboolean, jlong, jlong, jlong, jlong, jint, jlong);
+
+/*
+ * Class:     norwegiangambit_engine_Movegen
  * Method:    magicAtks
  * Signature: (JI)J
  */
@@ -34,10 +50,18 @@ JNIEXPORT void JNICALL Java_norwegiangambit_engine_Movegen_init
 /*
  * Class:     norwegiangambit_engine_Movegen
  * Method:    enemyAttacks
- * Signature: ()V
+ * Signature: (JJ)J
  */
-JNIEXPORT void JNICALL Java_norwegiangambit_engine_Movegen_enemyAttacks
-  (JNIEnv *, jobject);
+JNIEXPORT jlong JNICALL Java_norwegiangambit_engine_Movegen_enemyAttacks
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     norwegiangambit_engine_Movegen
+ * Method:    tzcnt2
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_norwegiangambit_engine_Movegen_tzcnt2
+  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }

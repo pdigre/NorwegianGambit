@@ -178,8 +178,8 @@ public class LongEval extends FastEval {
 		bMtrlPawns=pV*bPawnNum;
 		wMtrl=nV*Long.bitCount(wKnights)+bV*wBishopNum+rV*wRookNum+qV*Long.bitCount(wQueens);
 		bMtrl=nV*Long.bitCount(bKnights)+bV*bBishopNum+rV*bRookNum+qV*Long.bitCount(bQueens);
-		wKingZone=BitBoard.KMasks[wkingpos];
-		bKingZone=BitBoard.KMasks[bkingpos];
+		wKingZone=BitBoard.KMasks[wKingpos];
+		bKingZone=BitBoard.KMasks[bKingpos];
 		
 		// Bishop Pair Bonus
 		bonus[WB]=bishopPairBonus(wBishopNum, wPawnNum);
@@ -420,7 +420,7 @@ public class LongEval extends FastEval {
         final int maxM = qV + 2 * rV + 2 * bV + 2 * nV;
         int score = kingSafetyKPPart();
         
-        if (BitBoard.sq2y(wkingpos) == 0) {
+        if (BitBoard.sq2y(wKingpos) == 0) {
             if (((wKings & 0x60L) != 0) && // King on f1 or g1
                 ((wRooks & 0xC0L) != 0) && // Rook on g1 or h1
                 ((wPawns & BitBoard.maskFile[6]) != 0) &&
@@ -435,7 +435,7 @@ public class LongEval extends FastEval {
             }
         }
         
-        if (BitBoard.sq2y(bkingpos) == 7) {
+        if (BitBoard.sq2y(bKingpos) == 7) {
             if (((bKings & 0x6000000000000000L) != 0) && // King on f8 or g8
                 ((bRooks & 0xC000000000000000L) != 0) && // Rook on g8 or h8
                 ((bPawns & BitBoard.maskFile[6]) != 0) &&
@@ -467,8 +467,8 @@ public class LongEval extends FastEval {
 	public int bKingSafety() {
 		int safety = 0;
 		int halfOpenFiles = 0;
-		if (BitBoard.sq2y(bkingpos) >= 6) {
-		    long shelter = 1L << (56 + BitBoard.sq2x(bkingpos));
+		if (BitBoard.sq2y(bKingpos) >= 6) {
+		    long shelter = 1L << (56 + BitBoard.sq2x(bKingpos));
 		    shelter |= ((shelter & MaskBToHFiles) >>> 1) | ((shelter & MaskAToGFiles) << 1);
 		    shelter >>>= 8;
 		    safety += 3 * Long.bitCount(bPawns & shelter);
@@ -495,8 +495,8 @@ public class LongEval extends FastEval {
 	public int wKingSafety() {
 		int safety = 0;
 		int halfOpenFiles = 0;
-		if (BitBoard.sq2y(wkingpos) < 2) {
-		    long shelter = 1L << BitBoard.sq2x(wkingpos);
+		if (BitBoard.sq2y(wKingpos) < 2) {
+		    long shelter = 1L << BitBoard.sq2x(wKingpos);
 		    shelter |= ((shelter & MaskBToHFiles) >>> 1) | ((shelter & MaskAToGFiles) << 1);
 		    shelter <<= 8;
 		    safety += 3 * Long.bitCount(wPawns & shelter);
@@ -552,7 +552,7 @@ public class LongEval extends FastEval {
         if (m != 0) {
             int mtrlNoPawns = bMtrl - bMtrlPawns;
             if (mtrlNoPawns < hiMtrl) {
-                int kingPos = wkingpos;
+                int kingPos = wKingpos;
                 while (m != 0) {
                     int sq = Long.numberOfTrailingZeros(m);
                     int x = BitBoard.sq2x(sq);
@@ -565,7 +565,7 @@ public class LongEval extends FastEval {
                     if (!wNext)
                         kingDist--;
                     if ((pawnDist < kingDist) && (mtrlNoPawns == 0)) {
-                        if ((BitBoard.northFill(1L<<sq) & (1L << wkingpos)) != 0)
+                        if ((BitBoard.northFill(1L<<sq) & (1L << wKingpos)) != 0)
                             pawnDist++; // Own king blocking pawn
                         if (pawnDist < bestWPawnDist) {
                             bestWPawnDist = pawnDist;
@@ -584,7 +584,7 @@ public class LongEval extends FastEval {
         if (m != 0) {
             int mtrlNoPawns = wMtrl - wMtrlPawns;
             if (mtrlNoPawns < hiMtrl) {
-                int kingPos = wkingpos;
+                int kingPos = wKingpos;
                 while (m != 0) {
                     int sq = Long.numberOfTrailingZeros(m);
                     int x = BitBoard.sq2x(sq);
@@ -597,7 +597,7 @@ public class LongEval extends FastEval {
                     if (wNext)
                         kingDist--;
                     if ((pawnDist < kingDist) && (mtrlNoPawns == 0)) {
-                        if ((BitBoard.southFill(1L<<sq) & (1L << bkingpos)) != 0)
+                        if ((BitBoard.southFill(1L<<sq) & (1L << bKingpos)) != 0)
                             pawnDist++; // Own king blocking pawn
                         if (pawnDist < bestBPawnDist) {
                             bestBPawnDist = pawnDist;
@@ -617,10 +617,10 @@ public class LongEval extends FastEval {
                 if (wPly < bPly - 1) {
                     wscore += 500;
                 } else if (wPly == bPly - 1) {
-                    if (BitBoard.getDirection(bestWPromSq, bkingpos) != 0)
+                    if (BitBoard.getDirection(bestWPromSq, bKingpos) != 0)
                         wscore += 500;
                 } else if (wPly == bPly + 1) {
-                    if (BitBoard.getDirection(bestBPromSq, bkingpos) != 0)
+                    if (BitBoard.getDirection(bestBPromSq, bKingpos) != 0)
                         bscore += 500;
                 } else {
                     bscore += 500;

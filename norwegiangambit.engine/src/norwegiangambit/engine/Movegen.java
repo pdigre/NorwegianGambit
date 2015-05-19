@@ -48,12 +48,16 @@ public class Movegen implements IConst{
 		System.loadLibrary("jni/movegen");
 		Movegen dll=new Movegen();
 		dll.copyMagic(BitBoard.offsets,BitBoard.magics);
+		dll.copyMaps(BitBoard.NMasks,BitBoard.KMasks);
 	}
 
 	public Movegen() {
 	}
 
 	private native void copyMagic(int[] offsets, long[] magics);
+	private native void copyMaps(long[] nmasks, long[] kmasks);
+
+	private native void initVariables(boolean wNext, long aMinor, long aMajor, long aSlider, long bOccupied, int epsq, long castling);
 
 	/**
 	 * @param occupied bitmask
@@ -63,7 +67,12 @@ public class Movegen implements IConst{
 	private native long magicAtks(long occupied, int i);
 
 	private native void init();
-	private native void enemyAttacks();
+	private native long enemyAttacks(long eAttacked,long pcs);
+	private native int tzcnt2(long b);
+	private final int tzcnt(long b){
+		return tzcnt2(b);
+//		return Long.numberOfTrailingZeros(b);
+	}
 
     public final long rookAttacks(int sq, long occupied) {
 		return magicAtks(occupied, sq*4);
@@ -77,7 +86,7 @@ public class Movegen implements IConst{
     // initialization variables
 	public boolean wNext;
 	public long bOccupied,aMinor,aMajor,aSlider,castling;
-	public int wkingpos,bkingpos,epsq;
+	public int wKingpos,bKingpos,epsq;
 
 	// temp variables
 	public long aOccupied, wOccupied, oOccupied, eOccupied,aPawns,aKnights,aBishops,aRooks,aQueens,aKings;
@@ -114,15 +123,15 @@ public class Movegen implements IConst{
 		this.aMinor 	= b1^md.aMinor;
 		this.aMajor 	= b2^md.aMajor;
 		this.aSlider 	= b3^md.aSlider;
-		this.wkingpos   = wkingpos;
-		this.bkingpos   = bkingpos;
+		this.wKingpos   = wkingpos;
+		this.bKingpos   = bkingpos;
 		this.epsq 		= md instanceof ENPASSANT?((ENPASSANT)md).epsq:-1;
 		this.castling	= castling;
 		int type  = BITS.getPiece(md.bitmap);
 		if(type==IConst.WK)
-			this.wkingpos=BITS.getTo(md.bitmap);
+			this.wKingpos=BITS.getTo(md.bitmap);
 		else if(type==IConst.BK)
-			this.bkingpos=BITS.getTo(md.bitmap);
+			this.bKingpos=BITS.getTo(md.bitmap);
 		if(md instanceof MOVEDATAX)
 			this.castling^=((MOVEDATAX) md).castling;
 		initVariables();
@@ -133,14 +142,17 @@ public class Movegen implements IConst{
 		this.aMinor 	= aMinor;
 		this.aMajor 	= aMajor;
 		this.aSlider 	= aSlider;
-		this.wkingpos 	= wkingpos;
-		this.bkingpos 	= bkingpos;
+		this.wKingpos 	= wkingpos;
+		this.bKingpos 	= bkingpos;
 		this.epsq 		= BITS.getEnpassant(bitmap);
 		this.castling 	= ~CASTLING_STATE | bitmap; // all other are set
 		initVariables();
 	}
 
 	public void initVariables() {
+		initVariables(wNext,aMinor,aMajor,aSlider,bOccupied,epsq,castling);
+		
+		
 		erk        	= wNext?BR_KING_STARTPOS:WR_KING_STARTPOS;
 		erq        	= wNext?BR_QUEEN_STARTPOS:WR_QUEEN_STARTPOS;
 		ecq			= (castling & (wNext?CANCASTLE_BLACKQUEEN:CANCASTLE_WHITEQUEEN)) != 0;
@@ -160,8 +172,8 @@ public class Movegen implements IConst{
 		aBishops 	=  aMinor & ~aMajor &  aSlider;
 		aRooks 		= ~aMinor &  aMajor &  aSlider;
 		aQueens 	=  aMinor &  aMajor &  aSlider;
-		oKingpos 	= wNext?wkingpos:bkingpos;
-		eKingpos 	= wNext?bkingpos:wkingpos;
+		oKingpos 	= wNext?wKingpos:bKingpos;
+		eKingpos 	= wNext?bKingpos:wKingpos;
 		oOccupied	= wNext?wOccupied:bOccupied;
 		eOccupied	= wNext?bOccupied:wOccupied;
 		wPawns   	= wOccupied & aPawns;
@@ -176,6 +188,7 @@ public class Movegen implements IConst{
 			System.out.println("Wrong FEN");
 
 	}
+
 
 	public void undo(MOVEDATA md){
 		
@@ -289,7 +302,7 @@ public class Movegen implements IConst{
 	private void calculateEvasiveMoves() {
 		int num = Long.bitCount(checkers);
 		if(num==1){
-			int atk_sq = Long.numberOfTrailingZeros(checkers);
+			int atk_sq = tzcnt(checkers);
 			long between=BitBoard.BETWEEN[atk_sq*64+oKingpos];
 			long mask = between|checkers;
 			long free = oOccupied & ~pinners;
@@ -360,7 +373,7 @@ public class Movegen implements IConst{
 		if((eOccupied & aSlider & BitBoard.QMasks[oKingpos]) !=0){
 			long diagatks = eOccupied & aDiag & BitBoard.BMasks[oKingpos];
 			while(diagatks!=0){
-				int asq = Long.numberOfTrailingZeros(diagatks);
+				int asq = tzcnt(diagatks);
 				diagatks &= diagatks-1;
 				long attacker = 1L << asq;
 				long between = BitBoard.BETWEEN[asq+64*oKingpos];
@@ -370,7 +383,7 @@ public class Movegen implements IConst{
 				} else if(Long.bitCount(bpcs)==1){
 					// check for slide moves
 					long pinner = between&oOccupied;
-					int from = Long.numberOfTrailingZeros(pinner);
+					int from = tzcnt(pinner);
 					pinners|=pinner;
 					if((pinner&aDiag)!=0){	// BISHOP / QUEEN
 						if((pinner&aQueens)!=0){  	// QUEEN
@@ -416,7 +429,7 @@ public class Movegen implements IConst{
 			}
 			long lineatks = eOccupied & aLine & BitBoard.RMasks[oKingpos];
 			while (lineatks != 0){
-				int asq = Long.numberOfTrailingZeros(lineatks);
+				int asq = tzcnt(lineatks);
 				lineatks &= lineatks-1;
 				long attacker = 1L << asq;
 				long between = BitBoard.BETWEEN[asq+64*oKingpos];
@@ -426,7 +439,7 @@ public class Movegen implements IConst{
 				} else if(Long.bitCount(bpcs)==1){
 					// check for slide moves
 					long pinner = between&oOccupied;
-					int from = Long.numberOfTrailingZeros(pinner);
+					int from = tzcnt(pinner);
 					pinners|=pinner;
 					if((pinner&aLine)!=0){		// ROOK / QUEEN
 						if((pinner&aQueens)!=0){	// QUEEN
@@ -459,53 +472,7 @@ public class Movegen implements IConst{
 		// Calculate unsafe positions, those attacked by enemy
 		long pcs=aOccupied&~(oOccupied &  aKings);
 		eAttacked=wNext?wPawnAtkBy:bPawnAtkBy;
-//		bitscan(eOccupied & aKnights, sq -> eAttacked|=BitBoard.NMasks[sq]);
-//		bitscan(eOccupied & aKings, sq -> eAttacked|=BitBoard.KMasks[sq]);
-//		bitscan(eOccupied & aBishops, sq -> eAttacked|=BitBoard.bishopAttacks(sq, pcs));
-//		bitscan(eOccupied & aRooks, sq -> eAttacked|=BitBoard.rookAttacks(sq, pcs));
-//		bitscan(eOccupied & aQueens, sq -> eAttacked|=BitBoard.bishopAttacks(sq, pcs)|BitBoard.rookAttacks(sq, pcs));
-
-		{
-			long m=eOccupied & aKnights;
-			while(m!=0){
-				int sq = Long.numberOfTrailingZeros(m);
-				eAttacked|=BitBoard.NMasks[sq];
-				m &= m-1;
-			}
-		}
-		{
-			long m=eOccupied & aKings;
-			while(m!=0){
-				int sq = Long.numberOfTrailingZeros(m);
-				eAttacked|=BitBoard.KMasks[sq];
-				m &= m-1;
-			}
-		}
-		{
-			long m=eOccupied & aBishops;
-			while(m!=0){
-				int sq = Long.numberOfTrailingZeros(m);
-				eAttacked|=bishopAttacks(sq, pcs);
-				m &= m-1;
-			}
-		}
-		{
-			long m=eOccupied & aRooks;
-			while(m!=0){
-				int sq = Long.numberOfTrailingZeros(m);
-				eAttacked|=rookAttacks(sq, pcs);
-				m &= m-1;
-			}
-		}
-		{
-			long m=eOccupied & aQueens;
-			while(m!=0){
-				int sq = Long.numberOfTrailingZeros(m);
-				eAttacked|=bishopAttacks(sq, pcs);
-				eAttacked|=rookAttacks(sq, pcs);
-				m &= m-1;
-			}
-		}
+		eAttacked=enemyAttacks(eAttacked,pcs);
 	}
 
 	private void genKing() {
@@ -541,7 +508,7 @@ public class Movegen implements IConst{
 	private void genQueen(long from, long occupied,long capture,long mask) {
 		MSlider[] mvs = wNext?MWQ.MOVES:MBQ.MOVES;
 		while(from!=0){
-			int sq = Long.numberOfTrailingZeros(from);
+			int sq = tzcnt(from);
 			from ^= 1L << sq;
 			genSlides(occupied, capture, mask, mvs[sq],4);
 		}
@@ -550,7 +517,7 @@ public class Movegen implements IConst{
 	private void genBishop(long from, long occupied,long capture,long mask) {
 		MSlider[] mvs = wNext?MWB.MOVES:MBB.MOVES;
 		while(from!=0){
-			int sq = Long.numberOfTrailingZeros(from);
+			int sq = tzcnt(from);
 			from ^= 1L << sq;
 			genSlides(occupied, capture, mask, mvs[sq],2);
 		}
@@ -561,7 +528,7 @@ public class Movegen implements IConst{
 		MSlider kline = wNext?MWR.KLINE:MBR.KLINE;
 		MSlider qline = wNext?MWR.QLINE:MBR.QLINE;
 		while(from!=0){
-			int sq = Long.numberOfTrailingZeros(from);
+			int sq = tzcnt(from);
 			from ^= 1L << sq;
 			// If castling opportunities will be broken then special Zobrist
 			if(sq==orq){
@@ -611,7 +578,7 @@ public class Movegen implements IConst{
 	private void genKnight(long from, long occupied,long capture,long mask) {
 		MSimple[] mvs = wNext?MWN.MOVES:MBN.MOVES;
 		while(from!=0){
-			int sq = Long.numberOfTrailingZeros(from);
+			int sq = tzcnt(from);
 			from ^= 1L << sq;
 			MSimple mv = mvs[sq];
 			for (int s=mv.B;s<mv.E;s+=6){
@@ -639,7 +606,7 @@ public class Movegen implements IConst{
 	private void genPawn(long from, long open1, long open2, long captures) {
 		MPawn[] mvs = wNext?MWP.WP:MBP.BP;
 		while(open1!=0){
-			int sq = Long.numberOfTrailingZeros(open1);
+			int sq = tzcnt(open1);
 			if(wNext?sq>47:sq<16){
 				add1_promo(mvs[sq].P1);
 			} else {
@@ -648,7 +615,7 @@ public class Movegen implements IConst{
 			open1 &= open1-1;
 		}
 		while(open2!=0){
-			int sq = Long.numberOfTrailingZeros(open2);
+			int sq = tzcnt(open2);
 			add4(mvs[sq].M2);
 			open2 &= open2-1;
 		}
@@ -664,7 +631,7 @@ public class Movegen implements IConst{
 
 	private void pwnCaptures(MPCapture[] mvs, int pc, long m, int step, int cs, boolean cc) {
 		while(m!=0){
-			int sq = Long.numberOfTrailingZeros(m);
+			int sq = tzcnt(m);
 			m &= m-1;
 			int to=sq+step;
 			MPCapture mv = mvs[sq];
@@ -689,9 +656,9 @@ public class Movegen implements IConst{
 		}
 	}
 
-	final static void bitscan(long m, Consumer<Integer> c){
+	final void bitscan(long m, Consumer<Integer> c){
 		while(m!=0){
-			c.accept(Long.numberOfTrailingZeros(m));
+			c.accept(tzcnt(m));
 			m &= m-1;
 		}
 	}
@@ -800,7 +767,7 @@ public class Movegen implements IConst{
 			if (diagatks != 0) {
 				int bits = Long.bitCount(diagatks);
 				for (int j = 0; j < bits; j++) {
-					int asq = Long.numberOfTrailingZeros(diagatks);
+					int asq = tzcnt(diagatks);
 					long attacker = 1L << asq;
 					diagatks ^= attacker;
 					long between = BitBoard.BETWEEN[asq+64*eKingpos];
@@ -812,7 +779,7 @@ public class Movegen implements IConst{
 			if (lineatks != 0) {
 				int bits = Long.bitCount(lineatks);
 				for (int j = 0; j < bits; j++) {
-					int asq = Long.numberOfTrailingZeros(lineatks);
+					int asq = tzcnt(lineatks);
 					long attacker = 1L << asq;
 					lineatks ^= attacker;
 					long between = BitBoard.BETWEEN[asq+64*eKingpos];

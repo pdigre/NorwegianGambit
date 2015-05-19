@@ -88,7 +88,7 @@ public abstract class AbstractTester implements IDivide, ISearch{
 			m.ply=ply;
 		}
 		FastEval start = movegen[0];
-		start.make(md,root.wNext,root.castling,root.wkingpos,root.bkingpos,root.aMinor,root.aMajor,root.aSlider,root.bOccupied);
+		start.make(md,root.wNext,root.castling,root.wKingpos,root.bKingpos,root.aMinor,root.aMajor,root.aSlider,root.bOccupied);
 		start.evaluate(md);
 		return movegen;
 	}
