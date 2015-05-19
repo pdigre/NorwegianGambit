@@ -5,9 +5,9 @@ import norwegiangambit.util.IConst;
 
 public class MBQ extends MSlider{
 
-	int[][] DIAG,LINE;
+	public int[][] DIAG,LINE;
 
-	static MBQ[] MOVES;
+	public static MBQ[] MOVES;
 	public static void init() {
 		MOVES=new MBQ[64];
 		for (int from = 0; from < 64; from++)

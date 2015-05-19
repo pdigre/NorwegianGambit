@@ -4,10 +4,10 @@ import norwegiangambit.util.IConst;
 
 public class MBK extends MSimple {
 
-	static int CQ,CK,CQ2,CK2;
-	static int XB,XE,XQB,XQE,XKB,XKE; // Castling breakers
+	public static int CQ,CK,CQ2,CK2;
+	public static int XB,XE,XQB,XQE,XKB,XKE; // Castling breakers
 	
-	static MBK[] MOVES;
+	public static MBK[] MOVES;
 	public static void init() {
 		MOVES=new MBK[64];
 		for (int from = 0; from < 64; from++)

@@ -4,10 +4,10 @@ import norwegiangambit.util.IConst;
 
 public class MBP  extends MPawn{
 
-	static int PQ,PK;  // Promotion & Capture rook
-	static long[] REV=new long[64];
-	static MBP[] BP;
-	static MPCapture[] L,R;
+	public static int PQ,PK;  // Promotion & Capture rook
+	public static long[] REV=new long[64];
+	public static MBP[] BP;
+	public static MPCapture[] L,R;
 	public static void init() {
 		L=new MPCapture[64];
 		R=new MPCapture[64];

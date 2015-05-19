@@ -7,16 +7,16 @@ vpath %.class $(CLASS_PATH)
 all : movegen.dll
 
 # $@ matches the target, $< matches the first dependancy
-movegen.dll : JNImovegen.o
+movegen.dll : Movegen.o
 	gcc -Wl,--add-stdcall-alias -shared -o $@ $<
 
 # $@ matches the target, $< matches the first dependancy
-JNImovegen.o : JNImovegen.c JNImovegen.h
+Movegen.o : Movegen.c Movegen.h
 	gcc -I"C:\Program Files\Java\jdk1.8.0_05\include" -I"C:\Program Files\Java\jdk1.8.0_05\include\win32" -c $< -o $@
 
 # $* matches the target filename without the extension
-JNImovegen.h : ../bin/jni/JNImovegen.class
-	javah -classpath "$(CLASS_PATH)" -o JNImovegen.h jni.JNImovegen
+Movegen.h : ../bin/norwegiangambit/engine/Movegen.class
+	javah -classpath "$(CLASS_PATH)" -o Movegen.h norwegiangambit.engine.Movegen
 
 clean :
-	rm JNImovegen.h JNImovegen.o movegen.dll
+	rm Movegen.h Movegen.o movegen.dll

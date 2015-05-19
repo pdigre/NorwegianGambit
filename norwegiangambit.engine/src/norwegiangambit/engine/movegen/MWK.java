@@ -3,10 +3,10 @@ package norwegiangambit.engine.movegen;
 import norwegiangambit.util.IConst;
 
 public class MWK extends MSimple {
-	static int CQ,CK,CQ2,CK2;
-	static int XB,XE,XQB,XQE,XKB,XKE; // Castling breakers
+	public static int CQ,CK,CQ2,CK2;
+	public static int XB,XE,XQB,XQE,XKB,XKE; // Castling breakers
 
-	static MWK[] MOVES;
+	public static MWK[] MOVES;
 	
 	public static void init() {
 		MOVES=new MWK[64];

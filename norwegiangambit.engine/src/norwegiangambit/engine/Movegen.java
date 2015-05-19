@@ -1,9 +1,27 @@
-package norwegiangambit.engine.movegen;
+package norwegiangambit.engine;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-import jni.JNImovegen;
+import norwegiangambit.engine.movegen.ENPASSANT;
+import norwegiangambit.engine.movegen.MBB;
+import norwegiangambit.engine.movegen.MBK;
+import norwegiangambit.engine.movegen.MBN;
+import norwegiangambit.engine.movegen.MBP;
+import norwegiangambit.engine.movegen.MBQ;
+import norwegiangambit.engine.movegen.MBR;
+import norwegiangambit.engine.movegen.MOVEDATA;
+import norwegiangambit.engine.movegen.MOVEDATAX;
+import norwegiangambit.engine.movegen.MPCapture;
+import norwegiangambit.engine.movegen.MPawn;
+import norwegiangambit.engine.movegen.MSimple;
+import norwegiangambit.engine.movegen.MSlider;
+import norwegiangambit.engine.movegen.MWB;
+import norwegiangambit.engine.movegen.MWK;
+import norwegiangambit.engine.movegen.MWN;
+import norwegiangambit.engine.movegen.MWP;
+import norwegiangambit.engine.movegen.MWQ;
+import norwegiangambit.engine.movegen.MWR;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.BitBoard;
 import norwegiangambit.util.FEN;
@@ -27,9 +45,36 @@ public class Movegen implements IConst{
 	static{
 		int i=MOVEDATA.ALL.length;
 		assert i>0;
+		System.loadLibrary("jni/movegen");
+		Movegen dll=new Movegen();
+		dll.copyMagic(BitBoard.offsets,BitBoard.magics);
 	}
 
-	// initialization variables
+	public Movegen() {
+	}
+
+	private native void copyMagic(int[] offsets, long[] magics);
+
+	/**
+	 * @param occupied bitmask
+	 * @param i =sq*4 (+2 for Bishop)
+	 * @return
+	 */
+	private native long magicAtks(long occupied, int i);
+
+	private native void init();
+	private native void enemyAttacks();
+
+    public final long rookAttacks(int sq, long occupied) {
+		return magicAtks(occupied, sq*4);
+    }
+
+    public final long bishopAttacks(int sq, long occupied) {
+		return magicAtks(occupied, sq*4+2);
+    }
+
+
+    // initialization variables
 	public boolean wNext;
 	public long bOccupied,aMinor,aMajor,aSlider,castling;
 	public int wkingpos,bkingpos,epsq;
@@ -440,7 +485,7 @@ public class Movegen implements IConst{
 			long m=eOccupied & aBishops;
 			while(m!=0){
 				int sq = Long.numberOfTrailingZeros(m);
-				eAttacked|=JNImovegen.bishopAttacks(sq, pcs);
+				eAttacked|=bishopAttacks(sq, pcs);
 				m &= m-1;
 			}
 		}
@@ -448,7 +493,7 @@ public class Movegen implements IConst{
 			long m=eOccupied & aRooks;
 			while(m!=0){
 				int sq = Long.numberOfTrailingZeros(m);
-				eAttacked|=JNImovegen.rookAttacks(sq, pcs);
+				eAttacked|=rookAttacks(sq, pcs);
 				m &= m-1;
 			}
 		}
@@ -456,8 +501,8 @@ public class Movegen implements IConst{
 			long m=eOccupied & aQueens;
 			while(m!=0){
 				int sq = Long.numberOfTrailingZeros(m);
-				eAttacked|=JNImovegen.bishopAttacks(sq, pcs);
-				eAttacked|=JNImovegen.rookAttacks(sq, pcs);
+				eAttacked|=bishopAttacks(sq, pcs);
+				eAttacked|=rookAttacks(sq, pcs);
 				m &= m-1;
 			}
 		}

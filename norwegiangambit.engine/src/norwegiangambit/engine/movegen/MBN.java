@@ -4,7 +4,7 @@ import norwegiangambit.util.IConst;
 
 public class MBN extends MSimple {
 
-	static MSimple[] MOVES;
+	public static MSimple[] MOVES;
 
 	public static void init() {
 		MOVES=new MBN[64];

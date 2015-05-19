@@ -33,7 +33,7 @@ public abstract class MBase implements IConst{
 		return zobrist.keyCastling(castling);
 	}
 
-	int Q, K; // Break castling
+	public int Q,K;
 	
 	final public int from;
 	

@@ -6,8 +6,9 @@ import norwegiangambit.util.IConst;
 
 public abstract class MSlider extends MBase {
 
-	int[][] SLIDES;
-	int[] B, E;
+	public int[][] SLIDES;
+	public int[] B;
+	public int[] E;
 	int n;
 
 	public MSlider(int from) {

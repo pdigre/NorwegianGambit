@@ -1,10 +1,10 @@
 package norwegiangambit.engine.evaluate;
 
 import static norwegiangambit.util.ShortIntPairs.*;
+import norwegiangambit.engine.Movegen;
 import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.engine.movegen.ENPASSANT;
-import norwegiangambit.engine.movegen.Movegen;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 

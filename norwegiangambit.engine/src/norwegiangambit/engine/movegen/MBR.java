@@ -7,9 +7,11 @@ import norwegiangambit.util.IConst;
 
 public class MBR extends MSlider{
 
-	static MSlider QLINE,KLINE;
+	public static MSlider QLINE;
 
-	static MBR[] MOVES=new MBR[64];
+	public static MSlider KLINE;
+
+	public static MBR[] MOVES=new MBR[64];
 	public static void init() {
 		for (int from = 0; from < 64; from++)
 			MOVES[from] = new MBR(from);

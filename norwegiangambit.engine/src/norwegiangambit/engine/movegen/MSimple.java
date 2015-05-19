@@ -2,7 +2,7 @@ package norwegiangambit.engine.movegen;
 
 public abstract class MSimple extends MBase {
 
-	int B,E;
+	public int B,E;
 
 	public MSimple(int from) {
 		super(from);
