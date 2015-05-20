@@ -100,60 +100,61 @@ JNIEXPORT jlong JNICALL Java_norwegiangambit_engine_Movegen_magicAtks(JNIEnv *en
 	return (jlong) magicAtks((u64) occupied, (int)i);
 }
 
-JNIEXPORT jlong JNICALL Java_norwegiangambit_engine_Movegen_enemyAttacks(JNIEnv *env, jobject this, jlong jeAttacked, jlong jpcs){
-//	u64 eOccupied,aKnights,aKings,aBishops,aRooks,aQueens;
-	u64 pcs=(u64)jpcs;
-	u64 eAttacked=(u64)jeAttacked;
-	u64 eOccupied = (u64)(*env)->GetLongField(env, this,ideOccupied);
-	u64 aKnights = (u64)(*env)->GetLongField(env, this,idaKnights);
-	u64 aKings = (u64)(*env)->GetLongField(env, this,idaKings);
-	u64 aBishops = (u64)(*env)->GetLongField(env, this,idaBishops);
-	u64 aRooks = (u64)(*env)->GetLongField(env, this,idaRooks);
-	u64 aQueens = (u64)(*env)->GetLongField(env, this,idaQueens);
+JNIEXPORT jlong JNICALL Java_norwegiangambit_engine_Movegen_enemyAttacks(JNIEnv *env, jobject this, jboolean jwNext, jlong jaMinor, jlong jaMajor, jlong jaSlider, jlong jbOccupied){
+	unsigned char wNext       = (unsigned char) jwNext;
+	u64 aMinor      = (u64) jaMinor;
+	u64 aMajor      = (u64) jaMajor;
+	u64 aSlider     = (u64) jaSlider;
+	u64 bOccupied   = (u64) jbOccupied;
 
-//	u64 pcs=aOccupied&~(oOccupied &  aKings);
-//	u64 eAttacked=wNext?wPawnAtkBy:bPawnAtkBy;
+	u64 aOccupied 	= aMinor | aMajor | aSlider;
+	u64 wOccupied 	= aOccupied ^ bOccupied;
+	u64 aPawns 		=  aMinor & ~aMajor & ~aSlider;
+	u64 aKnights 	= ~aMinor &  aMajor & ~aSlider;
+	u64 aKings 		=  aMinor &  aMajor & ~aSlider;
+	u64 aBishops 	=  aMinor & ~aMajor &  aSlider;
+	u64 aRooks 		= ~aMinor &  aMajor &  aSlider;
+	u64 aQueens 	=  aMinor &  aMajor &  aSlider;
+	u64 oOccupied	= wNext?wOccupied:bOccupied;
+	u64 eOccupied	= wNext?bOccupied:wOccupied;
+	u64 wPawns   	= wOccupied & aPawns;
+	u64 bPawns   	= bOccupied & aPawns;
+	u64 wPawnAtkBy 	= (((bPawns & MaskBToHFiles) >> 9) | ((bPawns & MaskAToGFiles) >> 7));  // Left - Right
+	u64 bPawnAtkBy 	= (((wPawns & MaskBToHFiles) << 7) | ((wPawns & MaskAToGFiles) << 9));  // Left - Right
+	u64 pcs=aOccupied&~(oOccupied &  aKings);
+	u64 eAttacked=wNext?wPawnAtkBy:bPawnAtkBy;
+	u64 m;
 
-	{
-		u64 m=eOccupied & aKnights;
-		while(m!=0){
-			int sq = tzcnt(m);
-			eAttacked|=nmasks[sq];
-			m &= m-1;
-		}
+	m=eOccupied & aKnights;
+	while(m!=0){
+		int sq = tzcnt(m);
+		m &= m-1;
+		eAttacked|=nmasks[sq];
 	}
-	{
-		u64 m=eOccupied & aKings;
-		while(m!=0){
-			int sq = tzcnt(m);
-			eAttacked|=kmasks[sq];
-			m &= m-1;
-		}
+	m=eOccupied & aKings;
+	while(m!=0){
+		int sq = tzcnt(m);
+		m &= m-1;
+		eAttacked|=kmasks[sq];
 	}
-	{
-		u64 m=eOccupied & aBishops;
-		while(m!=0){
-			int sq = tzcnt(m);
-			eAttacked|=magicAtks(pcs,sq*4+2);
-			m &= m-1;
-		}
+	m=eOccupied & aBishops;
+	while(m!=0){
+		int sq = tzcnt(m);
+		m &= m-1;
+		eAttacked|=magicAtks(pcs,sq*4+2);
 	}
-	{
-		u64 m=eOccupied & aRooks;
-		while(m!=0){
-			int sq = tzcnt(m);
-			eAttacked|=magicAtks(pcs,sq*4);
-			m &= m-1;
-		}
+	m=eOccupied & aRooks;
+	while(m!=0){
+		int sq = tzcnt(m);
+		m &= m-1;
+		eAttacked|=magicAtks(pcs,sq*4);
 	}
-	{
-		u64 m=eOccupied & aQueens;
-		while(m!=0){
-			int sq = tzcnt(m);
-			eAttacked|=magicAtks(pcs,sq*4+2);
-			eAttacked|=magicAtks(pcs,sq*4);
-			m &= m-1;
-		}
+	m=eOccupied & aQueens;
+	while(m!=0){
+		int sq = tzcnt(m);
+		m &= m-1;
+		eAttacked|=magicAtks(pcs,sq*4+2);
+		eAttacked|=magicAtks(pcs,sq*4);
 	}
 	return (jlong) eAttacked;
 }
@@ -170,7 +171,21 @@ inline int tzcnt(u64 b) {
         : "a" (b));
 	return (int) sq;
 }
-
+/*
+inline int tzcnt2(u64 *b) {
+    u64 sq;
+    asm (
+    	"tzcnt %0, %1;"
+    	"mov r1, %1;"
+    	"dec r1;"
+    	"and %1, r1"
+        : "=a" (sq)
+        : "a" (b)
+		:
+		  );
+	return (int) sq;
+}
+*/
 /*
 int lsb(u64 b) {
 	int temp;

@@ -23,13 +23,15 @@ public class Test_PERFT_114s extends PerftTest{
 
 	@BeforeClass
 	public static void prepare() {
-		setTesting(new FastPerft(true,true));
+		setTesting(new FastPerft(false,true));
 		setValidator(new EngineStockfish(EngineStockfish.DEFAULT_EXEPATH));
 	}
 
 	@Test
 	public void perft_114s() {
 		testPerftSuite(getClass().getResourceAsStream("perftsuite.epd"));
+		System.out.println("t1="+Movegen.tot1/1000000+"ms");
+		System.out.println("t2="+Movegen.tot2/1000000+"ms");
 	}
-
+	
 }

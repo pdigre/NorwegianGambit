@@ -47,7 +47,7 @@ public abstract class AbstractTester implements IDivide, ISearch{
 		boolean isConcurrent = levels>2 && useConcurrency;
 		StartGame pos = new StartGame(fen);
 		FastEval root = new FastEval();
-		root.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		root.set(pos.whiteNext(), pos.getBitmap(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
 		ArrayList<Eval> map=new ArrayList<Eval>();
 		root.generate();
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
@@ -88,7 +88,7 @@ public abstract class AbstractTester implements IDivide, ISearch{
 			m.ply=ply;
 		}
 		FastEval start = movegen[0];
-		start.make(md,root.wNext,root.castling,root.wKingpos,root.bKingpos,root.aMinor,root.aMajor,root.aSlider,root.bOccupied);
+		start.make(md,root.wNext,root.castling,root.aMinor,root.aMajor,root.aSlider,root.bOccupied);
 		start.evaluate(md);
 		return movegen;
 	}

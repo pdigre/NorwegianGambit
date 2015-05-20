@@ -16,7 +16,7 @@ public class NodeGen implements IConst {
 
 	public static final Position[] getLegalMoves64(Position pos) {
 		Movegen movegen = new Movegen();
-		movegen.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		movegen.set(pos.whiteNext(), pos.getBitmap(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
 		return wrap(pos, movegen.legalmoves());
 	}
 
@@ -31,7 +31,7 @@ public class NodeGen implements IConst {
 
 	public static final Position[] getQuiescence64(Position pos) {
 		Movegen movegen = new Movegen();
-		movegen.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		movegen.set(pos.whiteNext(), pos.getBitmap(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
 		return wrap(pos,movegen.legalmoves());
 	}
 

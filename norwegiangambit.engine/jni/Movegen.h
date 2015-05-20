@@ -50,10 +50,10 @@ JNIEXPORT void JNICALL Java_norwegiangambit_engine_Movegen_init
 /*
  * Class:     norwegiangambit_engine_Movegen
  * Method:    enemyAttacks
- * Signature: (JJ)J
+ * Signature: (ZJJJJ)J
  */
 JNIEXPORT jlong JNICALL Java_norwegiangambit_engine_Movegen_enemyAttacks
-  (JNIEnv *, jobject, jlong, jlong);
+  (JNIEnv *, jobject, jboolean, jlong, jlong, jlong, jlong);
 
 /*
  * Class:     norwegiangambit_engine_Movegen

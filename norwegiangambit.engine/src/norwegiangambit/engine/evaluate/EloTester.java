@@ -55,7 +55,7 @@ public class EloTester extends SearchTesterTT {
 		super.start(fen);
 		StartGame pos = new StartGame(fen);
 		rooteval = new FastEval();
-		rooteval.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(),
+		rooteval.set(pos.whiteNext(), pos.getBitmap(), pos.get64black(), pos.get64bit1(), pos.get64bit2(),
 				pos.get64bit3());
 		rooteval.generate();
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());

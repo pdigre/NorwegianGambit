@@ -30,7 +30,7 @@ public class FastPerft implements IDivide{
 	public List<Eval> divide(String fen, int levels) {
 		StartGame pos = new StartGame(fen);
 		PerftGen root = new PerftGen(null,0);
-		root.set(pos.whiteNext(), pos.getBitmap(), pos.getWKpos(), pos.getBKpos(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		root.set(pos.whiteNext(), pos.getBitmap(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
 		root.evaluate();
 		root.generate();
 		ArrayList<Eval> map=new ArrayList<Eval>();
@@ -54,7 +54,7 @@ public class FastPerft implements IDivide{
 					m.ply=ply;
 					m.depth=totdepth-ply;
 				}
-				movegen[0].make(md,root.wNext,root.castling,root.wKingpos,root.bKingpos,root.aMinor,root.aMajor,root.aSlider,root.bOccupied);
+				movegen[0].make(md,root.wNext,root.castling,root.aMinor,root.aMajor,root.aSlider,root.bOccupied);
 				movegen[0].evaluate(md);
 				movegen[0].run();
 				map.add(new Eval(FEN.move2literal(MOVEDATA.ALL[md].bitmap),(int)count[i],0));
@@ -96,7 +96,7 @@ public class FastPerft implements IDivide{
 				m.ply=ply;
 				m.depth=totdepth-ply;
 			}
-			movegen[0].make(md,root.wNext,root.castling,root.wKingpos,root.bKingpos,root.aMinor,root.aMajor,root.aSlider,root.bOccupied);
+			movegen[0].make(md,root.wNext,root.castling,root.aMinor,root.aMajor,root.aSlider,root.bOccupied);
 			movegen[0].evaluate(md);
 		}
 
@@ -130,7 +130,7 @@ public class FastPerft implements IDivide{
 				generate();
 				for (int i = 0; i < iAll; i++) {
 					int md = moves[i];
-					deeper.make(md,wNext,castling,wKingpos,bKingpos,aMinor,aMajor,aSlider,bOccupied);
+					deeper.make(md,wNext,castling,aMinor,aMajor,aSlider,bOccupied);
 					deeper.evaluate(md);
 					((PerftGen)deeper).run();
 				}
@@ -151,7 +151,7 @@ public class FastPerft implements IDivide{
 				generate();
 				for (int i = 0; i < iAll; i++) {
 					int md = moves[i];
-					deeper.make(md,wNext,castling,wKingpos,bKingpos,aMinor,aMajor,aSlider,bOccupied);
+					deeper.make(md,wNext,castling,aMinor,aMajor,aSlider,bOccupied);
 					deeper.evaluate(md);
 					((PerftGen)deeper).run();
 				}
