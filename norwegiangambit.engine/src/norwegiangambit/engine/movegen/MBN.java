@@ -2,7 +2,7 @@ package norwegiangambit.engine.movegen;
 
 import norwegiangambit.util.IConst;
 
-public class MBN extends MSimple {
+public class MBN extends MSimple implements IBlack {
 
 	public static MSimple[] MOVES;
 

@@ -1,6 +1,5 @@
 package norwegiangambit.engine.movegen;
 
-import static norwegiangambit.util.IConst.WP;
 import static norwegiangambit.util.ShortIntPairs.SS;
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.util.BITS;
@@ -9,15 +8,38 @@ import norwegiangambit.util.IConst;
 import norwegiangambit.util.polyglot.IZobristKey;
 
 public class MOVEDATA {
+
+	public final static int MD_P2=0; // Opening for enpassant
+	public final static int MD_PEL=8; 
+	public final static int MD_PER=16; 
+	public final static int MD_PP=24;
+	public final static int MD_PPL=32;
+	public final static int MD_PPR=40;
+
+	public final static int MD_P1=48;
+	public final static int MD_PCL=112;
+	public final static int MD_PCR=176;
+	public final static int MD_PQ=240;
+	public final static int MD_PK=241;
+
+		// Castling
+	public final static int MD_KCQ=242;
+	public final static int MD_KCK=243;
+	public final static int MD_KCQ2=244;
+	public final static int MD_KCK2=245;
+
+	public static int MD_N=237;
+	public static int MD_B=237;
+	public static int MD_R=237;
+	public static int MD_RQLINE=237;
+	public static int MD_RKLINE=237;
+	public static int MD_Q=237;
+	public static int MD_K=237;
 	
 	public static class MDOffsets{
-		
-		// Prefixes Pawn kNight Bishop Rook Queen King
-		// 32k offset for Black
-		
-		public int[] PE;  		// 64 * Enpassant 
+		public int[] PE,P2,PP,PPL,PPR; 	// 8 from lanes * Enpassant 
 		public int PQ,PK;		// castling breakers from Rook captures
-		public int[] P1,P2,PP,PCL,PCR,PPL,PPR; // 64 *  Move 1, Move 2, Promotion, Capture Left/Right, Promotion Left/Right 
+		public int[] P1,PCL,PCR; // 64 *  Move 1, Move 2, Promotion, Capture Left/Right, Promotion Left/Right 
 
 		public int[] NQ,NK;     // 64 castling breakers from Rook captures
 		public int[] NB,NE;     // 64 moves
@@ -48,10 +70,9 @@ public class MOVEDATA {
 	//   366 9-374     BREAKERS
 	// 22724 375-23099 NORMAL
 	
-	public final static int ENP_BEGIN=1;
-	public final static int ENP_END=9;
-	public final static int BRK_END=375;
-	public final static int BLACK_OFFSET=25000; 
+	public final static int ENP_END=24;
+	public final static int BRK_END=500;
+	public final static int BLACK_OFFSET=32*1024; 
 
 	final public long bitmap,bOccupied,aMinor,aMajor,aSlider;
 	final public long bto;
@@ -165,6 +186,10 @@ public class MOVEDATA {
 	public static int create(long bitmap){
 		return MOVEDATA.add(new MOVEDATA(bitmap));
 	}
+
+	public static int create2(long bitmap,int offset){
+		return MOVEDATA.add2(new MOVEDATA(bitmap),offset);
+	}
 	
 	public static int capture(long bitmap,int victim){
 		return MOVEDATA.add(new MOVEDATA(bitmap | ((victim & 7) << IConst._CAPTURE)));
@@ -200,104 +225,19 @@ public class MOVEDATA {
 	}
 
 
-	public static int enp_cnt = 0, nrm_cnt = 0, brk_cnt = 0;
+	public static int nrm_cnt = 0, brk_cnt = 0, color_offset=0;
 
-	public static int cw = 0, cb = 0, mw = 0, mb = 0, mhw = 0, mhb = 0, ew = 0, eb = 0, cpw = 0, cpb = 0, mpw = 0, mpb = 0,mcw=0,mcb=0;
-	public static int cww = 0, cwb = 0,cew = 0, ceb = 0,clw = 0, clb = 0;
-	public static int xmw = 0, xmb = 0,xcw = 0, xcb = 0;
 
 	final public static long getBTo(int md){
 		return ALL[md].bto;
 	}
 	
 	public static void stats() {
-		System.out.println("White:"+enp_cnt+",Black:"+nrm_cnt);
-
-		System.out.println("CW:"+cw+",CB:"+cb);
-		System.out.println("EW:"+ew+",EB:"+eb);
-		System.out.println("CPW:"+cpw+",CPB:"+cpb);
-
-		System.out.println("MW:"+mw+",MB:"+mb);
-
-		System.out.println("MPW:"+mpw+",MPB:"+mpb);
-		System.out.println("MCW:"+mcw+",MCB:"+mcb);
-
-		System.out.println("CWW:"+cww+",CWB:"+cwb);
-		System.out.println("CEW:"+cew+",CEB:"+ceb);
-		System.out.println("CLW:"+clw+",CLB:"+clb);
-
-//		System.out.println("XMW:"+xmw+",XMB:"+xmb+" = 1/"+(mb/xmb));
-//		System.out.println("XCW:"+xcw+",XCB:"+xcb+" = 1/"+(cb/xcb));
+		System.out.println("hi");
 	}
 
 	public static int add(MOVEDATA md) {
-		long bitmap = md.bitmap;
-		boolean isWhite = BITS.white(bitmap);
-		boolean isPromo = BITS.isPromotion(bitmap);
-		int type = BITS.getType(bitmap);
-		if (BITS.isCapture(bitmap)) {
-			boolean isEnpassant = BITS.isEnpassant(bitmap);
-			int captured = BITS.getCapturedType(bitmap);
-			
-			if (isWhite) {
-				cw++;
-				if(md instanceof MOVEDATAX)
-					xcw++;
-				if (isEnpassant)
-					ew++;
-				if (isPromo)
-					cpw++;
-				if(captured>type)
-					cww++;
-				if(captured==type)
-					cew++;
-				if(captured<type)
-					clw++;
-			} else {
-				cb++;
-				if(md instanceof MOVEDATAX)
-					xcb++;
-				if (isEnpassant)
-					eb++;
-				if (isPromo)
-					cpb++;
-				if(captured>type)
-					cwb++;
-				if(captured==type)
-					ceb++;
-				if(captured<type)
-					clb++;
-			}
-		} else {
-			boolean isCastling = BITS.isCastling(bitmap);
-			boolean isHalf=type!=WP&&!isPromo&&!isCastling;
-			if (isWhite) {
-				mw++;
-				if(md instanceof MOVEDATAX)
-					xmw++;
-				if (isCastling)
-					mcw++;
-				if (isPromo)
-					mpw++;
-				if(isHalf)
-					mhw++;
-			} else {
-				mb++;
-				if(md instanceof MOVEDATAX)
-					xmb++;
-				if (isCastling)
-					mcb++;
-				if (isPromo)
-					mpb++;
-				if(isHalf)
-					mhw++;
-			}
-
-		}
-		if(md instanceof ENPASSANT){
-			ALL[enp_cnt++] = md;
-			return enp_cnt-1;
-		} else if(md instanceof MOVEDATAX){
+		if(md instanceof MOVEDATAX){
 			ALL[brk_cnt++] = md;
 			return brk_cnt-1;
 		} else {
@@ -306,10 +246,15 @@ public class MOVEDATA {
 		}
 	}
 
+	public static int add2(MOVEDATA md,int pos) {
+		int offset=pos+color_offset;
+		ALL[offset]=md;
+		return offset;
+	}
+
 	
 	
 	public static void init() {
-		enp_cnt=ENP_BEGIN;
 		brk_cnt=ENP_END;
 		nrm_cnt=BRK_END;
 		MWP.init();
@@ -318,11 +263,8 @@ public class MOVEDATA {
 		MWR.init();
 		MWB.init();
 		MWN.init();
-//		System.out.println("ENP="+enp_cnt);
-//		System.out.println("SPECIAL="+cbx_cnt);
-//		System.out.println("NORMAL="+(nrm_cnt-cbx_cnt));
 
-		enp_cnt=ENP_BEGIN+BLACK_OFFSET;
+		color_offset=BLACK_OFFSET;
 		brk_cnt=ENP_END+BLACK_OFFSET;
 		nrm_cnt=BRK_END+BLACK_OFFSET;
 		MBP.init();

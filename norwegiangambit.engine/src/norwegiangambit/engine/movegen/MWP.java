@@ -41,7 +41,7 @@ public class MWP extends MPawn{
 				} else {
 					CL=captures(to);
 					if(from > 31 && from < 40)
-						EL=enpassant(to);
+						EL=enpassant(to,8);
 				}
 			}
 			// RIGHT
@@ -55,7 +55,7 @@ public class MWP extends MPawn{
 				} else {
 				    CR=captures(to);
 					if(from > 31 && from < 40)
-						ER=enpassant(to);
+						ER=enpassant(to,16);
 				}
 			}
 		}
@@ -82,9 +82,9 @@ public class MWP extends MPawn{
 		return ENPASSANT.create(assemble(IConst.WP, from, to, CASTLING_STATE),enp);
 	}
 
-	private int enpassant(int to) {
+	private int enpassant(int to,int offset) {
 		long bitmap = assemble(IConst.WP, from, to, CASTLING_STATE | SPECIAL);
-		return MOVEDATA.create(bitmap | (IConst.WP << _CAPTURE));
+		return MOVEDATA.create2(bitmap | (IConst.WP << _CAPTURE),offset+from%8);
 	}
 
 	private int[] captures(int to) {

@@ -70,6 +70,7 @@ public class Movegen implements IConst{
 	public long wPawns,bPawns,wPawnAtks,bPawnAtks,wPawnAtkBy,bPawnAtkBy;
 	public long aLine,aDiag;
 	int oKingpos,eKingpos;
+	int mdoffset;
 	
 	// movegen shortcuts
 	public boolean ecq, eck, ocq, ock;
@@ -133,6 +134,7 @@ public class Movegen implements IConst{
 		wPawnAtkBy 	= (((bPawns & MaskBToHFiles) >> 9) | ((bPawns & MaskAToGFiles) >> 7));  // Left - Right
 		bPawnAtkBy 	= (((wPawns & MaskBToHFiles) << 7) | ((wPawns & MaskAToGFiles) << 9));  // Left - Right
 
+		mdoffset    = wNext?0:MOVEDATA.BLACK_OFFSET;
 		oOccupied	= wNext?wOccupied:bOccupied;
 		eOccupied	= wNext?bOccupied:wOccupied;
 		oKingpos 	= wNext?wKingpos:bKingpos;
@@ -179,7 +181,7 @@ public class Movegen implements IConst{
 		moves[iAll++] = moves[lvl3];
 		moves[lvl3++] = moves[lvl2];
 		moves[lvl2++] = moves[lvl1];
-		moves[lvl1++]=md;
+		moves[lvl1++]=md|mdoffset;
 	}
 	
 	/**
@@ -201,7 +203,7 @@ public class Movegen implements IConst{
 	final void add2(int md) {
 		moves[iAll++] = moves[lvl3];
 		moves[lvl3++] = moves[lvl2];
-		moves[lvl2++]=md;
+		moves[lvl2++]=md|mdoffset;
 	}
 	
 	/**
@@ -210,7 +212,7 @@ public class Movegen implements IConst{
 	 */
 	final void add3(int md) {
 		moves[iAll++] = moves[lvl3];
-		moves[lvl3++]=md;
+		moves[lvl3++]=md|mdoffset;
 	}
 
 	/**
@@ -218,7 +220,7 @@ public class Movegen implements IConst{
 	 * @param md
 	 */
 	final public void add4(int md) {
-		moves[iAll++] = md;
+		moves[iAll++] = md|mdoffset;
 	}
 	
 	/**
@@ -475,14 +477,14 @@ public class Movegen implements IConst{
 		if(oKingpos!= (wNext?WK_STARTPOS:BK_STARTPOS) || !(ock || ocq))
 			genKingMoves(mvs.B,mvs.E, mvs.K, mvs.Q);
 		else {
-			int i=(ocq?(ock?MWK.XB:MWK.XQB):(ock?MWK.XKB:0))+(wNext?0:MOVEDATA.BLACK_OFFSET);
+			int i=(ocq?(ock?MWK.XB:MWK.XQB):(ock?MWK.XKB:0));
 			genKingMoves(i,i+30, mvs.K, mvs.Q);
 		}
 	}
 
 	private void genKingMoves(int B, int E, int k, int q) {
 		for (int s=B;s<E;s+=6){
-			long bto = MOVEDATA.getBTo(s);
+			long bto = MOVEDATA.getBTo(s|mdoffset);
 			if ((aOccupied & bto) == 0) {
 				if((bto&~eAttacked)!=0L)
 					add4(s);
@@ -616,22 +618,22 @@ public class Movegen implements IConst{
 		}
 		long e=captures|(1L<<epsq);
 		if(wNext){
-			pwnCaptures(MWP.L, MWP.PQ, (from & MaskBToHFiles) &(e>>7), 7, erq, ecq);
-			pwnCaptures(MWP.R, MWP.PK, (from & MaskAToGFiles) &(e>>9), 9, erk, eck);
+			pwnCaptures(MWP.L, MWP.PQ, (from & MaskBToHFiles) &(e>>7), 7, erq, ecq,true);
+			pwnCaptures(MWP.R, MWP.PK, (from & MaskAToGFiles) &(e>>9), 9, erk, eck,false);
 		} else {
-			pwnCaptures(MBP.L, MBP.PQ, (from & MaskBToHFiles) &(e<<9), -9, erq, ecq);
-			pwnCaptures(MBP.R, MBP.PK, (from & MaskAToGFiles) &(e<<7), -7, erk, eck);
+			pwnCaptures(MBP.L, MBP.PQ, (from & MaskBToHFiles) &(e<<9), -9, erq, ecq,true);
+			pwnCaptures(MBP.R, MBP.PK, (from & MaskAToGFiles) &(e<<7), -7, erk, eck,false);
 		}
 	}
 
-	private void pwnCaptures(MPCapture[] mvs, int pc, long m, int step, int cs, boolean cc) {
+	private void pwnCaptures(MPCapture[] mvs, int pc, long m, int step, int cs, boolean cc, boolean isLeft) {
 		while(m!=0){
 			int sq = Long.numberOfTrailingZeros(m);
 			m &= m-1;
 			int to=sq+step;
 			MPCapture mv = mvs[sq];
 			if (to == epsq) {
-				int md=mv.E;
+				int md=(isLeft?8:16)+sq%8;
 				if(isSafeMove(md))	// Check for safety since there may be a covered check wit en-passant
 					add2(md);
 			} else {
@@ -693,7 +695,7 @@ public class Movegen implements IConst{
 	}
 
 	public boolean isSafeMove(int md) {
-		MOVEDATA m=MOVEDATA.ALL[md];
+		MOVEDATA m=MOVEDATA.ALL[md|mdoffset];
 		return isSafe(wNext,oKingpos,bOccupied^m.bOccupied, aMinor^m.aMinor, aMajor^m.aMajor, aSlider^m.aSlider);
 	}
 

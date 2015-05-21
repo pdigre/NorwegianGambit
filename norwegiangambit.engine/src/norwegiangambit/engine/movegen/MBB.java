@@ -3,7 +3,7 @@ package norwegiangambit.engine.movegen;
 import norwegiangambit.util.IConst;
 
 
-public class MBB extends MSlider{
+public class MBB extends MSlider implements IBlack{
 
 	public static MBB[] MOVES;
 	public static void init() {

@@ -2,7 +2,7 @@ package norwegiangambit.engine.movegen;
 
 import norwegiangambit.util.IConst;
 
-public class MBK extends MSimple {
+public class MBK extends MSimple implements IBlack {
 
 	public static int CQ,CK,CQ2,CK2;
 	public static int XB,XE,XQB,XQE,XKB,XKE; // Castling breakers

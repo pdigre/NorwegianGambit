@@ -17,7 +17,6 @@ public class ENPASSANT extends MOVEDATA {
 	}
 
 	public static int create(long bitmap,int epsq){
-		return MOVEDATA.add(new ENPASSANT(bitmap,epsq));
+		return MOVEDATA.add2(new ENPASSANT(bitmap,epsq),epsq%8);
 	}
-
 }

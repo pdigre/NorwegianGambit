@@ -2,7 +2,7 @@ package norwegiangambit.engine.movegen;
 
 import norwegiangambit.util.IConst;
 
-public class MBP  extends MPawn{
+public class MBP  extends MPawn implements IBlack{
 
 	public static int PQ,PK;  // Promotion & Capture rook
 	public static long[] REV=new long[64];
@@ -40,7 +40,7 @@ public class MBP  extends MPawn{
 				} else {
 					CL=captures(to);
 					if(from > 23 && from < 32)
-						EL=enpassant(to);
+						EL=enpassant(to,8);
 				}
 			}
 			// RIGHT
@@ -54,7 +54,7 @@ public class MBP  extends MPawn{
 				} else {
 				    CR=captures(to);
 					if(from > 23 && from < 32)
-						ER=enpassant(to);
+						ER=enpassant(to,16);
 				}
 			}
 		}
@@ -81,9 +81,9 @@ public class MBP  extends MPawn{
 		return ENPASSANT.create(assemble(IConst.BP, from, to, CASTLING_STATE),enp);
 	}
 
-	private int enpassant(int to) {
+	private int enpassant(int to,int offset) {
 		long bitmap = assemble(IConst.BP, from, to, CASTLING_STATE | IConst.SPECIAL);
-		return MOVEDATA.create(bitmap | (IConst.WP << IConst._CAPTURE));
+		return MOVEDATA.create2(bitmap | (IConst.WP << IConst._CAPTURE),offset+from%8);
 	}
 
 	private int[] captures(int to) {

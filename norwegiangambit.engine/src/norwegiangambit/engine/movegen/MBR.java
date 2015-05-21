@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import norwegiangambit.util.IConst;
 
 
-public class MBR extends MSlider{
+public class MBR extends MSlider implements IBlack{
 
 	public static MSlider QLINE;
 
