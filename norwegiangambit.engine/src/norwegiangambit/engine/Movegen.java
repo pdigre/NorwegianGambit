@@ -366,14 +366,14 @@ public class Movegen implements IConst{
 							if(pinner<<7==attacker && (attacker&MaskHFile)==0){
 								MPCapture l = MWP.L[from];
 								if(from>47){
-									add1_promo(l.P+ctype*4);
+									add1_promo(MOVEDATA.MD_PPL+(from%8)*20+ctype*4);
 								} else
 									capture(l.C[ctype], 0, ctype, attacker);
 							}
 							if(pinner<<9==attacker && (attacker&MaskAFile)==0){
 								MPCapture r = MWP.R[from];
 								if(from>47){
-									add1_promo(r.P+ctype*4);
+									add1_promo(MOVEDATA.MD_PPR+(from%8)*20+ctype*4);
 								} else
 									capture(r.C[ctype], 0, ctype, attacker);
 							}
@@ -381,14 +381,14 @@ public class Movegen implements IConst{
 							if(pinner>>9==attacker && (attacker&MaskHFile)==0){
 								MPCapture l = MBP.L[from];
 								if(from<16){
-									add1_promo(l.P+ctype*4);
+									add1_promo(MOVEDATA.MD_PPL+(from%8)*20+ctype*4);
 								} else
 									capture(l.C[ctype], 0, ctype, attacker);
 							}
 							if(pinner>>7==attacker && (attacker&MaskAFile)==0){
 								MPCapture r = MBP.R[from];
 								if(from<16){
-									add1_promo(r.P+ctype*4);
+									add1_promo(MOVEDATA.MD_PPR+(from%8)*20+ctype*4);
 								} else
 									capture(r.C[ctype], 0, ctype, attacker);
 							}
@@ -618,11 +618,11 @@ public class Movegen implements IConst{
 		}
 		long e=captures|(1L<<epsq);
 		if(wNext){
-			pwnCaptures(MWP.L, MWP.PQ, (from & MaskBToHFiles) &(e>>7), 7, erq, ecq,true);
-			pwnCaptures(MWP.R, MWP.PK, (from & MaskAToGFiles) &(e>>9), 9, erk, eck,false);
+			pwnCaptures(MWP.L, MOVEDATA.MD_PQ, (from & MaskBToHFiles) &(e>>7), 7, erq, ecq,true);
+			pwnCaptures(MWP.R, MOVEDATA.MD_PK, (from & MaskAToGFiles) &(e>>9), 9, erk, eck,false);
 		} else {
-			pwnCaptures(MBP.L, MBP.PQ, (from & MaskBToHFiles) &(e<<9), -9, erq, ecq,true);
-			pwnCaptures(MBP.R, MBP.PK, (from & MaskAToGFiles) &(e<<7), -7, erk, eck,false);
+			pwnCaptures(MBP.L, MOVEDATA.MD_PQ, (from & MaskBToHFiles) &(e<<9), -9, erq, ecq,true);
+			pwnCaptures(MBP.R, MOVEDATA.MD_PK, (from & MaskAToGFiles) &(e<<7), -7, erk, eck,false);
 		}
 	}
 
@@ -633,7 +633,7 @@ public class Movegen implements IConst{
 			int to=sq+step;
 			MPCapture mv = mvs[sq];
 			if (to == epsq) {
-				int md=(isLeft?8:16)+sq%8;
+				int md=(isLeft?MOVEDATA.MD_PEL:MOVEDATA.MD_PER)+sq%8;
 				if(isSafeMove(md))	// Check for safety since there may be a covered check wit en-passant
 					add2(md);
 			} else {
@@ -645,7 +645,7 @@ public class Movegen implements IConst{
 					if(cc && sq+step==cs){
 						add1_promo(pc);
 					} else {
-						int p = mv.P;
+						int p = (isLeft?MOVEDATA.MD_PPL:MOVEDATA.MD_PPR)+(sq%8)*20;
 						add1_promo(p+ctype*4);
 					}
 				}

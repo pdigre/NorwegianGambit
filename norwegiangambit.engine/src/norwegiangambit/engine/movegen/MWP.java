@@ -4,7 +4,6 @@ import norwegiangambit.util.IConst;
 
 public class MWP extends MPawn{
 
-	public static int PQ,PK;  // Promotion & Capture rook
 	public static long[] REV=new long[64];
 	public static MWP[] WP;
 	public static MPCapture[] L,R;
@@ -20,7 +19,7 @@ public class MWP extends MPawn{
 	public MWP(int from) {
 		super(from);
 		int[] CL=null,CR=null;	
-		int EL=0,ER=0,M1=0,P1=0,PL=0,PR=0;
+		int M1=0,P1=0;
 		if(from>7 && from < 56){
 			if (from < 48) {
 				M1=move(from + 8);
@@ -35,13 +34,13 @@ public class MWP extends MPawn{
 				int to=from + 7;
 				REV[to] |= (1L << from);
 				if(from>47){
-					PL=cpromotes(to);
+					cpromotes(to,MOVEDATA.MD_PPL);
 					if(to==BR_QUEEN_STARTPOS)
-						PQ=cpromotesx(to,MOVEDATA.MD_PQ);
+						cpromotesx(to,MOVEDATA.MD_PQ);
 				} else {
 					CL=captures(to);
 					if(from > 31 && from < 40)
-						EL=enpassant(to,8);
+						enpassant(to,MOVEDATA.MD_PEL);
 				}
 			}
 			// RIGHT
@@ -49,13 +48,13 @@ public class MWP extends MPawn{
 				int to = from + 9;
 				REV[to] |= (1L << from);
 				if(from>47){
-					PR=cpromotes(to);
+					cpromotes(to,MOVEDATA.MD_PPR);
 					if(to==BR_KING_STARTPOS)
-						PK=cpromotesx(to,MOVEDATA.MD_PK);
+						cpromotesx(to,MOVEDATA.MD_PK);
 				} else {
 				    CR=captures(to);
 					if(from > 31 && from < 40)
-						ER=enpassant(to,16);
+						enpassant(to,MOVEDATA.MD_PER);
 				}
 			}
 		}
@@ -65,12 +64,8 @@ public class MWP extends MPawn{
 		MWP.R[from]=R;
 		L.C=CL;
 		R.C=CR;
-		L.E=EL;
-		R.E=ER;
 		this.M1=M1;
 		this.P1=P1;
-		L.P=PL;
-		R.P=PR;
 	}
 
 	private int move(int to) {
@@ -81,17 +76,14 @@ public class MWP extends MPawn{
 		ENPASSANT.create(assemble(IConst.WP, from, to, CASTLING_STATE),enp);
 	}
 
-	private int enpassant(int to,int offset) {
-		long bitmap = assemble(IConst.WP, from, to, CASTLING_STATE | SPECIAL);
-		return MOVEDATA.create2(bitmap | (IConst.WP << _CAPTURE),offset+from%8);
+	private void enpassant(int to,int offset) {
+		MOVEDATA.create2(assemble(IConst.WP, from, to, CASTLING_STATE | SPECIAL) | (IConst.WP << _CAPTURE),offset+from%8);
 	}
 
 	private int[] captures(int to) {
 		int[] captures=new int[5];
-		for (int i = 0; i < 5; i++) {
-			long bitmap = assemble(IConst.WP, from, to, CASTLING_STATE);
-			captures[i]=MOVEDATA.capture(bitmap, WCAPTURES[i]);
-		}
+		for (int i = 0; i < 5; i++)
+			captures[i]=MOVEDATA.capture(assemble(IConst.WP, from, to, CASTLING_STATE), WCAPTURES[i]);
 		return captures;
 	}
 
@@ -102,18 +94,13 @@ public class MWP extends MPawn{
 		return promotes[0];
 	}
 
-	private int cpromotes(int to) {
-		int[] promotes=new int[20];
+	private void cpromotes(int to,int offset) {
 		for (int i = 0; i < 20; i++)
-			promotes[i]=MOVEDATA.cpromote(from,to, WPROMOTES[i%4], IConst.WP, WCAPTURES[i/4]);
-		return promotes[0];
+			MOVEDATA.cpromote2(from,to, WPROMOTES[i%4], IConst.WP, WCAPTURES[i/4],offset+i+20*(from%8));
 	}
 
-	private int cpromotesx(int to,int offset) {
-		int[] promotes=new int[4];
-		for (int p = 0; p < 4; p++){
-			promotes[p]=MOVEDATAX.cpromote2(from,to, WPROMOTES[p], IConst.WP, IConst.BR,offset+p); 
-		}
-		return promotes[0];
+	private void cpromotesx(int to,int offset) {
+		for (int p = 0; p < 4; p++)
+			MOVEDATAX.cpromote2(from,to, WPROMOTES[p], IConst.WP, IConst.BR,offset+p); 
 	}
 }

@@ -13,14 +13,14 @@ public class MOVEDATA {
 	public final static int MD_PEL=8;   // 8 lanes
 	public final static int MD_PER=16;  // 8 lanes
 	public final static int MD_PP=24;   // 32 - 8 lanes * 4 types
-	public final static int MD_PPL=56;  // 32 - 8 lanes * 4 types
-	public final static int MD_PPR=176;  // 32 - 8 lanes * 4 types
+	public final static int MD_PPL=56;  // 160 - 8 lanes * 20 types
+	public final static int MD_PPR=216;  // 160- 8 lanes * 20 types
 
-	public final static int MD_P1=296;  // 64
-	public final static int MD_PCL=714;	// 320 - 64*5 types
-	public final static int MD_PCR=1034;// 320 - 64*5 types
-	public final static int MD_PQ=1354;	// 4 - promotion 4 types
-	public final static int MD_PK=1358; // 4 - promotion 4 types
+	public final static int MD_P1=376;  // 64
+	public final static int MD_PCL=440;	// 320 - 64*5 types
+	public final static int MD_PCR=760;// 320 - 64*5 types
+	public final static int MD_PQ=1080;	// 4 - promotion 4 types
+	public final static int MD_PK=1084; // 4 - promotion 4 types
 
 		// Castling
 	public final static int MD_KCQ=242;
@@ -70,8 +70,8 @@ public class MOVEDATA {
 	//   366 9-374     BREAKERS
 	// 22724 375-23099 NORMAL
 	
-	public final static int ENP_END=1000;
-	public final static int BRK_END=2000;
+	public final static int ENP_END=2000;
+	public final static int BRK_END=3000;
 	public final static int BLACK_OFFSET=32*1024; 
 
 	final public long bitmap,bOccupied,aMinor,aMajor,aSlider;
