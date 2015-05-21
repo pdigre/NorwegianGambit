@@ -45,16 +45,9 @@ public class Movegen implements IConst{
 	static{
 		int i=MOVEDATA.ALL.length;
 		assert i>0;
-//		System.loadLibrary("jni/movegen");
-//		Movegen dll=new Movegen();
-//		dll.copyMagic(BitBoard.offsets,BitBoard.magics);
-//		dll.copyMaps(BitBoard.NMasks,BitBoard.KMasks);
 	}
 
-	private native void copyMagic(int[] offsets, long[] magics);
-	private native void copyMaps(long[] nmasks, long[] kmasks);
-	private native void initVariables(boolean wNext, long aMinor, long aMajor, long aSlider, long bOccupied, int epsq, long castling);
-
+	
 	/**
 	 * @param occupied bitmask
 	 * @param i =sq*4 (+2 for Bishop)
@@ -99,47 +92,29 @@ public class Movegen implements IConst{
 		return FEN.board2fen(FEN.boardFrom64(aMinor, aMajor, aSlider, bOccupied)) + " " +(wNext?"w":"b") + " " + FEN.getFenCastling(castling) + " "+ FEN.pos2string(epsq);
 	}
 
-	public void make(int md_num,boolean wLast, long castling, long b1, long b2, long b3, long bb) {
-		MOVEDATA md 	= MOVEDATA.ALL[md_num];
-		this.wNext		= !wLast;
-		this.bOccupied 	= bb^md.bOccupied;
-		this.aMinor 	= b1^md.aMinor;
-		this.aMajor 	= b2^md.aMajor;
-		this.aSlider 	= b3^md.aSlider;
-		this.epsq 		= md instanceof ENPASSANT?((ENPASSANT)md).epsq:-1;
-		this.castling	= castling;
-		if(md instanceof MOVEDATAX)
-			this.castling^=((MOVEDATAX) md).castling;
-		initVariables();
+	public void make(boolean wNext,long bOccupied, long aMinor, long aMajor, long aSlider, long castling, int md_num) {
+		MOVEDATA md = MOVEDATA.ALL[md_num];
+		initVariables(wNext,aSlider^md.bOccupied,bOccupied^md.aMinor,aMinor^md.aMajor,aMajor^md.aSlider
+			,md instanceof ENPASSANT?((ENPASSANT)md).epsq:-1
+			,md instanceof MOVEDATAX?castling^=((MOVEDATAX) md).castling:castling);
 	}
-	public void set(boolean isWhite, long bitmap, long bOccupied, long aMinor, long aMajor, long aSlider) {
-		this.wNext		= isWhite;
+	public void set(boolean wNext, long bOccupied, long aMinor, long aMajor, long aSlider, long bitmap) {
+		initVariables(wNext,bOccupied,aMinor,aMajor,aSlider
+			,BITS.getEnpassant(bitmap)
+			,~CASTLING_STATE | bitmap);
+	}
+
+	private final void initVariables(boolean wNext, long bOccupied, long aMinor, long aMajor, long aSlider, int epsq, long castling) {
+		this.wNext		= wNext;
 		this.bOccupied 	= bOccupied;
 		this.aMinor 	= aMinor;
 		this.aMajor 	= aMajor;
 		this.aSlider 	= aSlider;
-		this.epsq 		= BITS.getEnpassant(bitmap);
-		this.castling 	= ~CASTLING_STATE | bitmap; // all other are set
-		initVariables();
-	}
-
-	public void initVariables() {
-//		initVariables(wNext,aMinor,aMajor,aSlider,bOccupied,epsq,castling);
-		
-		erk        	= wNext?BR_KING_STARTPOS:WR_KING_STARTPOS;
-		erq        	= wNext?BR_QUEEN_STARTPOS:WR_QUEEN_STARTPOS;
-		ecq			= (castling & (wNext?CANCASTLE_BLACKQUEEN:CANCASTLE_WHITEQUEEN)) != 0;
-		eck			= (castling & (wNext?CANCASTLE_BLACKKING:CANCASTLE_WHITEKING)) != 0;
-		ork 		= wNext?WR_KING_STARTPOS:BR_KING_STARTPOS;
-		orq 		= wNext?WR_QUEEN_STARTPOS:BR_QUEEN_STARTPOS;
-		ocq 		= (castling & (wNext?CANCASTLE_WHITEQUEEN:CANCASTLE_BLACKQUEEN)) != 0;
-		ock 		= (castling & (wNext?CANCASTLE_WHITEKING:CANCASTLE_BLACKKING)) != 0;
+		this.epsq 		= epsq;
+		this.castling 	= castling; 
 		
 		aOccupied 	= aMinor | aMajor | aSlider;
 		wOccupied 	= aOccupied ^ bOccupied;
-		oOccupied	= wNext?wOccupied:bOccupied;
-		eOccupied	= wNext?bOccupied:wOccupied;
-
 		aPawns 		=  aMinor & ~aMajor & ~aSlider;
 		aKnights 	= ~aMinor &  aMajor & ~aSlider;
 		aKings 		=  aMinor &  aMajor & ~aSlider;
@@ -148,11 +123,9 @@ public class Movegen implements IConst{
 		aBishops 	=  aMinor & ~aMajor &  aSlider;
 		aRooks 		= ~aMinor &  aMajor &  aSlider;
 		aQueens 	=  aMinor &  aMajor &  aSlider;
-
 		wKingpos 	= Long.numberOfTrailingZeros(wOccupied & aKings);
 		bKingpos 	= Long.numberOfTrailingZeros(bOccupied & aKings);
-		oKingpos 	= Long.numberOfTrailingZeros(oOccupied & aKings);
-		eKingpos 	= Long.numberOfTrailingZeros(eOccupied & aKings);
+
 		wPawns   	= wOccupied & aPawns;
         bPawns   	= bOccupied & aPawns;
 		wPawnAtks 	= (((wPawns & MaskBToHFiles) << 7) | ((wPawns & MaskAToGFiles) << 9));  // Left - Right
@@ -160,9 +133,18 @@ public class Movegen implements IConst{
 		wPawnAtkBy 	= (((bPawns & MaskBToHFiles) >> 9) | ((bPawns & MaskAToGFiles) >> 7));  // Left - Right
 		bPawnAtkBy 	= (((wPawns & MaskBToHFiles) << 7) | ((wPawns & MaskAToGFiles) << 9));  // Left - Right
 
-		boolean start=oKingpos==(wNext?WK_STARTPOS:BK_STARTPOS);
-		if(!start && (ock || ocq))
-			System.out.println("Wrong FEN");
+		oOccupied	= wNext?wOccupied:bOccupied;
+		eOccupied	= wNext?bOccupied:wOccupied;
+		oKingpos 	= wNext?wKingpos:bKingpos;
+		eKingpos 	= wNext?bKingpos:oKingpos;
+		erk        	= wNext?BR_KING_STARTPOS:WR_KING_STARTPOS;
+		erq        	= wNext?BR_QUEEN_STARTPOS:WR_QUEEN_STARTPOS;
+		ecq			= (castling & (wNext?CANCASTLE_BLACKQUEEN:CANCASTLE_WHITEQUEEN)) != 0;
+		eck			= (castling & (wNext?CANCASTLE_BLACKKING:CANCASTLE_WHITEKING)) != 0;
+		ork 		= wNext?WR_KING_STARTPOS:BR_KING_STARTPOS;
+		orq 		= wNext?WR_QUEEN_STARTPOS:BR_QUEEN_STARTPOS;
+		ocq 		= (castling & (wNext?CANCASTLE_WHITEQUEEN:CANCASTLE_BLACKQUEEN)) != 0;
+		ock 		= (castling & (wNext?CANCASTLE_WHITEKING:CANCASTLE_BLACKKING)) != 0;
 
 	}
 

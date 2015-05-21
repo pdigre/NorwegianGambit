@@ -64,7 +64,7 @@ public class FastEval extends Movegen {
 	}
 	
 	public void make(int md) {
-		((Movegen)deeper).make(md,wNext, castling, aMinor, aMajor, aSlider, bOccupied);
+		((Movegen)deeper).make(!wNext,aMinor, aMajor, aSlider, bOccupied, castling, md);
 	}
 
 	public void evaluate(int i) {

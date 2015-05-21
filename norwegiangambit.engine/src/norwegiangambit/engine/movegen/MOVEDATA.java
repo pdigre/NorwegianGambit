@@ -1,13 +1,43 @@
 package norwegiangambit.engine.movegen;
 
+import static norwegiangambit.util.IConst.WP;
+import static norwegiangambit.util.ShortIntPairs.SS;
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 import norwegiangambit.util.polyglot.IZobristKey;
-import static norwegiangambit.util.ShortIntPairs.*;
 
 public class MOVEDATA {
+	
+	public static class MDOffsets{
+		public int PQ,PK;		// castling breakers from Rook captures
+		public int[] P1,P2,PE,PP,PCL,PCR,PPL,PPR; // 64 *  Move 1, Move 2, Enpassant, Promotion, Capture Left/Right, Promotion Left/Right 
+
+		public int[] NQ,NK;     // 64 castling breakers from Rook captures
+		public int[] NB,NE;     // 64 moves
+
+		public int KXB,KXE,KXQB,KXQE,KXKB,KXKE;  // Castling breakers from moving king (3 previous castling state)
+		public int KCQ,KCK,KCQ2,KCK2;  		// Castling Queen/King side (2 previous castling state)
+		public int[] KQ, KK;    // 64 castling breakers from Rook captures
+		public int[] KB,KE;    	// 64 moves
+
+		public int[] BQ, BK;   // 64 castling breakers from Rook captures
+		public int[][] BB,BE;  // 64*4   4 direction slide
+		
+		public int[] RQLINEB,RQLINEE, RKLINEB,RKLINEE;   // 4 directions castling breakers from startpos
+		public int[] RQ, RK;   // 64 castling breakers from Rook captures
+		public int[][] RB,RE;  // 64*4   4 direction slide
+
+		public int[] QQ, QK;   // 64 castling breakers from Rook captures
+		public int[][] QB,QE;  // 64*8   8 direction slide
+
+		
+		// Moves, slides (+ self inflicted castling breakers)  contains Begin-End, all other have fixed offsets
+	}
+
+	public static MDOffsets WOFF, BOFF;
+	
 	
 	//     1 0         NULL-MOVE
 	//     8 1-8       ENPASSANT

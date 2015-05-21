@@ -84,7 +84,7 @@ public class Test_Zobrist_Polyglot {
 	public FastEval start(String fen) {
 		StartGame pos = new StartGame(fen);
 		FastEval e1 = new FastEval();
-		e1.set(pos.whiteNext(), pos.getBitmap(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		e1.set(pos.whiteNext(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3(), pos.getBitmap());
 		e1.evaluate();
 		return e1;
 	}

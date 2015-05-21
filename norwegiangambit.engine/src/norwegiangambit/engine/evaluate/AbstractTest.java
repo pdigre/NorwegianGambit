@@ -64,7 +64,7 @@ public abstract class AbstractTest {
 		FastEval root = new FastEval();
 		root.setChild(leaf);
 		leaf.setParent(root);
-		root.set(pos.whiteNext(), pos.getBitmap(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		root.set(pos.whiteNext(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3(), pos.getBitmap());
 		root.evaluate();
 		root.generate();
 		StringBuilder sb=new StringBuilder("Move PSQT Pawn_W__B <Bishop <--Rook Cstle Trade <--Threat KingS  EG  ADJ  TOT");
@@ -88,7 +88,7 @@ public abstract class AbstractTest {
 		LongEval root = new LongEval();
 		root.setChild(leaf);
 		leaf.setParent(root);
-		root.set(pos.whiteNext(), pos.getBitmap(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		root.set(pos.whiteNext(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3(), pos.getBitmap());
 		root.evaluate();
 		assertEquals("Wrong score", expected, root.printEval());
 	}
@@ -132,7 +132,7 @@ public abstract class AbstractTest {
 		FastEval gen = new FastEval();
 		gen.setChild(gen);
 		StartGame pos = new StartGame(fen);
-		gen.set(pos.whiteNext(), pos.getBitmap(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3());
+		gen.set(pos.whiteNext(), pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3(), pos.getBitmap());
 		try {
 			for (String move : moves) {
 				int mv=0;
