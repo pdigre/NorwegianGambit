@@ -9,18 +9,18 @@ import norwegiangambit.util.polyglot.IZobristKey;
 
 public class MOVEDATA {
 
-	public final static int MD_P2=0; // Opening for enpassant
-	public final static int MD_PEL=8; 
-	public final static int MD_PER=16; 
-	public final static int MD_PP=24;
-	public final static int MD_PPL=32;
-	public final static int MD_PPR=40;
+	public final static int MD_P2=0; 	// 8 lanes Opening for enpassant
+	public final static int MD_PEL=8;   // 8 lanes
+	public final static int MD_PER=16;  // 8 lanes
+	public final static int MD_PP=24;   // 32 - 8 lanes * 4 types
+	public final static int MD_PPL=56;  // 32 - 8 lanes * 4 types
+	public final static int MD_PPR=176;  // 32 - 8 lanes * 4 types
 
-	public final static int MD_P1=48;
-	public final static int MD_PCL=112;
-	public final static int MD_PCR=176;
-	public final static int MD_PQ=240;
-	public final static int MD_PK=241;
+	public final static int MD_P1=296;  // 64
+	public final static int MD_PCL=714;	// 320 - 64*5 types
+	public final static int MD_PCR=1034;// 320 - 64*5 types
+	public final static int MD_PQ=1354;
+	public final static int MD_PK=1355;
 
 		// Castling
 	public final static int MD_KCQ=242;
@@ -70,8 +70,8 @@ public class MOVEDATA {
 	//   366 9-374     BREAKERS
 	// 22724 375-23099 NORMAL
 	
-	public final static int ENP_END=24;
-	public final static int BRK_END=500;
+	public final static int ENP_END=1000;
+	public final static int BRK_END=2000;
 	public final static int BLACK_OFFSET=32*1024; 
 
 	final public long bitmap,bOccupied,aMinor,aMajor,aSlider;
@@ -195,6 +195,10 @@ public class MOVEDATA {
 		return MOVEDATA.add(new MOVEDATA(bitmap | ((victim & 7) << IConst._CAPTURE)));
 	}
 
+	public static int capture2(long bitmap,int victim,int offset){
+		return MOVEDATA.add2(new MOVEDATA(bitmap | ((victim & 7) << IConst._CAPTURE)),offset);
+	}
+
 	@Override
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
@@ -215,6 +219,11 @@ public class MOVEDATA {
 	public static int cpromote(int from,int to, int promote, int pawn, int victim) {
 		long promo = MBase.assemblePromote(pawn, promote, from, to, IConst.CASTLING_STATE | IConst.SPECIAL);
 		return capture(promo, victim);
+	}
+
+	public static int cpromote2(int from,int to, int promote, int pawn, int victim, int offset) {
+		long promo = MBase.assemblePromote(pawn, promote, from, to, IConst.CASTLING_STATE | IConst.SPECIAL);
+		return capture2(promo, victim,offset);
 	}
 
 	final public static MOVEDATA[] ALL;

@@ -17,6 +17,12 @@ public class MOVEDATAX extends MOVEDATA implements IConst{
 		return create((bm | CASTLING_STATE) ^cstl,cstl);
 	}
 
+	public static int capture2(long bitmap,int victim,int offset){
+		long bm = bitmap | ((victim & 7) << _CAPTURE);
+		long cstl = findCastlingTo(bitmap);
+		return create2((bm | CASTLING_STATE) ^cstl,cstl,offset);
+	}
+
 	private MOVEDATAX(long bitmap,long cstl) {
 		super((bitmap | CASTLING_STATE) ^cstl);
 		this.castling=cstl;
@@ -24,6 +30,10 @@ public class MOVEDATAX extends MOVEDATA implements IConst{
 
 	public static int create(long bitmap,long cstl){
 		return MOVEDATA.add(new MOVEDATAX(bitmap,cstl));
+	}
+	
+	public static int create2(long bitmap,long cstl,int offset){
+		return MOVEDATA.add2(new MOVEDATAX(bitmap,cstl),offset);
 	}
 	
 	public static int createRook(long bitmap){
@@ -72,6 +82,11 @@ public class MOVEDATAX extends MOVEDATA implements IConst{
 	public static int cpromote(int from,int to, int promote, int pawn, int victim) {
 		long promo = MBase.assemblePromote(pawn, promote, from, to, CASTLING_STATE | SPECIAL);
 		return capture(promo, victim);
+	}
+
+	public static int cpromote2(int from,int to, int promote, int pawn, int victim,int offset) {
+		long promo = MBase.assemblePromote(pawn, promote, from, to, CASTLING_STATE | SPECIAL);
+		return capture2(promo, victim,offset);
 	}
 
 	@Override
