@@ -421,13 +421,13 @@ public class Movegen implements IConst{
 							if(((pinner<<8)&between)!=0){
 								add4(MWP.WP[from].M1);
 								if(from<16 && ((pinner<<16)&between)!=0)
-									add4(MWP.WP[from].M2);
+									add4(MOVEDATA.MD_P2+from%8);
 							}
 						} else {
 							if(((pinner>>8)&between)!=0){
 								add4(MBP.BP[from].M1);
 								if(from>47 && ((pinner>>16)&between)!=0)
-									add4(MBP.BP[from].M2);
+									add4(MOVEDATA.MD_P2+from%8);
 							}
 						}
 					}
@@ -613,7 +613,7 @@ public class Movegen implements IConst{
 		}
 		while(open2!=0){
 			int sq = Long.numberOfTrailingZeros(open2);
-			add4(mvs[sq].M2);
+			add4(MOVEDATA.MD_P2+sq%8);
 			open2 &= open2-1;
 		}
 		long e=captures|(1L<<epsq);

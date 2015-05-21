@@ -19,8 +19,8 @@ public class MOVEDATA {
 	public final static int MD_P1=296;  // 64
 	public final static int MD_PCL=714;	// 320 - 64*5 types
 	public final static int MD_PCR=1034;// 320 - 64*5 types
-	public final static int MD_PQ=1354;
-	public final static int MD_PK=1355;
+	public final static int MD_PQ=1354;	// 4 - promotion 4 types
+	public final static int MD_PK=1358; // 4 - promotion 4 types
 
 		// Castling
 	public final static int MD_KCQ=242;
