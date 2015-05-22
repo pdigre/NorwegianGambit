@@ -36,6 +36,10 @@ public class MWK extends MSimple {
 	public MWK(int from) {
 		super(from);			
 		addMoves(new int[]{UP,DOWN,LEFT,RIGHT,UP + LEFT,UP + RIGHT,DOWN + LEFT,DOWN + RIGHT});
+		if(q!=null)
+			Q=MOVEDATA.add(q);
+		if(k!=null)
+			K=MOVEDATA.add(k);
 	}
 
 	public void addMoves(int[] mvs) {
@@ -52,7 +56,7 @@ public class MWK extends MSimple {
 			for (int i = 0; i < 5; i++){
 				int c = WCAPTURES[i];
 				MOVEDATA.capture(bitmap, c); 
-				rookCapture(to, bitmap, c);
+				rookCapture2(to, bitmap, c);
 			}
 		}
 	}

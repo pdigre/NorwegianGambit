@@ -16,6 +16,10 @@ public class MBN extends MSimple implements IBlack {
 		super(from);
 		for (int i = 0; i < KNIGHT_MOVES.length; i++)
 			add(KNIGHT_MOVES[i]);
+		if(q!=null)
+			Q=MOVEDATA.add(q);
+		if(k!=null)
+			K=MOVEDATA.add(k);
 	}
 
 	private void add(int offset) {
@@ -27,7 +31,7 @@ public class MBN extends MSimple implements IBlack {
 			for (int i = 0; i < 5; i++){
 				int c = BCAPTURES[i];
 				MOVEDATA.capture(bitmap, c); 
-				rookCapture(to, bitmap, c);
+				rookCapture2(to, bitmap, c);
 			}
 		}
 	}
