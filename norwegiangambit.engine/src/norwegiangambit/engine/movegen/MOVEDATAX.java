@@ -14,7 +14,14 @@ public class MOVEDATAX extends MOVEDATA implements IConst{
 	public static int capture(long bitmap,int victim){
 		long bm = bitmap | ((victim & 7) << _CAPTURE);
 		long cstl = findCastlingTo(bitmap);
-		return create((bm | CASTLING_STATE) ^cstl,cstl);
+		MOVEDATAX md = new MOVEDATAX((bm | CASTLING_STATE) ^cstl,cstl);
+		return MOVEDATA.add(md);
+	}
+
+	public static MOVEDATAX capture3(long bitmap,int victim){
+		long bm = bitmap | ((victim & 7) << _CAPTURE);
+		long cstl = findCastlingTo(bitmap);
+		return new MOVEDATAX((bm | CASTLING_STATE) ^cstl,cstl);
 	}
 
 	public static int capture2(long bitmap,int victim,int offset){

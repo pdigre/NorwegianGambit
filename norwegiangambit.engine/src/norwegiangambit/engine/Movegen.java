@@ -305,10 +305,10 @@ public class Movegen implements IConst{
 
 			// Castling
 			if (ocq && ((CWQ_FREE & aOccupied) | (CWQ_MASK&eAttacked))==0) {
-				add4(ock?MWK.CQ:MWK.CQ2);
+				add4(ock?MOVEDATA.MD_KCQ:MOVEDATA.MD_KCQ2);
 			}
 			if (ock && ((CWK_FREE & aOccupied) | (CWK_MASK&eAttacked))==0) {
-				add4(ocq?MWK.CK:MWK.CK2);
+				add4(ocq?MOVEDATA.MD_KCK:MOVEDATA.MD_KCK2);
 			}
 
 		} else {
@@ -318,10 +318,10 @@ public class Movegen implements IConst{
 
 			// Castling
 			if (ocq && ((CBQ_FREE & aOccupied) | (CBQ_MASK&eAttacked))==0) {
-				add4(ock?MBK.CQ:MBK.CQ2);
+				add4(ock?MOVEDATA.MD_KCQ:MOVEDATA.MD_KCQ2);
 			}
 			if (ock && ((CBK_FREE & aOccupied) | (CBK_MASK&eAttacked))==0) {
-				add4(ocq?MBK.CK:MBK.CK2);
+				add4(ocq?MOVEDATA.MD_KCK:MOVEDATA.MD_KCK2);
 			}
 		}
 		tot2+=System.nanoTime()-t2;

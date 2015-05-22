@@ -34,6 +34,7 @@ public abstract class MBase implements IConst{
 	}
 
 	public int Q,K;
+	public MOVEDATAX q,k;
 	
 	final public int from;
 	
@@ -80,19 +81,40 @@ public abstract class MBase implements IConst{
 		return x;
 	}
 
-	public void rookCapture(int to, long bitmap, int captured) {
+	public void rookCapture2(int to, long bitmap, int captured) {
 		if (captured == IConst.BR) {
 			if (to == IConst.BR_KING_STARTPOS){
-				K=MOVEDATAX.capture(bitmap, captured);
+				k=MOVEDATAX.capture3(bitmap, captured);
 			} else if (to == IConst.BR_QUEEN_STARTPOS){
-				Q=MOVEDATAX.capture(bitmap,captured);
+				q=MOVEDATAX.capture3(bitmap,captured);
 			}
 		}
 		if (captured == IConst.WR) {
 			if (to == IConst.WR_KING_STARTPOS){
-				K=MOVEDATAX.capture(bitmap, captured);
+				k=MOVEDATAX.capture3(bitmap, captured);
 			} else if (to == IConst.WR_QUEEN_STARTPOS){
-				Q=MOVEDATAX.capture(bitmap, captured);
+				q=MOVEDATAX.capture3(bitmap, captured);
+			}
+		}
+	}
+
+	public void rookCapture(int to, long bitmap, int captured) {
+		if (captured == IConst.BR) {
+			if (to == IConst.BR_KING_STARTPOS){
+				k=MOVEDATAX.capture3(bitmap, captured);
+				K=MOVEDATA.add(k);
+			} else if (to == IConst.BR_QUEEN_STARTPOS){
+				q=MOVEDATAX.capture3(bitmap,captured);
+				Q=MOVEDATA.add(q);
+			}
+		}
+		if (captured == IConst.WR) {
+			if (to == IConst.WR_KING_STARTPOS){
+				k=MOVEDATAX.capture3(bitmap, captured);
+				K=MOVEDATA.add(k);
+			} else if (to == IConst.WR_QUEEN_STARTPOS){
+				q=MOVEDATAX.capture3(bitmap,captured);
+				Q=MOVEDATA.add(q);
 			}
 		}
 	}

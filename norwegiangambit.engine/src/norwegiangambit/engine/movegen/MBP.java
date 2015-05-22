@@ -4,11 +4,9 @@ import norwegiangambit.util.IConst;
 
 public class MBP  extends MPawn implements IBlack{
 
-	public static MBP[] BP;
 	public static void init() {
-		BP=new MBP[64];
 		for (int from = 0; from < 64; from++)
-			BP[from] = new MBP(from);
+			new MBP(from);
 	}
 
 	public MBP(int from) {

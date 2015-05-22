@@ -4,12 +4,9 @@ import norwegiangambit.util.IConst;
 
 public class MWP extends MPawn{
 
-	public static MWP[] WP;
-	
 	public static void init(){
-		WP=new MWP[64];
 		for (int from = 0; from < 64; from++)
-			WP[from] = new MWP(from);
+			new MWP(from);
 	}
 
 	public MWP(int from) {

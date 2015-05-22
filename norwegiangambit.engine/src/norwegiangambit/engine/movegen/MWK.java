@@ -3,7 +3,6 @@ package norwegiangambit.engine.movegen;
 import norwegiangambit.util.IConst;
 
 public class MWK extends MSimple {
-	public static int CQ,CK,CQ2,CK2;
 	public static int XB,XE,XQB,XQE,XKB,XKE; // Castling breakers
 
 	public static MWK[] MOVES;
@@ -13,21 +12,25 @@ public class MWK extends MSimple {
 		for (int from = 0; from < 64; from++)
 			MOVES[from] = new MWK(from);
 		MWK m = MOVES[WK_STARTPOS];
+		
 		XB=MOVEDATA.brk_cnt;
 		castlingKing(m.B,m.E,CANCASTLE_WHITE);
 		XE=MOVEDATA.brk_cnt;
+
 		XQB=MOVEDATA.brk_cnt;
 		castlingKing(m.B,m.E,CANCASTLE_WHITEQUEEN);
 		XQE=MOVEDATA.brk_cnt;
+
 		XKB=MOVEDATA.brk_cnt;
 		castlingKing(m.B,m.E,CANCASTLE_WHITEKING);
 		XKE=MOVEDATA.brk_cnt;
+		
 		long cq = assemble(IConst.WK, WK_STARTPOS, WK_STARTPOS - 2, CANCASTLE_BLACK | SPECIAL);
-		CQ=MOVEDATAX.create(cq,CANCASTLE_WHITE);
-		CQ2=MOVEDATAX.create(cq,CANCASTLE_WHITEQUEEN);
+		MOVEDATAX.create2(cq,CANCASTLE_WHITE,MOVEDATA.MD_KCQ);
+		MOVEDATAX.create2(cq,CANCASTLE_WHITEQUEEN,MOVEDATA.MD_KCQ2);
 		long ck = assemble(IConst.WK, WK_STARTPOS, WK_STARTPOS + 2, CANCASTLE_BLACK | SPECIAL);
-		CK=MOVEDATAX.create(ck,CANCASTLE_WHITE);
-		CK2=MOVEDATAX.create(ck,CANCASTLE_WHITEKING);
+		MOVEDATAX.create2(ck,CANCASTLE_WHITE,MOVEDATA.MD_KCK);
+		MOVEDATAX.create2(ck,CANCASTLE_WHITEKING,MOVEDATA.MD_KCK2);
 	}
 
 	public MWK(int from) {

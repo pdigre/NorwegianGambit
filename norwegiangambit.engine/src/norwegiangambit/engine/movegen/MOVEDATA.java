@@ -9,61 +9,40 @@ import norwegiangambit.util.polyglot.IZobristKey;
 
 public class MOVEDATA {
 
+	// Pawn moves
 	public final static int MD_P2=0; 	// 8 lanes Opening for enpassant
-	public final static int MD_PEL=8;   // 8 lanes
-	public final static int MD_PER=16;  // 8 lanes
+	public final static int MD_PEL=8;   // 8 lanes enpassant left
+	public final static int MD_PER=16;  // 8 lanes enpassant right
 	public final static int MD_PP=24;   // 32 - 8 lanes * 4 types
-	public final static int MD_PPL=56;  // 160 - 8 lanes * 20 types
-	public final static int MD_PPR=216;  // 160- 8 lanes * 20 types
-
-	public final static int MD_P1=376;  // 64
-	public final static int MD_PCL=440;	// 320 - 64*5 types
-	public final static int MD_PCR=760;// 320 - 64*5 types
+	public final static int MD_PPL=56;  // 160 - 8 lanes * 20 types - promotion left
+	public final static int MD_PPR=216;  // 160- 8 lanes * 20 types - promotion right
+	public final static int MD_P1=376;  // 64 move 1 step
+	public final static int MD_PCL=440;	// 320 - 64*5 types - left
+	public final static int MD_PCR=760;// 320 - 64*5 types - right
 	public final static int MD_PQ=1080;	// 4 - promotion 4 types
 	public final static int MD_PK=1084; // 4 - promotion 4 types
 
 		// Castling
-	public final static int MD_KCQ=242;
-	public final static int MD_KCK=243;
-	public final static int MD_KCQ2=244;
-	public final static int MD_KCK2=245;
+	public final static int MD_KCQ=1088;
+	public final static int MD_KCK=1089;
+	public final static int MD_KCQ2=1090;
+	public final static int MD_KCK2=1091;
 
-	public static int MD_N=237;
-	public static int MD_B=237;
-	public static int MD_R=237;
-	public static int MD_RQLINE=237;
-	public static int MD_RKLINE=237;
-	public static int MD_Q=237;
-	public static int MD_K=237;
+	// Simple - King & kNight
+	// B->E (Q,K follows)
 	
-	public static class MDOffsets{
-		public int[] PE,P2,PP,PPL,PPR; 	// 8 from lanes * Enpassant 
-		public int PQ,PK;		// castling breakers from Rook captures
-		public int[] P1,PCL,PCR; // 64 *  Move 1, Move 2, Promotion, Capture Left/Right, Promotion Left/Right 
+	// Sliders
+	// 4/8* (B->E) (Q,K follows)
 
-		public int[] NQ,NK;     // 64 castling breakers from Rook captures
-		public int[] NB,NE;     // 64 moves
+	public static int[] MD_K;		// 64 - Simple set (B[64] E[64])
+	public static int[] MD_N;		// 64 - Simple set (B[64] E[64])
 
-		public int[] BQ, BK;   // 64 castling breakers from Rook captures
-		public int[][] BB,BE;  // 64*4   4 direction slide
-		
-		public int[] RQLINEB,RQLINEE, RKLINEB,RKLINEE;   // 4 directions castling breakers from startpos
-		public int[] RQ, RK;   // 64 castling breakers from Rook captures
-		public int[][] RB,RE;  // 64*4   4 direction slide
+	public static int[] MD_Q;		// 64 - 8Slider set (B[64*8] E[64*8])
+	public static int[] MD_B;		// 64 - 4Slider set (B[64*4] E[64*4])
+	public static int[] MD_R;		// 64 - 4Slider set (B[64*4] E[64*4])
 
-		public int[] QQ, QK;   // 64 castling breakers from Rook captures
-		public int[][] QB,QE;  // 64*8   8 direction slide
-
-		public int KXB,KXE,KXQB,KXQE,KXKB,KXKE;  // Castling breakers from moving king (3 previous castling state)
-		public int KCQ,KCK,KCQ2,KCK2;  		// Castling Queen/King side (2 previous castling state)
-		public int[] KQ, KK;    // 64 castling breakers from Rook captures
-		public int[] KB,KE;    	// 64 moves
-		
-		// Moves, slides (+ self inflicted castling breakers)  contains LOOKUP Begin-End, all other have fixed offsets
-	}
-
-	public static MDOffsets WOFF, BOFF;
-	
+	public static int[] MD_RQ;  	// 1 - 4Slider set  (B[4] E[4])
+	public static int[] MD_RK;  	// 1 - 4Slider set  (B[4] E[4])
 	
 	//     1 0         NULL-MOVE
 	//     8 1-8       ENPASSANT
@@ -270,6 +249,7 @@ public class MOVEDATA {
 		REV_WP=new long[64];
 		REV_BP=new long[64];
 
+		color_offset=0;
 		brk_cnt=ENP_END;
 		nrm_cnt=BRK_END;
 		MWP.init();
