@@ -80,6 +80,8 @@ public class MOVEDATA {
 	final public long zobrist;
 	final public long pawnhash;
 
+
+	
 	protected MOVEDATA(long bits) {
 		int score=0;
 		this.bitmap = bits;
@@ -262,8 +264,12 @@ public class MOVEDATA {
 	}
 
 	
+	public static long[] REV_WP,REV_BP;
 	
 	public static void init() {
+		REV_WP=new long[64];
+		REV_BP=new long[64];
+
 		brk_cnt=ENP_END;
 		nrm_cnt=BRK_END;
 		MWP.init();

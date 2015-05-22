@@ -7,19 +7,15 @@ import norwegiangambit.engine.movegen.ENPASSANT;
 import norwegiangambit.engine.movegen.MBB;
 import norwegiangambit.engine.movegen.MBK;
 import norwegiangambit.engine.movegen.MBN;
-import norwegiangambit.engine.movegen.MBP;
 import norwegiangambit.engine.movegen.MBQ;
 import norwegiangambit.engine.movegen.MBR;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.engine.movegen.MOVEDATAX;
-import norwegiangambit.engine.movegen.MPCapture;
-import norwegiangambit.engine.movegen.MPawn;
 import norwegiangambit.engine.movegen.MSimple;
 import norwegiangambit.engine.movegen.MSlider;
 import norwegiangambit.engine.movegen.MWB;
 import norwegiangambit.engine.movegen.MWK;
 import norwegiangambit.engine.movegen.MWN;
-import norwegiangambit.engine.movegen.MWP;
 import norwegiangambit.engine.movegen.MWQ;
 import norwegiangambit.engine.movegen.MWR;
 import norwegiangambit.util.BITS;
@@ -336,7 +332,7 @@ public class Movegen implements IConst{
 		pinners=0L;
 
 		// Regular checks
-		checkers=(eOccupied & aKnights & BitBoard.NMasks[oKingpos]) | (eOccupied & aPawns & (wNext?MBP.REV[oKingpos]:MWP.REV[oKingpos]));
+		checkers=(eOccupied & aKnights & BitBoard.NMasks[oKingpos]) | (eOccupied & aPawns & (wNext?MOVEDATA.REV_BP[oKingpos]:MOVEDATA.REV_WP[oKingpos]));
 
 		// Slider checks
 		if((eOccupied & aSlider & BitBoard.QMasks[oKingpos]) !=0){
@@ -364,33 +360,29 @@ public class Movegen implements IConst{
 						int ctype = ctype(attacker);
 						if(wNext){
 							if(pinner<<7==attacker && (attacker&MaskHFile)==0){
-								MPCapture l = MWP.L[from];
 								if(from>47){
 									add1_promo(MOVEDATA.MD_PPL+(from%8)*20+ctype*4);
 								} else
-									capture(l.C[ctype], 0, ctype, attacker);
+									capture(MOVEDATA.MD_PCL+(from*5)+ctype, 0, ctype, attacker);
 							}
 							if(pinner<<9==attacker && (attacker&MaskAFile)==0){
-								MPCapture r = MWP.R[from];
 								if(from>47){
 									add1_promo(MOVEDATA.MD_PPR+(from%8)*20+ctype*4);
 								} else
-									capture(r.C[ctype], 0, ctype, attacker);
+									capture(MOVEDATA.MD_PCR+(from*5)+ctype, 0, ctype, attacker);
 							}
 						} else {
 							if(pinner>>9==attacker && (attacker&MaskHFile)==0){
-								MPCapture l = MBP.L[from];
 								if(from<16){
 									add1_promo(MOVEDATA.MD_PPL+(from%8)*20+ctype*4);
 								} else
-									capture(l.C[ctype], 0, ctype, attacker);
+									capture(MOVEDATA.MD_PCL+(from*5)+ctype, 0, ctype, attacker);
 							}
 							if(pinner>>7==attacker && (attacker&MaskAFile)==0){
-								MPCapture r = MBP.R[from];
 								if(from<16){
 									add1_promo(MOVEDATA.MD_PPR+(from%8)*20+ctype*4);
 								} else
-									capture(r.C[ctype], 0, ctype, attacker);
+									capture(MOVEDATA.MD_PCR+(from*5)+ctype, 0, ctype, attacker);
 							}
 						}
 					}
@@ -419,13 +411,13 @@ public class Movegen implements IConst{
 					} else if((pinner&aPawns)!=0){  // PAWN FORWARD
 						if(wNext){
 							if(((pinner<<8)&between)!=0){
-								add4(MWP.WP[from].M1);
+								add4(MOVEDATA.MD_P1+from);
 								if(from<16 && ((pinner<<16)&between)!=0)
 									add4(MOVEDATA.MD_P2+from%8);
 							}
 						} else {
 							if(((pinner>>8)&between)!=0){
-								add4(MBP.BP[from].M1);
+								add4(MOVEDATA.MD_P1+from);
 								if(from>47 && ((pinner>>16)&between)!=0)
 									add4(MOVEDATA.MD_P2+from%8);
 							}
@@ -601,13 +593,12 @@ public class Movegen implements IConst{
 	}
 
 	private void genPawn(long from, long open1, long open2, long captures) {
-		MPawn[] mvs = wNext?MWP.WP:MBP.BP;
 		while(open1!=0){
 			int sq = Long.numberOfTrailingZeros(open1);
 			if(wNext?sq>47:sq<16){
-				add1_promo(mvs[sq].P1);
+				add1_promo(MOVEDATA.MD_PP+4*(sq%8));
 			} else {
-				add4(mvs[sq].M1);
+				add4(MOVEDATA.MD_P1+sq);
 			}
 			open1 &= open1-1;
 		}
@@ -618,20 +609,19 @@ public class Movegen implements IConst{
 		}
 		long e=captures|(1L<<epsq);
 		if(wNext){
-			pwnCaptures(MWP.L, MOVEDATA.MD_PQ, (from & MaskBToHFiles) &(e>>7), 7, erq, ecq,true);
-			pwnCaptures(MWP.R, MOVEDATA.MD_PK, (from & MaskAToGFiles) &(e>>9), 9, erk, eck,false);
+			pwnCaptures(MOVEDATA.MD_PQ, (from & MaskBToHFiles) &(e>>7), 7, erq, ecq,true);
+			pwnCaptures(MOVEDATA.MD_PK, (from & MaskAToGFiles) &(e>>9), 9, erk, eck,false);
 		} else {
-			pwnCaptures(MBP.L, MOVEDATA.MD_PQ, (from & MaskBToHFiles) &(e<<9), -9, erq, ecq,true);
-			pwnCaptures(MBP.R, MOVEDATA.MD_PK, (from & MaskAToGFiles) &(e<<7), -7, erk, eck,false);
+			pwnCaptures(MOVEDATA.MD_PQ, (from & MaskBToHFiles) &(e<<9), -9, erq, ecq,true);
+			pwnCaptures(MOVEDATA.MD_PK, (from & MaskAToGFiles) &(e<<7), -7, erk, eck,false);
 		}
 	}
 
-	private void pwnCaptures(MPCapture[] mvs, int pc, long m, int step, int cs, boolean cc, boolean isLeft) {
+	private void pwnCaptures(int pc, long m, int step, int cs, boolean cc, boolean isLeft) {
 		while(m!=0){
 			int sq = Long.numberOfTrailingZeros(m);
 			m &= m-1;
 			int to=sq+step;
-			MPCapture mv = mvs[sq];
 			if (to == epsq) {
 				int md=(isLeft?MOVEDATA.MD_PEL:MOVEDATA.MD_PER)+sq%8;
 				if(isSafeMove(md))	// Check for safety since there may be a covered check wit en-passant
@@ -640,7 +630,7 @@ public class Movegen implements IConst{
 				long bto = 1L << to;
 				int ctype=ctype(bto);
 				if((bto & MaskGoal)==0L){
-					capture(mv.C[ctype], 0, ctype, bto);
+					capture((isLeft?MOVEDATA.MD_PCL:MOVEDATA.MD_PCR)+(sq*5)+ctype, 0, ctype, bto);
 				} else {
 					if(cc && sq+step==cs){
 						add1_promo(pc);
@@ -707,7 +697,7 @@ public class Movegen implements IConst{
 		long enemy=white?bb_black:(bb_bit1 | bb_bit2 | bb_bit3)^bb_black;
 		if(((enemy & bb_knights & BitBoard.NMasks[king]) != 0) || 
 				((enemy & bb_kings & BitBoard.KMasks[king]) != 0) || 
-				((enemy & bb_pawns & (white?MBP.REV[king]:MWP.REV[king])) != 0))
+				((enemy & bb_pawns & (white?MOVEDATA.REV_BP[king]:MOVEDATA.REV_WP[king])) != 0))
 			return false;
 		long slider=enemy & bb_bit3;
 		if((slider & BitBoard.QMasks[king]) !=0){
@@ -825,13 +815,13 @@ public class Movegen implements IConst{
     				}
     				break;
 				case IConst.WP:
-					if((bto & MWP.REV[eKingpos])!=0){
+					if((bto & MOVEDATA.REV_WP[eKingpos])!=0){
 						addChecker(i);
 						continue;
 					}
 					break;
 				case IConst.BP:
-					if((bto & MBP.REV[eKingpos])!=0){
+					if((bto & MOVEDATA.REV_BP[eKingpos])!=0){
 						addChecker(i);
 						continue;
 					}
