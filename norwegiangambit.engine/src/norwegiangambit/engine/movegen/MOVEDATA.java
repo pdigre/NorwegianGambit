@@ -10,17 +10,17 @@ import norwegiangambit.util.polyglot.IZobristKey;
 public class MOVEDATA {
 
 	// Pawn moves
-	public final static int MD_P2=0; 	// 8 lanes Opening for enpassant
-	public final static int MD_PEL=8;   // 8 lanes enpassant left
-	public final static int MD_PER=16;  // 8 lanes enpassant right
-	public final static int MD_PP=24;   // 32 - 8 lanes * 4 types
-	public final static int MD_PPL=56;  // 160 - 8 lanes * 20 types - promotion left
-	public final static int MD_PPR=216;  // 160- 8 lanes * 20 types - promotion right
-	public final static int MD_P1=376;  // 64 move 1 step
-	public final static int MD_PCL=440;	// 320 - 64*5 types - left
-	public final static int MD_PCR=760;// 320 - 64*5 types - right
-	public final static int MD_PQ=1080;	// 4 - promotion 4 types
-	public final static int MD_PK=1084; // 4 - promotion 4 types
+	public final static int MD_P2=0; 		// 8 lanes Opening for enpassant
+	public final static int MD_PEL=8;   	// 8 lanes enpassant left
+	public final static int MD_PER=16;  	// 8 lanes enpassant right
+	public final static int MD_PP=24;   	// 32 - 8 lanes * 4 types
+	public final static int MD_PPL=56;  	// 160 - 8 lanes * 20 types - promotion left
+	public final static int MD_PPR=216;  	// 160- 8 lanes * 20 types - promotion right
+	public final static int MD_P1=376;  	// 64 move 1 step
+	public final static int MD_PCL=440;		// 320 - 64*5 types - left
+	public final static int MD_PCR=760;		// 320 - 64*5 types - right
+	public final static int MD_PQ=1080;		// 4 - promotion 4 types
+	public final static int MD_PK=1084; 	// 4 - promotion 4 types
 
 		// Castling
 	public final static int MD_KCQ=1088;
@@ -34,15 +34,15 @@ public class MOVEDATA {
 	// Sliders
 	// 4/8* (B->E) (Q,K follows)
 
-	public static int[] MD_K;		// 64 - Simple set (B[64] E[64])
-	public static int[] MD_N;		// 64 - Simple set (B[64] E[64])
+	public static int[] MD_K=new int[128];	// 64 - Simple set (B[64] E[64])
+	public static int[] MD_N=new int[128];	// 64 - Simple set (B[64] E[64])
 
-	public static int[] MD_Q;		// 64 - 8Slider set (B[64*8] E[64*8])
-	public static int[] MD_B;		// 64 - 4Slider set (B[64*4] E[64*4])
-	public static int[] MD_R;		// 64 - 4Slider set (B[64*4] E[64*4])
+	public static int[] MD_Q=new int[1024];	// 64 - 8Slider set (B[64*8] E[64*8])
+	public static int[] MD_B=new int[512];	// 64 - 4Slider set (B[64*4] E[64*4])
+	public static int[] MD_R=new int[512];	// 64 - 4Slider set (B[64*4] E[64*4])
 
-	public static int[] MD_RQ;  	// 1 - 4Slider set  (B[4] E[4])
-	public static int[] MD_RK;  	// 1 - 4Slider set  (B[4] E[4])
+	public static int[] MD_RQ=new int[8];  	// 1 - 4Slider set  (B[4] E[4])
+	public static int[] MD_RK=new int[8];  	// 1 - 4Slider set  (B[4] E[4])
 	
 	//     1 0         NULL-MOVE
 	//     8 1-8       ENPASSANT
@@ -235,6 +235,7 @@ public class MOVEDATA {
 			return nrm_cnt-1;
 		}
 	}
+
 
 	public static int add2(MOVEDATA md,int pos) {
 		int offset=pos+color_offset;

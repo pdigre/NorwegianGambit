@@ -33,16 +33,9 @@ public class MBK extends MSimple implements IBlack {
 
 	public MBK(int from) {
 		super(from);
-		addMoves(new int[]{UP,DOWN,LEFT,RIGHT,UP + LEFT,UP + RIGHT,DOWN + LEFT,DOWN + RIGHT});
-		if(q!=null)
-			Q=MOVEDATA.add(q);
-		if(k!=null)
-			K=MOVEDATA.add(k);
-	}
-
-	public void addMoves(int[] mvs) {
-		for (int i : mvs)
+		for (int i : new int[]{UP,DOWN,LEFT,RIGHT,UP + LEFT,UP + RIGHT,DOWN + LEFT,DOWN + RIGHT})
 			add(i);
+		addBreakers();
 	}
 
 	protected void add(int offset) {

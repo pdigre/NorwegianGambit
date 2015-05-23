@@ -570,7 +570,9 @@ public class Movegen implements IConst{
 			int sq = Long.numberOfTrailingZeros(from);
 			from ^= 1L << sq;
 			MSimple mv = mvs[sq];
-			for (int s=mv.B;s<mv.E;s+=6){
+			int b=MOVEDATA.MD_N[sq*2]+mdoffset;
+			int e=MOVEDATA.MD_N[sq*2+1]+mdoffset;
+			for (int s=b;s<e;s+=6){
 				long bto = MOVEDATA.getBTo(s);
 				if ((occupied & bto) == 0L) {
 					if((bto & mask)!=0L)

@@ -16,10 +16,7 @@ public class MBN extends MSimple implements IBlack {
 		super(from);
 		for (int i = 0; i < KNIGHT_MOVES.length; i++)
 			add(KNIGHT_MOVES[i]);
-		if(q!=null)
-			Q=MOVEDATA.add(q);
-		if(k!=null)
-			K=MOVEDATA.add(k);
+		addBreakers();
 	}
 
 	private void add(int offset) {

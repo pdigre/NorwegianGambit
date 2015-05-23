@@ -12,7 +12,7 @@ public class MWK extends MSimple {
 		for (int from = 0; from < 64; from++)
 			MOVES[from] = new MWK(from);
 		MWK m = MOVES[WK_STARTPOS];
-		
+
 		XB=MOVEDATA.brk_cnt;
 		castlingKing(m.B,m.E,CANCASTLE_WHITE);
 		XE=MOVEDATA.brk_cnt;
@@ -24,7 +24,7 @@ public class MWK extends MSimple {
 		XKB=MOVEDATA.brk_cnt;
 		castlingKing(m.B,m.E,CANCASTLE_WHITEKING);
 		XKE=MOVEDATA.brk_cnt;
-		
+
 		long cq = assemble(IConst.WK, WK_STARTPOS, WK_STARTPOS - 2, CANCASTLE_BLACK | SPECIAL);
 		MOVEDATAX.create2(cq,CANCASTLE_WHITE,MOVEDATA.MD_KCQ);
 		MOVEDATAX.create2(cq,CANCASTLE_WHITEQUEEN,MOVEDATA.MD_KCQ2);
@@ -34,17 +34,12 @@ public class MWK extends MSimple {
 	}
 
 	public MWK(int from) {
-		super(from);			
-		addMoves(new int[]{UP,DOWN,LEFT,RIGHT,UP + LEFT,UP + RIGHT,DOWN + LEFT,DOWN + RIGHT});
-		if(q!=null)
-			Q=MOVEDATA.add(q);
-		if(k!=null)
-			K=MOVEDATA.add(k);
-	}
-
-	public void addMoves(int[] mvs) {
-		for (int i : mvs)
+		super(from);
+		MOVEDATA.MD_K[from*2]=B;
+		for (int i : new int[]{UP,DOWN,LEFT,RIGHT,UP + LEFT,UP + RIGHT,DOWN + LEFT,DOWN + RIGHT})
 			add(i);
+		MOVEDATA.MD_K[from*2+1]=E;
+		addBreakers();
 	}
 
 	protected void add(int offset) {

@@ -14,12 +14,11 @@ public class MWN extends MSimple{
 	
 	public MWN(int from) {
 		super(from);
+		MOVEDATA.MD_N[from*2]=B;
 		for (int i = 0; i < KNIGHT_MOVES.length; i++)
 			add(KNIGHT_MOVES[i]);
-		if(q!=null)
-			Q=MOVEDATA.add(q);
-		if(k!=null)
-			K=MOVEDATA.add(k);
+		MOVEDATA.MD_N[from*2+1]=E;
+		addBreakers();
 	}
 
 	private void add(int offset) {
