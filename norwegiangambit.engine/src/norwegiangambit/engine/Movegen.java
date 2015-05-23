@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import norwegiangambit.engine.movegen.ENPASSANT;
 import norwegiangambit.engine.movegen.MBB;
 import norwegiangambit.engine.movegen.MBK;
-import norwegiangambit.engine.movegen.MBN;
 import norwegiangambit.engine.movegen.MBQ;
 import norwegiangambit.engine.movegen.MBR;
 import norwegiangambit.engine.movegen.MOVEDATA;
@@ -15,7 +14,6 @@ import norwegiangambit.engine.movegen.MSimple;
 import norwegiangambit.engine.movegen.MSlider;
 import norwegiangambit.engine.movegen.MWB;
 import norwegiangambit.engine.movegen.MWK;
-import norwegiangambit.engine.movegen.MWN;
 import norwegiangambit.engine.movegen.MWQ;
 import norwegiangambit.engine.movegen.MWR;
 import norwegiangambit.util.BITS;
@@ -565,11 +563,9 @@ public class Movegen implements IConst{
 	}
 
 	private void genKnight(long from, long occupied,long capture,long mask) {
-		MSimple[] mvs = wNext?MWN.MOVES:MBN.MOVES;
 		while(from!=0){
 			int sq = Long.numberOfTrailingZeros(from);
 			from ^= 1L << sq;
-			MSimple mv = mvs[sq];
 			int b=MOVEDATA.MD_N[sq*2]+mdoffset;
 			int e=MOVEDATA.MD_N[sq*2+1]+mdoffset;
 			for (int s=b;s<e;s+=6){
@@ -581,10 +577,10 @@ public class Movegen implements IConst{
 					if ((capture & bto & mask) != 0) {
 						int c = ctype(bto);
 						if(c==3 && bto==1L<<erk && eck) // Enemy Rook -> no castling king side
-							capture(mv.K, 1, c, bto);
+							capture(e+1, 1, c, bto);
 						else {
 							if(c==3 && bto==1L<<erq && ecq) // Enemy Rook -> no castling queen side
-								capture(mv.Q, 1, c, bto);
+								capture(e, 1, c, bto);
 							else
 								capture(s+1+c, 1, c, bto);
 						}
