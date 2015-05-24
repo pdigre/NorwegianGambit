@@ -24,7 +24,7 @@ public class MBN extends MSimple implements IBlack {
 		if (inside(to, from)){
 			long bitmap = assemble(IConst.BN, from, to, CASTLING_STATE | HALFMOVES);
 			MOVEDATA.create(bitmap);
-			E+=6;
+			n+=6;
 			for (int i = 0; i < 5; i++){
 				int c = BCAPTURES[i];
 				MOVEDATA.capture(bitmap, c); 

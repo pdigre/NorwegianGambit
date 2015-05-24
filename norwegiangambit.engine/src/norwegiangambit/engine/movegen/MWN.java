@@ -17,7 +17,7 @@ public class MWN extends MSimple{
 		MOVEDATA.MD_N[from*2]=B;
 		for (int i = 0; i < KNIGHT_MOVES.length; i++)
 			add(KNIGHT_MOVES[i]);
-		MOVEDATA.MD_N[from*2+1]=E;
+		MOVEDATA.MD_N[from*2+1]=n;
 		addBreakers();
 	}
 
@@ -26,7 +26,7 @@ public class MWN extends MSimple{
 		if (inside(to, from)){
 			long bitmap = assemble(IConst.WN, from, to, CASTLING_STATE | HALFMOVES);
 			MOVEDATA.create(bitmap);
-			E+=6;
+			n+=6;
 			for (int i = 0; i < 5; i++){
 				int c = WCAPTURES[i];
 				MOVEDATA.capture(bitmap, c); 

@@ -27,6 +27,9 @@ public class MOVEDATA {
 	public final static int MD_KCK=1089;
 	public final static int MD_KCQ2=1090;
 	public final static int MD_KCK2=1091;
+	public final static int	MD_KX=1092;		// King moves - could castle both sides
+	public final static int MD_KXQ=1122;	// King moves - could castle queen sides
+	public final static int MD_KXK=1152;	// King moves - could castle king sides
 
 	// Simple - King & kNight
 	// B->E (Q,K follows)

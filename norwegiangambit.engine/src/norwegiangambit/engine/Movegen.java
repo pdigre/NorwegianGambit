@@ -464,9 +464,11 @@ public class Movegen implements IConst{
 
 	private void genKing() {
 		MSimple mvs=wNext?MWK.MOVES[oKingpos]:MBK.MOVES[oKingpos]; 
-		if(oKingpos!= (wNext?WK_STARTPOS:BK_STARTPOS) || !(ock || ocq))
-			genKingMoves(mvs.B,mvs.E, mvs.K, mvs.Q);
-		else {
+		if(oKingpos!= (wNext?WK_STARTPOS:BK_STARTPOS) || !(ock || ocq)) {
+			int e = MOVEDATA.MD_K[oKingpos*2+1];
+			int b = MOVEDATA.MD_K[oKingpos*2];
+			genKingMoves(b,e, e+1, e);
+		} else {
 			int i=(ocq?(ock?MWK.XB:MWK.XQB):(ock?MWK.XKB:0));
 			genKingMoves(i,i+30, mvs.K, mvs.Q);
 		}

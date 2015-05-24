@@ -2,19 +2,19 @@ package norwegiangambit.engine.movegen;
 
 public abstract class MSimple extends MBase {
 
-	public int B,E;
+	public int B,n;
 
 	public MSimple(int from) {
 		super(from);
-		B=MOVEDATA.nrm_cnt;
-		E=B;
+		n=MOVEDATA.nrm_cnt;
+		B=n;
 	}
 
 	protected void addBreakers() {
 		MOVEDATA.nrm_cnt+=2;
-		Q=E;
-		MOVEDATA.ALL[E] = q;
-		K=E+1;
-		MOVEDATA.ALL[E+1] = k;
+		Q=n;
+		MOVEDATA.ALL[n] = q;
+		K=n+1;
+		MOVEDATA.ALL[n+1] = k;
 	}
 }
