@@ -5,13 +5,13 @@ import norwegiangambit.util.IConst;
 
 public class MBR extends MRook implements IBlack{
 
-	public static MRook QLINE,KLINE;
-	public static MBR[] MOVES=new MBR[64];
 	public static void init() {
+		MRook QLINE,KLINE;
+		MBR[] MOVES=new MBR[64];
 		for (int from = 0; from < 64; from++) {
 			MBR m = new MBR(from);
 			m.SLIDES=m.rookSlides(from,IConst.BR,BCAPTURES);
-			m.register(MOVEDATA.MD_R);
+			m.register(MOVEDATA.MD_R,m.SLIDES);
 			MOVES[from] = m;
 		}
 

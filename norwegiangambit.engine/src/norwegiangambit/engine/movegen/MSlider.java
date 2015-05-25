@@ -6,11 +6,7 @@ import norwegiangambit.util.IConst;
 
 public abstract class MSlider extends MBase {
 
-	public int[][] SLIDES;
-	public int[] B;
-	public int[] E;
 	int n;
-
 	public static int[] DIR_QUEEN=new int[]{UP + LEFT,UP + RIGHT,DOWN + LEFT,DOWN + RIGHT,UP,DOWN,LEFT,RIGHT};
 	public static int[] DIR_ROOK=new int[]{UP,DOWN,LEFT,RIGHT};
 	public static int[] DIR_BISHOP=new int[]{UP + LEFT,UP + RIGHT,DOWN + LEFT,DOWN + RIGHT};
@@ -24,7 +20,7 @@ public abstract class MSlider extends MBase {
 
 	public MSlider(int from) {
 		super(from);
-		n=this instanceof MSliderSpecial?MOVEDATA.brk_cnt:MOVEDATA.nrm_cnt;
+		n=MOVEDATA.nrm_cnt;
 	}
 
 	public int[] slide(int type, int offset) {
@@ -43,39 +39,15 @@ public abstract class MSlider extends MBase {
 		return makeArray(list);
 	}
 
-	public void register(int[] offsets) {
-		B=new int[SLIDES.length];
-		E=new int[SLIDES.length];
-		int off = SLIDES.length*2*from;
-		for (int i = 0; i < SLIDES.length; i++) {
-			B[i]=n;
-			offsets[off+i*2]=n-MOVEDATA.color_offset;
-			n+=SLIDES[i].length;
-			E[i]=n;
-			offsets[off+i*2+1]=n-MOVEDATA.color_offset;
-		}
-		MOVEDATA.nrm_cnt+=2;
-		Q=n;
-		MOVEDATA.ALL[n] = q;
-		K=n+1;
-		MOVEDATA.ALL[n+1] = k;
-	}
-
 	public void register(int[] offsets,int[][] SLIDES) {
-		B=new int[SLIDES.length];
-		E=new int[SLIDES.length];
 		int off = SLIDES.length*2*from;
 		for (int i = 0; i < SLIDES.length; i++) {
-			B[i]=n;
 			offsets[off+i*2]=n-MOVEDATA.color_offset;
 			n+=SLIDES[i].length;
-			E[i]=n;
 			offsets[off+i*2+1]=n-MOVEDATA.color_offset;
 		}
 		MOVEDATA.nrm_cnt+=2;
-		Q=n;
 		MOVEDATA.ALL[n] = q;
-		K=n+1;
 		MOVEDATA.ALL[n+1] = k;
 	}
 }

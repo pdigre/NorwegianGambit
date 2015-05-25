@@ -5,13 +5,13 @@ import norwegiangambit.util.IConst;
 
 public class MWR extends MRook{
 
-	public static MRook QLINE,KLINE;
-	public static MWR[] MOVES=new MWR[64];
 	public static void init() {
+		MWR[] MOVES=new MWR[64];
+		MRook QLINE,KLINE;
 		for (int from = 0; from < 64; from++) {
 			MWR m = new MWR(from);
 			m.SLIDES=m.rookSlides(from,IConst.WR,WCAPTURES);
-			m.register(MOVEDATA.MD_R);
+			m.register(MOVEDATA.MD_R,m.SLIDES);
 			MOVES[from] = m;
 		}
 

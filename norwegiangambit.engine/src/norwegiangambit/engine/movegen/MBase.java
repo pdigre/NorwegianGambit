@@ -33,7 +33,6 @@ public abstract class MBase implements IConst{
 		return zobrist.keyCastling(castling);
 	}
 
-	public int Q,K;
 	public MOVEDATAX q,k;
 	
 	final public int from;

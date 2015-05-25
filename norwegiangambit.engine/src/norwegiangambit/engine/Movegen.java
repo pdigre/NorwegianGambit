@@ -3,15 +3,8 @@ package norwegiangambit.engine;
 import java.util.Arrays;
 
 import norwegiangambit.engine.movegen.ENPASSANT;
-import norwegiangambit.engine.movegen.MBB;
-import norwegiangambit.engine.movegen.MBQ;
-import norwegiangambit.engine.movegen.MBR;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.engine.movegen.MOVEDATAX;
-import norwegiangambit.engine.movegen.MSlider;
-import norwegiangambit.engine.movegen.MWB;
-import norwegiangambit.engine.movegen.MWQ;
-import norwegiangambit.engine.movegen.MWR;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.BitBoard;
 import norwegiangambit.util.FEN;
@@ -346,9 +339,9 @@ public class Movegen implements IConst{
 					pinners|=pinner;
 					if((pinner&aDiag)!=0){	// BISHOP / QUEEN
 						if((pinner&aQueens)!=0){  	// QUEEN
-							slide(wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 4,0,4);
+							slide2(attacker,between, 4,0,4,MOVEDATA.MD_Q,from,8);
 						} else {
-							slide(wNext?MWB.MOVES[from]:MBB.MOVES[from],attacker,between, 4,0,4);
+							slide2(attacker,between, 4,0,4,MOVEDATA.MD_B,from,4);
 						}
 					} else if((pinner&aPawns)!=0){  // PAWN CAPTURE
 						int ctype = ctype(attacker);
@@ -398,9 +391,9 @@ public class Movegen implements IConst{
 					pinners|=pinner;
 					if((pinner&aLine)!=0){		// ROOK / QUEEN
 						if((pinner&aQueens)!=0){	// QUEEN
-							slide(wNext?MWQ.MOVES[from]:MBQ.MOVES[from],attacker,between, 4,4,8);
+							slide2(attacker,between, 4,4,8,MOVEDATA.MD_Q,from,8);
 						} else {
-							slide(wNext?MWR.MOVES[from]:MBR.MOVES[from],attacker,between, 3,0,4);
+							slide2(attacker,between, 3,0,4,MOVEDATA.MD_R,from,4);
 						}
 					} else if((pinner&aPawns)!=0){  // PAWN FORWARD
 						if(wNext){
@@ -488,96 +481,50 @@ public class Movegen implements IConst{
 	}
 
 	private void genQueen(long from, long occupied,long capture,long mask) {
-		MSlider[] mvs = wNext?MWQ.MOVES:MBQ.MOVES;
 		while(from!=0){
 			int sq = Long.numberOfTrailingZeros(from);
 			from ^= 1L << sq;
-//			genSlides2(occupied, capture, mask, mvs[sq],4);
-			genSlides2(occupied, capture, mask, MOVEDATA.MD_Q,8,sq,4,mvs[sq]);
+			genSlides(occupied, capture, mask, 4,MOVEDATA.MD_Q,8,sq);
 		}
 	}
 
 	private void genBishop(long from, long occupied,long capture,long mask) {
-		MSlider[] mvs = wNext?MWB.MOVES:MBB.MOVES;
 		while(from!=0){
 			int sq = Long.numberOfTrailingZeros(from);
 			from ^= 1L << sq;
-			genSlides2(occupied, capture, mask, MOVEDATA.MD_B,4,sq,2,mvs[sq]);
+			genSlides(occupied, capture, mask, 2,MOVEDATA.MD_B,4,sq);
 		}
 	}
 
 	private void genRook(long from, long occupied,long capture,long mask) {
-		MSlider[] mvs = wNext?MWR.MOVES:MBR.MOVES;
-		MSlider kline = wNext?MWR.KLINE:MBR.KLINE;
-		MSlider qline = wNext?MWR.QLINE:MBR.QLINE;
 		while(from!=0){
 			int sq = Long.numberOfTrailingZeros(from);
 			from ^= 1L << sq;
 			// If castling opportunities will be broken then special Zobrist
 			if(sq==orq){
 				if(ocq ){
-					genSlides(occupied, capture, mask, qline,3);
-//					genSlides2(occupied, capture, mask, wNext?MOVEDATA.MD_RQW:MOVEDATA.MD_RQB,4,0,3,qline);
+					genSlides(occupied, capture, mask, 3, wNext?MOVEDATA.MD_RQW:MOVEDATA.MD_RQB,4,0);
 					continue;
 				}
 			} else if(sq==ork){
 				if(ock ){
-					genSlides(occupied, capture, mask, kline,3);
-//					genSlides2(occupied, capture, mask, wNext?MOVEDATA.MD_RKW:MOVEDATA.MD_RKB,4,0,3,kline);
+					genSlides(occupied, capture, mask, 3, wNext?MOVEDATA.MD_RKW:MOVEDATA.MD_RKB,4,0);
 					continue;
 				}
 			}
-//			genSlides(occupied, capture, mask, mvs[sq],3);
-			genSlides2(occupied, capture, mask, MOVEDATA.MD_R,4,sq,3,mvs[sq]);
-		}
-	}
-	
-	private void genSlides(long occupied, long capture, long mask, MSlider mv, int val) {
-		int n = mv.B.length;
-		int k = mv.K;
-		int q = mv.Q;
-		for (int j = 0; j < n; j++) {
-			int b = mv.B[j];
-			int e = mv.E[j];
-			while (b < e) {
-				long bto = MOVEDATA.getBTo(b+5);
-				if ((occupied & bto) != 0) {
-					if ((capture & bto & mask) != 0) {
-						int c = ctype(bto);
-						if(c==3 && bto==1L<<erk  && eck){ // Enemy Rook -> no castling king side
-							capture(k, val, c, bto);
-						}else if(c==3 && bto==1L<<erq && ecq){ // Enemy Rook -> no castling queen side
-							capture(q, val, c, bto);
-						}else{
-							capture(b + c, val, c, bto);
-						}
-					}
-					break;
-				} else {
-					if((bto&mask)!=0){
-						add4(b+5);
-					}
-					b += 6;
-				}
-			}
+			genSlides(occupied, capture, mask, 3,MOVEDATA.MD_R,4,sq);
 		}
 	}
 
-	private void genSlides2(long occupied, long capture, long mask, int[] slider, int n, int sq, int val,MSlider mv) {
+	private void genSlides(long occupied, long capture, long mask, int val, int[] slider, int n, int sq) {
 		int offset = sq*n*2;
 		int q = slider[offset+2*n-1];
 		int k = q+1;
-		if(slider==null || mv==null)
-			System.out.println("hi");
-		if((q|mdoffset)!=(mv.Q|mdoffset) || (k|mdoffset)!=(mv.K|mdoffset))
-			System.out.println("Hi");
 		for (int j = 0; j < n; j++) {
 			int b = slider[offset+j*2];
 			int e = slider[offset+1+j*2];
-			if((b|mdoffset)!=(mv.B[j]|mdoffset) || (e|mdoffset)!=(mv.E[j]|mdoffset))
-				System.out.println("Hi");
 			while (b < e) {
-				long bto = MOVEDATA.getBTo(b+5);
+				long bto = MOVEDATA.getBTo(b+5+mdoffset);
 				if ((occupied & bto) != 0) {
 					if ((capture & bto & mask) != 0) {
 						int c = ctype(bto);
@@ -679,10 +626,13 @@ public class Movegen implements IConst{
 		}
 	}
 
-	private void slide(MSlider mv,long attacker,long between, int type,int from,int to) {
+	private void slide2(long attacker,long between, int type,int from,int to,int[] slider,int sq,int n) {
+		int offset = sq*n*2;
+		int q = slider[offset+2*n-1];
+		int k = q+1;
 		for (int j = from; j < to; j++) {
-			int b = mv.B[j];
-			int e = mv.E[j];
+			int b = slider[offset+j*2];
+			int e = slider[offset+1+j*2];
 			while (b < e) {
 				long bto = MOVEDATA.getBTo(b + 5);
 				if((between&bto)!=0){
@@ -694,9 +644,9 @@ public class Movegen implements IConst{
 					int c = ctype(bto);
 					if(c==3){
 						if(bto==1L<<erk && eck)
-							capture(mv.K, type, c, bto);
+							capture(k, type, c, bto);
 						 else if(bto==1L<<erq && ecq)
-							capture(mv.Q, type, c, bto);
+							capture(q, type, c, bto);
 						 else 
 							capture(b+c, type, c, bto);
 					} else {

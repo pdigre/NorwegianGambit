@@ -227,13 +227,13 @@ public class MOVEDATA {
 	}
 
 	public static int add(MOVEDATA md) {
-		if(md instanceof MOVEDATAX){
-			ALL[brk_cnt++] = md;
-			return brk_cnt-1;
-		} else {
-			ALL[nrm_cnt++] = md;
-			return nrm_cnt-1;
-		}
+		ALL[nrm_cnt++] = md;
+		return nrm_cnt-1;
+	}
+
+	public static int add3(MOVEDATA md) {
+		ALL[nrm_cnt++] = md;
+		return nrm_cnt-1;
 	}
 
 
