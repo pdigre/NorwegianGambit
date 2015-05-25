@@ -3,25 +3,14 @@ package norwegiangambit.engine.movegen;
 import norwegiangambit.util.IConst;
 
 public class MWK extends MSimple {
-	public static int XB,XQB,XKB; // Castling breakers
-
-	public static MWK[] MOVES;
-	
 	public static void init() {
-		MOVES=new MWK[64];
 		for (int from = 0; from < 64; from++)
-			MOVES[from] = new MWK(from);
+			new MWK(from);
 		int b=MOVEDATA.MD_K[WK_STARTPOS*2];
 		int e=MOVEDATA.MD_K[WK_STARTPOS*2+1];
-
-		XB=MOVEDATA.brk_cnt;
-		castlingKing(b,e,CANCASTLE_WHITE);
-
-		XQB=MOVEDATA.brk_cnt;
-		castlingKing(b,e,CANCASTLE_WHITEQUEEN);
-
-		XKB=MOVEDATA.brk_cnt;
-		castlingKing(b,e,CANCASTLE_WHITEKING);
+		castlingKing2(b,e,CANCASTLE_WHITE,MOVEDATA.MD_KX);
+		castlingKing2(b,e,CANCASTLE_WHITEQUEEN,MOVEDATA.MD_KXQ);
+		castlingKing2(b,e,CANCASTLE_WHITEKING,MOVEDATA.MD_KXK);
 
 		long cq = assemble(IConst.WK, WK_STARTPOS, WK_STARTPOS - 2, CANCASTLE_BLACK | SPECIAL);
 		MOVEDATAX.create2(cq,CANCASTLE_WHITE,MOVEDATA.MD_KCQ);
@@ -33,7 +22,7 @@ public class MWK extends MSimple {
 
 	public MWK(int from) {
 		super(from);
-		MOVEDATA.MD_K[from*2]=B;
+		MOVEDATA.MD_K[from*2]=n;
 		for (int i : new int[]{UP,DOWN,LEFT,RIGHT,UP + LEFT,UP + RIGHT,DOWN + LEFT,DOWN + RIGHT})
 			add(i);
 		MOVEDATA.MD_K[from*2+1]=n;

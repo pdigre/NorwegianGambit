@@ -1,19 +1,15 @@
 package norwegiangambit.engine;
 
 import java.util.Arrays;
-import java.util.function.Consumer;
 
 import norwegiangambit.engine.movegen.ENPASSANT;
 import norwegiangambit.engine.movegen.MBB;
-import norwegiangambit.engine.movegen.MBK;
 import norwegiangambit.engine.movegen.MBQ;
 import norwegiangambit.engine.movegen.MBR;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.engine.movegen.MOVEDATAX;
-import norwegiangambit.engine.movegen.MSimple;
 import norwegiangambit.engine.movegen.MSlider;
 import norwegiangambit.engine.movegen.MWB;
-import norwegiangambit.engine.movegen.MWK;
 import norwegiangambit.engine.movegen.MWQ;
 import norwegiangambit.engine.movegen.MWR;
 import norwegiangambit.util.BITS;
@@ -296,7 +292,7 @@ public class Movegen implements IConst{
 		tot1+=System.nanoTime()-t1;
 		long t2=System.nanoTime();
 		long pfree = free & aPawns;
-		if (wNext) {											// 1.310 of 18 secs   Pawn
+		if (wNext) {											// 1.250 of 18 secs   Pawn
 			long open1 = pfree&~(aOccupied>>8);
 			long open2 = open1&0xFF00L&(~(aOccupied>>8)>>8);
 			genPawn(pfree,open1,open2,eOccupied);
@@ -463,19 +459,16 @@ public class Movegen implements IConst{
 	}
 
 	private void genKing() {
-		MSimple mvs=wNext?MWK.MOVES[oKingpos]:MBK.MOVES[oKingpos]; 
 		if(oKingpos!= (wNext?WK_STARTPOS:BK_STARTPOS) || !(ock || ocq)) {
-			int e = MOVEDATA.MD_K[oKingpos*2+1];
-			int b = MOVEDATA.MD_K[oKingpos*2];
-			genKingMoves(b,e, e+1, e);
+			genKingMoves(MOVEDATA.MD_K[oKingpos*2],MOVEDATA.MD_K[oKingpos*2+1]);
 		} else {
-			int i=(ocq?(ock?MWK.XB:MWK.XQB):(ock?MWK.XKB:0));
-			genKingMoves(i,i+30, mvs.K, mvs.Q);
+			int i=(ocq?(ock?MOVEDATA.MD_KX:MOVEDATA.MD_KXQ):(ock?MOVEDATA.MD_KXK:0));
+			genKingMoves(i,i+30);
 		}
 	}
 
-	private void genKingMoves(int B, int E, int k, int q) {
-		for (int s=B;s<E;s+=6){
+	private void genKingMoves(int b, int e) {
+		for (int s=b;s<e;s+=6){
 			long bto = MOVEDATA.getBTo(s|mdoffset);
 			if ((aOccupied & bto) == 0) {
 				if((bto&~eAttacked)!=0L)
@@ -484,9 +477,9 @@ public class Movegen implements IConst{
 				if ((eOccupied & bto & ~eAttacked) != 0) {
 					int c = ctype(bto);
 					if(c==3 && bto==1L<<erk && eck)
-						add4(k); // Enemy Rook -> no castling king side
+						add4(e+1); // Enemy Rook -> no castling king side
 					else if(c==3 && bto==1L<<erq && ecq)
-						add4(q); // Enemy Rook -> no castling queen side
+						add4(e); // Enemy Rook -> no castling queen side
 					else
 						add4(s+1+c);
 				}
@@ -595,17 +588,17 @@ public class Movegen implements IConst{
 	private void genPawn(long from, long open1, long open2, long captures) {
 		while(open1!=0){
 			int sq = Long.numberOfTrailingZeros(open1);
+			open1 &= open1-1;
 			if(wNext?sq>47:sq<16){
 				add1_promo(MOVEDATA.MD_PP+4*(sq%8));
 			} else {
 				add4(MOVEDATA.MD_P1+sq);
 			}
-			open1 &= open1-1;
 		}
 		while(open2!=0){
 			int sq = Long.numberOfTrailingZeros(open2);
-			add4(MOVEDATA.MD_P2+sq%8);
 			open2 &= open2-1;
+			add4(MOVEDATA.MD_P2+sq%8);
 		}
 		long e=captures|(1L<<epsq);
 		if(wNext){
@@ -643,13 +636,6 @@ public class Movegen implements IConst{
 		}
 	}
 
-	final void bitscan(long m, Consumer<Integer> c){
-		while(m!=0){
-			c.accept(Long.numberOfTrailingZeros(m));
-			m &= m-1;
-		}
-	}
-	
 	private void slide(MSlider mv,long attacker,long between, int type,int from,int to) {
 		for (int j = from; j < to; j++) {
 			int b = mv.B[j];

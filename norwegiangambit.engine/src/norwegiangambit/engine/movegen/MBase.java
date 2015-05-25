@@ -68,7 +68,7 @@ public abstract class MBase implements IConst{
 	
 	public static void castlingKing2(int B, int E,long castling,int offset) {
 		for(int i=B;i<E;i++)
-			MOVEDATAX.create2((MOVEDATA.ALL[i].bitmap),castling,offset);
+			MOVEDATAX.create2((MOVEDATA.ALL[i].bitmap),castling,offset+i-B);
 	}
 	
 	public static int[][] castlingKing(int[][] M,long castling) {

@@ -14,7 +14,7 @@ public class MWN extends MSimple{
 	
 	public MWN(int from) {
 		super(from);
-		MOVEDATA.MD_N[from*2]=B;
+		MOVEDATA.MD_N[from*2]=n;
 		for (int i = 0; i < KNIGHT_MOVES.length; i++)
 			add(KNIGHT_MOVES[i]);
 		MOVEDATA.MD_N[from*2+1]=n;

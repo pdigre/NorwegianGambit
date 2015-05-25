@@ -4,21 +4,14 @@ import norwegiangambit.util.IConst;
 
 public class MBK extends MSimple implements IBlack {
 
-	public static int XB,XQB,XKB; // Castling breakers
-	
-	public static MBK[] MOVES;
 	public static void init() {
-		MOVES=new MBK[64];
 		for (int from = 0; from < 64; from++)
-			MOVES[from] = new MBK(from);
+			new MBK(from);
 		int b=MOVEDATA.MD_K[BK_STARTPOS*2]+MOVEDATA.color_offset;
 		int e=MOVEDATA.MD_K[BK_STARTPOS*2+1]+MOVEDATA.color_offset;
-		XB=MOVEDATA.brk_cnt;
-		castlingKing(b,e,CANCASTLE_BLACK);
-		XQB=MOVEDATA.brk_cnt;
-		castlingKing(b,e,CANCASTLE_BLACKQUEEN);
-		XKB=MOVEDATA.brk_cnt;
-		castlingKing(b,e,CANCASTLE_BLACKKING);
+		castlingKing2(b,e,CANCASTLE_BLACK,MOVEDATA.MD_KX);
+		castlingKing2(b,e,CANCASTLE_BLACKQUEEN,MOVEDATA.MD_KXQ);
+		castlingKing2(b,e,CANCASTLE_BLACKKING,MOVEDATA.MD_KXK);
 		
 		long cq = assemble(IConst.BK, BK_STARTPOS, BK_STARTPOS - 2, CANCASTLE_WHITE | SPECIAL);
 		MOVEDATAX.create2(cq,CANCASTLE_BLACK,MOVEDATA.MD_KCQ);
