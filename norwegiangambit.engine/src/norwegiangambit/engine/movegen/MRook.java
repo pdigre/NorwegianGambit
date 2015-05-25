@@ -6,8 +6,6 @@ import norwegiangambit.util.IConst;
 
 public abstract class MRook extends MSlider {
 
-	public int[][] SLIDES;
-
 	public MRook(int from) {
 		super(from);
 	}

@@ -4,12 +4,9 @@ import norwegiangambit.util.IConst;
 
 public class MBN extends MSimple implements IBlack {
 
-	public static MSimple[] MOVES;
-
 	public static void init() {
-		MOVES=new MBN[64];
 		for (int from = 0; from < 64; from++)
-			MOVES[from] = new MBN(from);
+			new MBN(from);
 	}
 
 	public MBN(int from) {
