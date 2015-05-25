@@ -30,7 +30,7 @@ public class MWN extends MSimple{
 			for (int i = 0; i < 5; i++){
 				int c = WCAPTURES[i];
 				MOVEDATA.capture(bitmap, c); 
-				rookCapture2(to, bitmap, c);
+				rookCapture(to, bitmap, c);
 			}
 		}
 	}

@@ -81,6 +81,6 @@ public class MBP  extends MPawn implements IBlack{
 
 	private void cpromotesx(int to,int offset) {
 		for (int p = 0; p < 4; p++)
-			MOVEDATAX.cpromote2(from,to, BPROMOTES[p], IConst.BP, IConst.WR,offset+p);
+			MOVEDATAX.capturePromote(from,to, BPROMOTES[p], IConst.BP, IConst.WR,offset+p);
 	}
 }

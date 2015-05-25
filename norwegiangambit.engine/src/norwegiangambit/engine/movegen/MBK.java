@@ -9,9 +9,9 @@ public class MBK extends MSimple implements IBlack {
 			new MBK(from);
 		int b=MOVEDATA.MD_K[BK_STARTPOS*2]+MOVEDATA.color_offset;
 		int e=MOVEDATA.MD_K[BK_STARTPOS*2+1]+MOVEDATA.color_offset;
-		castlingKing2(b,e,CANCASTLE_BLACK,MOVEDATA.MD_KX);
-		castlingKing2(b,e,CANCASTLE_BLACKQUEEN,MOVEDATA.MD_KXQ);
-		castlingKing2(b,e,CANCASTLE_BLACKKING,MOVEDATA.MD_KXK);
+		castlingKing(b,e,CANCASTLE_BLACK,MOVEDATA.MD_KX);
+		castlingKing(b,e,CANCASTLE_BLACKQUEEN,MOVEDATA.MD_KXQ);
+		castlingKing(b,e,CANCASTLE_BLACKKING,MOVEDATA.MD_KXK);
 		
 		long cq = assemble(IConst.BK, BK_STARTPOS, BK_STARTPOS - 2, CANCASTLE_WHITE | SPECIAL);
 		MOVEDATAX.create2(cq,CANCASTLE_BLACK,MOVEDATA.MD_KCQ);
@@ -37,7 +37,7 @@ public class MBK extends MSimple implements IBlack {
 			for (int i = 0; i < 5; i++){
 				int c = BCAPTURES[i];
 				MOVEDATA.capture(bitmap, c); 
-				rookCapture2(to, bitmap, c);
+				rookCapture(to, bitmap, c);
 			}
 		}
 	}

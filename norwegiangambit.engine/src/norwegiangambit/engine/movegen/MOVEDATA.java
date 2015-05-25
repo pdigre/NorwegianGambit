@@ -1,7 +1,6 @@
 package norwegiangambit.engine.movegen;
 
 import static norwegiangambit.util.ShortIntPairs.SS;
-import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
@@ -27,9 +26,12 @@ public class MOVEDATA {
 	public final static int MD_KCK=1089;
 	public final static int MD_KCQ2=1090;
 	public final static int MD_KCK2=1091;
-	public final static int	MD_KX=1092;		// King moves - could castle both sides
-	public final static int MD_KXQ=1122;	// King moves - could castle queen sides
-	public final static int MD_KXK=1152;	// King moves - could castle king sides
+	public final static int	MD_KX=1092;		// 32 King moves - could castle both sides
+	public final static int MD_KXQ=1122;	// 32 King moves - could castle queen sides
+	public final static int MD_KXK=1152;	// 32 King moves - could castle king sides
+	public final static int MD_RQ=1182;	// 86 - Rook move - could castle	
+	public final static int MD_RK=1268;	// 86 - Rook move - could castle	
+	
 
 	// Simple - King & kNight
 	// B->E (Q,K follows)
@@ -44,8 +46,10 @@ public class MOVEDATA {
 	public static int[] MD_B=new int[512];	// 64 - 4Slider set (B[64*4] E[64*4])
 	public static int[] MD_R=new int[512];	// 64 - 4Slider set (B[64*4] E[64*4])
 
-	public static int[] MD_RQ=new int[8];  	// 1 - 4Slider set  (B[4] E[4])
-	public static int[] MD_RK=new int[8];  	// 1 - 4Slider set  (B[4] E[4])
+	public static int[] MD_RQW=new int[8];  	// 1 - 4Slider set  (B[4] E[4])
+	public static int[] MD_RKW=new int[8];  	// 1 - 4Slider set  (B[4] E[4])
+	public static int[] MD_RQB=new int[8];  	// 1 - 4Slider set  (B[4] E[4])
+	public static int[] MD_RKB=new int[8];  	// 1 - 4Slider set  (B[4] E[4])
 	
 	//     1 0         NULL-MOVE
 	//     8 1-8       ENPASSANT
@@ -158,13 +162,6 @@ public class MOVEDATA {
 	private int add(int piece, int sq) {
 		return SS(MBase.psqt(sq, piece));
 		
-	}
-
-	public static void main(String[] args) {
-		StartGame pos = new StartGame("n1R5/PP1k4/1n6/8/8/8/4Kppp/5N1N b - - 2 3");
-		System.out.println(pos);
-		pos.make(MOVEDATAX.cpromote(14,7, IConst.BB, IConst.BP, IConst.WN),pos.bitmap);
-		System.out.println(pos);
 	}
 
 	public static int create(long bitmap){

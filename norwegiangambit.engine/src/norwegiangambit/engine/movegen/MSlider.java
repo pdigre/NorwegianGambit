@@ -35,7 +35,7 @@ public abstract class MSlider extends MBase {
 			for (int i = 0; i < 5; i++) {
 				int c = (type & 8) > 0?BCAPTURES[i]:WCAPTURES[i];
 				list.add(MOVEDATA.capture(bitmap, c));
-				rookCapture2(to, bitmap, c);
+				rookCapture(to, bitmap, c);
 			}
 			list.add(MOVEDATA.create(bitmap));
 			to += offset;

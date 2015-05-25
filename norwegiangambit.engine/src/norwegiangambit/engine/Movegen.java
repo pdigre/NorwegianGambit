@@ -517,12 +517,13 @@ public class Movegen implements IConst{
 			if(sq==orq){
 				if(ocq ){
 					genSlides(occupied, capture, mask, qline,3);
-//					genSlides2(occupied, capture, mask, MOVEDATA.MD_RQ,4,sq,3,qline);
+//					genSlides2(occupied, capture, mask, wNext?MOVEDATA.MD_RQW:MOVEDATA.MD_RQB,4,0,3,qline);
 					continue;
 				}
 			} else if(sq==ork){
 				if(ock ){
 					genSlides(occupied, capture, mask, kline,3);
+//					genSlides2(occupied, capture, mask, wNext?MOVEDATA.MD_RKW:MOVEDATA.MD_RKB,4,0,3,kline);
 					continue;
 				}
 			}
@@ -566,12 +567,14 @@ public class Movegen implements IConst{
 		int offset = sq*n*2;
 		int q = slider[offset+2*n-1];
 		int k = q+1;
-		if(q+mdoffset!=mv.Q || k+mdoffset!=mv.K)
+		if(slider==null || mv==null)
+			System.out.println("hi");
+		if((q|mdoffset)!=(mv.Q|mdoffset) || (k|mdoffset)!=(mv.K|mdoffset))
 			System.out.println("Hi");
 		for (int j = 0; j < n; j++) {
 			int b = slider[offset+j*2];
 			int e = slider[offset+1+j*2];
-			if(b+mdoffset!=mv.B[j] || e+mdoffset!=mv.E[j])
+			if((b|mdoffset)!=(mv.B[j]|mdoffset) || (e|mdoffset)!=(mv.E[j]|mdoffset))
 				System.out.println("Hi");
 			while (b < e) {
 				long bto = MOVEDATA.getBTo(b+5);

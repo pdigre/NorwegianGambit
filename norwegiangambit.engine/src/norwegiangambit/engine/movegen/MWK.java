@@ -8,9 +8,9 @@ public class MWK extends MSimple {
 			new MWK(from);
 		int b=MOVEDATA.MD_K[WK_STARTPOS*2];
 		int e=MOVEDATA.MD_K[WK_STARTPOS*2+1];
-		castlingKing2(b,e,CANCASTLE_WHITE,MOVEDATA.MD_KX);
-		castlingKing2(b,e,CANCASTLE_WHITEQUEEN,MOVEDATA.MD_KXQ);
-		castlingKing2(b,e,CANCASTLE_WHITEKING,MOVEDATA.MD_KXK);
+		castlingKing(b,e,CANCASTLE_WHITE,MOVEDATA.MD_KX);
+		castlingKing(b,e,CANCASTLE_WHITEQUEEN,MOVEDATA.MD_KXQ);
+		castlingKing(b,e,CANCASTLE_WHITEKING,MOVEDATA.MD_KXK);
 
 		long cq = assemble(IConst.WK, WK_STARTPOS, WK_STARTPOS - 2, CANCASTLE_BLACK | SPECIAL);
 		MOVEDATAX.create2(cq,CANCASTLE_WHITE,MOVEDATA.MD_KCQ);
@@ -38,7 +38,7 @@ public class MWK extends MSimple {
 			for (int i = 0; i < 5; i++){
 				int c = WCAPTURES[i];
 				MOVEDATA.capture(bitmap, c); 
-				rookCapture2(to, bitmap, c);
+				rookCapture(to, bitmap, c);
 			}
 		}
 	}

@@ -28,7 +28,7 @@ public class MBN extends MSimple implements IBlack {
 			for (int i = 0; i < 5; i++){
 				int c = BCAPTURES[i];
 				MOVEDATA.capture(bitmap, c); 
-				rookCapture2(to, bitmap, c);
+				rookCapture(to, bitmap, c);
 			}
 		}
 	}

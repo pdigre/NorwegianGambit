@@ -9,10 +9,10 @@ import norwegiangambit.util.polyglot.IZobristKey;
 
 public abstract class MBase implements IConst{
 	
-	final static int[] WPROMOTES=new int[]{IConst.WN,IConst.WB,IConst.WR,IConst.WQ};
-	final static int[] BPROMOTES=new int[]{IConst.BN,IConst.BB,IConst.BR,IConst.BQ};
-	final static int[] WCAPTURES=new int[]{IConst.BP,IConst.BN,IConst.BB,IConst.BR,IConst.BQ};
-	final static int[] BCAPTURES=new int[]{IConst.WP,IConst.WN,IConst.WB,IConst.WR,IConst.WQ};
+	final static int[] WPROMOTES=new int[]{WN,WB,WR,WQ};
+	final static int[] BPROMOTES=new int[]{BN,BB,BR,BQ};
+	final static int[] WCAPTURES=new int[]{BP,BN,BB,BR,BQ};
+	final static int[] BCAPTURES=new int[]{WP,WN,WB,WR,WQ};
 	
 	public static PSQT psqt; 
 	public static IZobristKey zobrist;
@@ -54,82 +54,34 @@ public abstract class MBase implements IConst{
 		return (((long) score) << 32) | ((int) bitmap);
 	}
 
-	public static int[] checkRook(int[] M,long castling) {
-		int[] x=new int[M.length];
-		for (int i = 0; i < M.length; i++)
-			x[i]=MOVEDATAX.create(MOVEDATA.ALL[M[i]].bitmap^castling,castling);
-		return x;
-	}
-
-	public static void castlingKing(int B, int E,long castling) {
-		for(int i=B;i<E;i++)
-			MOVEDATAX.create((MOVEDATA.ALL[i].bitmap),castling);
-	}
-	
-	public static void castlingKing2(int B, int E,long castling,int offset) {
+	public static void castlingKing(int B, int E,long castling,int offset) {
 		for(int i=B;i<E;i++)
 			MOVEDATAX.create2((MOVEDATA.ALL[i].bitmap),castling,offset+i-B);
 	}
 	
-	public static int[][] castlingKing(int[][] M,long castling) {
-		int[][] x=new int[M.length][];
-		for (int i = 0; i < M.length; i++)
-			x[i]=castling(M[i],castling);
-		return x;
-	}
-	
-	private static int[] castling(int[] m,long mask) {
-		int[] x=new int[m.length];
-		x[m.length-1]=MOVEDATAX.create((MOVEDATA.ALL[m[m.length-1]].bitmap),mask);
-		for (int i = 0; i < m.length-1; i++)
-			x[i]=MOVEDATAX.create((MOVEDATA.ALL[m[i]].bitmap),mask);
-		return x;
-	}
-
-	public void rookCapture2(int to, long bitmap, int captured) {
-		if (captured == IConst.BR) {
-			if (to == IConst.BR_KING_STARTPOS){
-				k=MOVEDATAX.capture3(bitmap, captured);
-			} else if (to == IConst.BR_QUEEN_STARTPOS){
-				q=MOVEDATAX.capture3(bitmap,captured);
-			}
-		}
-		if (captured == IConst.WR) {
-			if (to == IConst.WR_KING_STARTPOS){
-				k=MOVEDATAX.capture3(bitmap, captured);
-			} else if (to == IConst.WR_QUEEN_STARTPOS){
-				q=MOVEDATAX.capture3(bitmap, captured);
-			}
-		}
-	}
-
 	public void rookCapture(int to, long bitmap, int captured) {
-		if (captured == IConst.BR) {
-			if (to == IConst.BR_KING_STARTPOS){
-				k=MOVEDATAX.capture3(bitmap, captured);
-				K=MOVEDATA.add(k);
-			} else if (to == IConst.BR_QUEEN_STARTPOS){
-				q=MOVEDATAX.capture3(bitmap,captured);
-				Q=MOVEDATA.add(q);
+		if (captured == BR) {
+			if (to == BR_KING_STARTPOS){
+				k=MOVEDATAX.rookCapture(bitmap);
+			} else if (to == BR_QUEEN_STARTPOS){
+				q=MOVEDATAX.rookCapture(bitmap);
 			}
 		}
-		if (captured == IConst.WR) {
-			if (to == IConst.WR_KING_STARTPOS){
-				k=MOVEDATAX.capture3(bitmap, captured);
-				K=MOVEDATA.add(k);
-			} else if (to == IConst.WR_QUEEN_STARTPOS){
-				q=MOVEDATAX.capture3(bitmap,captured);
-				Q=MOVEDATA.add(q);
+		if (captured == WR) {
+			if (to == WR_KING_STARTPOS){
+				k=MOVEDATAX.rookCapture(bitmap);
+			} else if (to == WR_QUEEN_STARTPOS){
+				q=MOVEDATAX.rookCapture(bitmap);
 			}
 		}
 	}
 
 	final public static long assemble(int piece, int from, int to, long extra) {
-		return (piece << IConst._PIECE) | (from << IConst._FROM) | (to << IConst._TO) | extra;
+		return (piece << _PIECE) | (from << _FROM) | (to << _TO) | extra;
 	}
 
 	final public static long assemblePromote(int pawn, int promote, int from, int to, long extra) {
-		return (promote << IConst._PIECE) | (from << IConst._FROM) | (to << IConst._TO) | extra;
+		return (promote << _PIECE) | (from << _FROM) | (to << _TO) | extra;
 	}
 
 	/**

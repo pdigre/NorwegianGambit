@@ -81,6 +81,6 @@ public class MWP extends MPawn{
 
 	private void cpromotesx(int to,int offset) {
 		for (int p = 0; p < 4; p++)
-			MOVEDATAX.cpromote2(from,to, WPROMOTES[p], IConst.WP, IConst.BR,offset+p); 
+			MOVEDATAX.capturePromote(from,to, WPROMOTES[p], IConst.WP, IConst.BR,offset+p); 
 	}
 }
