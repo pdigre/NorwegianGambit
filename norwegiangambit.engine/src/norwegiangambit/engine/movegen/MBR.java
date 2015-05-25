@@ -12,28 +12,28 @@ public class MBR extends MRook implements IBlack{
 	public static void init() {
 		for (int from = 0; from < 64; from++) {
 			MBR m = new MBR(from);
+			m.SLIDES=m.rookSlides(from);
+			m.register(MOVEDATA.MD_R);
 			MOVES[from] = m;
 		}
 
 		MBR q = MOVES[BR_QUEEN_STARTPOS];
+
 		QLINE=new MSliderSpecial();
 		QLINE.SLIDES=cline(q.SLIDES,CANCASTLE_BLACKQUEEN);
-		QLINE.register();
-		q.Q=q.SLIDES[1][39];
+		QLINE.register(MOVEDATA.MD_RQ);
 		QLINE.Q=MOVEDATAX.create(MOVEDATA.ALL[q.Q].bitmap^CANCASTLE_BLACKKING,CANCASTLE_BLACKQUEEN|CANCASTLE_WHITEQUEEN);
 
 		MBR k = MOVES[BR_KING_STARTPOS];
+
 		KLINE=new MSliderSpecial();
 		KLINE.SLIDES=cline(k.SLIDES,CANCASTLE_BLACKKING);
-		KLINE.register();
-		k.K=k.SLIDES[1][39];
+		KLINE.register(MOVEDATA.MD_RK);
 		KLINE.K=MOVEDATAX.create(MOVEDATA.ALL[k.K].bitmap^CANCASTLE_BLACKQUEEN,CANCASTLE_BLACKKING|CANCASTLE_WHITEKING);
 	}
 
 	public MBR(int from) {
 		super(from);
-		SLIDES=rookSlides(from);
-		register();
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class MBR extends MRook implements IBlack{
 			for (int i = 0; i < 5; i++) {
 				int c = BCAPTURES[i];
 				list.add(MOVEDATA.capture(bitmap, c));
-				rookCapture(to, bitmap, c);
+				rookCapture2(to, bitmap, c);
 			}
 			list.add(MOVEDATA.create(bitmap));
 			to+=offset;

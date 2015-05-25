@@ -24,7 +24,7 @@ public abstract class MSlider extends MBase {
 			for (int i = 0; i < 5; i++) {
 				int c = (type & 8) > 0?BCAPTURES[i]:WCAPTURES[i];
 				list.add(MOVEDATA.capture(bitmap, c));
-				rookCapture(to, bitmap, c);
+				rookCapture2(to, bitmap, c);
 			}
 			list.add(MOVEDATA.create(bitmap));
 			to += offset;
@@ -32,13 +32,21 @@ public abstract class MSlider extends MBase {
 		return makeArray(list);
 	}
 
-	public void register() {
+	public void register(int[] offsets) {
 		B=new int[SLIDES.length];
 		E=new int[SLIDES.length];
+		int off = SLIDES.length*2*from;
 		for (int i = 0; i < SLIDES.length; i++) {
 			B[i]=n;
+			offsets[off+i*2]=n-MOVEDATA.color_offset;
 			n+=SLIDES[i].length;
 			E[i]=n;
+			offsets[off+i*2+1]=n-MOVEDATA.color_offset;
 		}
+		MOVEDATA.nrm_cnt+=2;
+		Q=n;
+		MOVEDATA.ALL[n] = q;
+		K=n+1;
+		MOVEDATA.ALL[n+1] = k;
 	}
 }

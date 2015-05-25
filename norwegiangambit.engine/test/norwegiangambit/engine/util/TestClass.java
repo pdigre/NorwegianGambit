@@ -34,6 +34,6 @@ public class TestClass {
 		
 //		String txt = Long.lowestOneBit(i)toBinaryString(t);
 //		System.out.println(s+" "+ ".0000000.0000000.0000000.0000000".substring(0, 16-txt.length())+txt);
-		System.out.println("hi");
+//		System.out.println("hi");
 	}
 }

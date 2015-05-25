@@ -10,28 +10,30 @@ public class MWR extends MRook{
 	public static MRook QLINE,KLINE;
 	public static MWR[] MOVES=new MWR[64];
 	public static void init() {
-		for (int from = 0; from < 64; from++)
-			MOVES[from] = new MWR(from);
+		for (int from = 0; from < 64; from++) {
+			MWR m = new MWR(from);
+			m.SLIDES=m.rookSlides(from);
+			m.register(MOVEDATA.MD_R);
+			MOVES[from] = m;
+		}
 
 		MWR q = MOVES[WR_QUEEN_STARTPOS];
+
 		QLINE=new MSliderSpecial();
 		QLINE.SLIDES=cline(q.SLIDES,CANCASTLE_WHITEQUEEN);
-		QLINE.register();
-		q.Q=q.SLIDES[0][39];
+		QLINE.register(MOVEDATA.MD_RQ);
 		QLINE.Q=MOVEDATAX.create(MOVEDATA.ALL[q.Q].bitmap^CANCASTLE_WHITEKING,CANCASTLE_BLACKQUEEN|CANCASTLE_WHITEQUEEN);
 
 		MWR k = MOVES[WR_KING_STARTPOS];
+
 		KLINE=new MSliderSpecial();
 		KLINE.SLIDES=cline(k.SLIDES,CANCASTLE_WHITEKING);
-		KLINE.register();
-		k.K=k.SLIDES[0][39];
+		KLINE.register(MOVEDATA.MD_RK);
 		KLINE.K=MOVEDATAX.create(MOVEDATA.ALL[k.K].bitmap^CANCASTLE_WHITEQUEEN,CANCASTLE_BLACKKING|CANCASTLE_WHITEKING);
 	}
 
 	public MWR(int from) {
 		super(from);
-		SLIDES=rookSlides(from);
-		register();
 	}
 
 	@Override
@@ -44,7 +46,7 @@ public class MWR extends MRook{
 				int c = WCAPTURES[i];
 				int md = MOVEDATA.capture(bitmap, c);
 				list.add(md);
-				rookCapture(to, bitmap, c);
+				rookCapture2(to, bitmap, c);
 			}
 			list.add(MOVEDATA.create(bitmap));
 			to+=dir;

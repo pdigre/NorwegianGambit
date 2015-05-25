@@ -226,7 +226,7 @@ public class MOVEDATA {
 	}
 	
 	public static void stats() {
-		System.out.println("hi");
+//		System.out.println("hi");
 	}
 
 	public static int add(MOVEDATA md) {

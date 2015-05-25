@@ -15,6 +15,6 @@ public class MWB extends MSlider{
 	public MWB(int from) {
 		super(from);
 		SLIDES=new int[][]{slide(IConst.WB, UP + LEFT),slide(IConst.WB, UP + RIGHT),slide(IConst.WB, DOWN + LEFT),slide(IConst.WB, DOWN + RIGHT)};
-		register();
+		register(MOVEDATA.MD_B);
 	}
 }

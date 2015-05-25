@@ -17,6 +17,6 @@ public class MBQ extends MSlider implements IBlack{
 		int[][] DIAG=new int[][]{slide(IConst.BQ, UP + LEFT),slide(IConst.BQ, UP + RIGHT),slide(IConst.BQ, DOWN + LEFT),slide(IConst.BQ, DOWN + RIGHT)};
 		int[][] LINE=new int[][]{slide(IConst.BQ, UP),slide(IConst.BQ, DOWN), slide(IConst.BQ, LEFT),slide(IConst.BQ, RIGHT)};
 		SLIDES=new int[][]{DIAG[0],DIAG[1],DIAG[2],DIAG[3],LINE[0],LINE[1],LINE[2],LINE[3]};
-		register();
+		register(MOVEDATA.MD_Q);
 	}
 }

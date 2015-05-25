@@ -492,7 +492,8 @@ public class Movegen implements IConst{
 		while(from!=0){
 			int sq = Long.numberOfTrailingZeros(from);
 			from ^= 1L << sq;
-			genSlides(occupied, capture, mask, mvs[sq],4);
+//			genSlides2(occupied, capture, mask, mvs[sq],4);
+			genSlides2(occupied, capture, mask, MOVEDATA.MD_Q,8,sq,4,mvs[sq]);
 		}
 	}
 
@@ -501,7 +502,7 @@ public class Movegen implements IConst{
 		while(from!=0){
 			int sq = Long.numberOfTrailingZeros(from);
 			from ^= 1L << sq;
-			genSlides(occupied, capture, mask, mvs[sq],2);
+			genSlides2(occupied, capture, mask, MOVEDATA.MD_B,4,sq,2,mvs[sq]);
 		}
 	}
 
@@ -524,12 +525,15 @@ public class Movegen implements IConst{
 					continue;
 				}
 			}
-			genSlides(occupied, capture, mask, mvs[sq],3);
+//			genSlides(occupied, capture, mask, mvs[sq],3);
+			genSlides2(occupied, capture, mask, MOVEDATA.MD_R,4,sq,3,mvs[sq]);
 		}
 	}
 	
 	private void genSlides(long occupied, long capture, long mask, MSlider mv, int val) {
 		int n = mv.B.length;
+		int k = mv.K;
+		int q = mv.Q;
 		for (int j = 0; j < n; j++) {
 			int b = mv.B[j];
 			int e = mv.E[j];
@@ -539,9 +543,44 @@ public class Movegen implements IConst{
 					if ((capture & bto & mask) != 0) {
 						int c = ctype(bto);
 						if(c==3 && bto==1L<<erk  && eck){ // Enemy Rook -> no castling king side
-							capture(mv.K, val, c, bto);
+							capture(k, val, c, bto);
 						}else if(c==3 && bto==1L<<erq && ecq){ // Enemy Rook -> no castling queen side
-							capture(mv.Q, val, c, bto);
+							capture(q, val, c, bto);
+						}else{
+							capture(b + c, val, c, bto);
+						}
+					}
+					break;
+				} else {
+					if((bto&mask)!=0){
+						add4(b+5);
+					}
+					b += 6;
+				}
+			}
+		}
+	}
+
+	private void genSlides2(long occupied, long capture, long mask, int[] slider, int n, int sq, int val,MSlider mv) {
+		int offset = sq*n*2;
+		int q = slider[offset+2*n-1];
+		int k = q+1;
+		if(q+mdoffset!=mv.Q || k+mdoffset!=mv.K)
+			System.out.println("Hi");
+		for (int j = 0; j < n; j++) {
+			int b = slider[offset+j*2];
+			int e = slider[offset+1+j*2];
+			if(b+mdoffset!=mv.B[j] || e+mdoffset!=mv.E[j])
+				System.out.println("Hi");
+			while (b < e) {
+				long bto = MOVEDATA.getBTo(b+5);
+				if ((occupied & bto) != 0) {
+					if ((capture & bto & mask) != 0) {
+						int c = ctype(bto);
+						if(c==3 && bto==1L<<erk  && eck){ // Enemy Rook -> no castling king side
+							capture(k, val, c, bto);
+						}else if(c==3 && bto==1L<<erq && ecq){ // Enemy Rook -> no castling queen side
+							capture(q, val, c, bto);
 						}else{
 							capture(b + c, val, c, bto);
 						}
