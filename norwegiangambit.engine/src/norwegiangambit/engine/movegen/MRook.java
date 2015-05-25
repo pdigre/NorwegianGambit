@@ -10,16 +10,30 @@ public abstract class MRook extends MSlider {
 		super(from);
 	}
 
-	public static int[][] cline(int[][] l,long castling) {
-		int[][] a = new int[4][];
-		for (int i = 0; i < a.length; i++) {
+	public void cline(int[][] l,long castling,int offset, int[] md) {
+		SLIDES = new int[4][];
+		for (int i = 0; i < 4; i++) {
 			int[] M = l[i];
 			int[] x=new int[M.length];
 			for (int i1 = 0; i1 < M.length; i1++)
 				x[i1]=MOVEDATAX.create(MOVEDATA.ALL[M[i1]].bitmap^castling,castling);
-			a[i]=x;
+			SLIDES[i]=x;
 		}
-		return a;
+		B=new int[SLIDES.length];
+		E=new int[SLIDES.length];
+		int off = SLIDES.length*2*from;
+		for (int i = 0; i < SLIDES.length; i++) {
+			B[i]=n;
+			md[off+i*2]=n-MOVEDATA.color_offset;
+			n+=SLIDES[i].length;
+			E[i]=n;
+			md[off+i*2+1]=n-MOVEDATA.color_offset;
+		}
+		MOVEDATA.nrm_cnt+=2;
+		Q=n;
+		MOVEDATA.ALL[n] = q;
+		K=n+1;
+		MOVEDATA.ALL[n+1] = k;
 	}
 
 	public static int[][] cline2(MSlider m,long castling,int[] md,int offset,MRook rook) {
