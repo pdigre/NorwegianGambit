@@ -517,6 +517,7 @@ public class Movegen implements IConst{
 			if(sq==orq){
 				if(ocq ){
 					genSlides(occupied, capture, mask, qline,3);
+//					genSlides2(occupied, capture, mask, MOVEDATA.MD_RQ,4,sq,3,qline);
 					continue;
 				}
 			} else if(sq==ork){

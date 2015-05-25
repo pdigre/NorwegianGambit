@@ -30,7 +30,7 @@ public class MOVEDATAX extends MOVEDATA implements IConst{
 		return create2((bm | CASTLING_STATE) ^cstl,cstl,offset);
 	}
 
-	private MOVEDATAX(long bitmap,long cstl) {
+	MOVEDATAX(long bitmap,long cstl) {
 		super((bitmap | CASTLING_STATE) ^cstl);
 		this.castling=cstl;
 	}
