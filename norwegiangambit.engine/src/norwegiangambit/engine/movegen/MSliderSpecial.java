@@ -6,4 +6,10 @@ public class MSliderSpecial extends MRook {
 		super(0);
 	}
 
+	@Override
+	public int[] rslide(int offset, int from) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

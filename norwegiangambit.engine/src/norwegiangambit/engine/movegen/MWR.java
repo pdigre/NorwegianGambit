@@ -30,14 +30,15 @@ public class MWR extends MRook{
 
 	public MWR(int from) {
 		super(from);
-		SLIDES=new int[][]{slide(UP),slide(DOWN), slide(LEFT),slide(RIGHT)};
+		SLIDES=rookSlides(from);
 		register();
 	}
 
-	private int[] slide(int offset) {
+	@Override
+	public int[] rslide(int dir,int from) {
 		ArrayList<Integer> list = new ArrayList<Integer>();
-		int to=from+offset;
-		while(inside(to, to-offset)){
+		int to=from+dir;
+		while(inside(to, to-dir)){
 			long bitmap = assemble(IConst.WR, from, to, IConst.CASTLING_STATE | IConst.HALFMOVES);
 			for (int i = 0; i < 5; i++) {
 				int c = WCAPTURES[i];
@@ -46,7 +47,7 @@ public class MWR extends MRook{
 				rookCapture(to, bitmap, c);
 			}
 			list.add(MOVEDATA.create(bitmap));
-			to+=offset;
+			to+=dir;
 		}
 		return makeArray(list);
 	}

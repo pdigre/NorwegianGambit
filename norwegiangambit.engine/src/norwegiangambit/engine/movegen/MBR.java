@@ -10,8 +10,10 @@ public class MBR extends MRook implements IBlack{
 	public static MRook QLINE,KLINE;
 	public static MBR[] MOVES=new MBR[64];
 	public static void init() {
-		for (int from = 0; from < 64; from++)
-			MOVES[from] = new MBR(from);
+		for (int from = 0; from < 64; from++) {
+			MBR m = new MBR(from);
+			MOVES[from] = m;
+		}
 
 		MBR q = MOVES[BR_QUEEN_STARTPOS];
 		QLINE=new MSliderSpecial();
@@ -30,11 +32,12 @@ public class MBR extends MRook implements IBlack{
 
 	public MBR(int from) {
 		super(from);
-		SLIDES=new int[][]{slide(UP),slide(DOWN), slide(LEFT),slide(RIGHT)};
+		SLIDES=rookSlides(from);
 		register();
 	}
 
-	private int[] slide(int offset) {
+	@Override
+	public int[] rslide(int offset,int from) {
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		int to=from+offset;
 		while(inside(to, to-offset)){
