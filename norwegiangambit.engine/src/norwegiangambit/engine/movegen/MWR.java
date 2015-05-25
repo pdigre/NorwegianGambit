@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import norwegiangambit.util.IConst;
 
 
-public class MWR extends MSlider{
+public class MWR extends MRook{
 
-	public static MSlider QLINE,KLINE;
-
+	public static MRook QLINE,KLINE;
 	public static MWR[] MOVES=new MWR[64];
 	public static void init() {
 		for (int from = 0; from < 64; from++)
@@ -27,10 +26,6 @@ public class MWR extends MSlider{
 		KLINE.register();
 		k.K=k.SLIDES[0][39];
 		KLINE.K=MOVEDATAX.create(MOVEDATA.ALL[k.K].bitmap^CANCASTLE_WHITEQUEEN,CANCASTLE_BLACKKING|CANCASTLE_WHITEKING);
-	}
-
-	public static int[][] cline(int[][] l,long castling) {
-		return new int[][]{checkRook(l[0],castling),checkRook(l[1],castling), checkRook(l[2],castling),checkRook(l[3],castling)};
 	}
 
 	public MWR(int from) {
