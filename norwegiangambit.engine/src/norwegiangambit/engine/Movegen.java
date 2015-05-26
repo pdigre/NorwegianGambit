@@ -25,9 +25,19 @@ import norwegiangambit.util.IConst;
  */
 public class Movegen implements IConst{
 	
+	final public static int MOVEDATASIZE=64*1024; 
+	final public static long[] BITMAP=new long[MOVEDATASIZE];
+	final public static long[] BOCCUPIED=new long[MOVEDATASIZE];
+	final public static long[] AMINOR=new long[MOVEDATASIZE];
+	final public static long[] AMAJOR=new long[MOVEDATASIZE];
+	final public static long[] ASLIDER=new long[MOVEDATASIZE];
+	final public static long[] BTO=new long[MOVEDATASIZE];
+	final public static int[] MESCORE=new int[MOVEDATASIZE];
+	final public static long[] ZOBRIST=new long[MOVEDATASIZE];
+	final public static long[] PAWNHASH=new long[MOVEDATASIZE];
+	
 	static{
-		int i=MOVEDATA.ALL.length;
-		assert i>0;
+		MOVEDATA.initialize(BITMAP,BOCCUPIED,AMINOR,AMAJOR,ASLIDER,BTO,MESCORE,ZOBRIST,PAWNHASH);
 	}
 
 	
@@ -76,16 +86,14 @@ public class Movegen implements IConst{
 		return FEN.board2fen(FEN.boardFrom64(aMinor, aMajor, aSlider, bOccupied)) + " " +(wNext?"w":"b") + " " + FEN.getFenCastling(castling) + " "+ FEN.pos2string(epsq);
 	}
 
-	public void make(boolean wNext,long bOccupied, long aMinor, long aMajor, long aSlider, long castling, int md_num) {
+	public void make(boolean wNext,long aMinor, long aMajor, long aSlider, long bOccupied, long castling, int md_num) {
 		MOVEDATA md = MOVEDATA.ALL[md_num];
-		initVariables(wNext,aSlider^md.bOccupied,bOccupied^md.aMinor,aMinor^md.aMajor,aMajor^md.aSlider
-			,md instanceof ENPASSANT?((ENPASSANT)md).epsq:-1
-			,md instanceof MOVEDATAX?castling^=((MOVEDATAX) md).castling:castling);
+		int epsq2 = md instanceof ENPASSANT?((ENPASSANT)md).epsq:-1;
+		long castling2 = md instanceof MOVEDATAX?castling^=((MOVEDATAX) md).castling:castling;
+		initVariables(wNext,bOccupied^BOCCUPIED[md_num],aMinor^AMINOR[md_num],aMajor^AMAJOR[md_num],aSlider^ASLIDER[md_num],epsq2,castling2);
 	}
 	public void set(boolean wNext, long bOccupied, long aMinor, long aMajor, long aSlider, long bitmap) {
-		initVariables(wNext,bOccupied,aMinor,aMajor,aSlider
-			,BITS.getEnpassant(bitmap)
-			,~CASTLING_STATE | bitmap);
+		initVariables(wNext,bOccupied,aMinor,aMajor,aSlider,BITS.getEnpassant(bitmap),~CASTLING_STATE | bitmap);
 	}
 
 	private final void initVariables(boolean wNext, long bOccupied, long aMinor, long aMajor, long aSlider, int epsq, long castling) {
@@ -134,8 +142,11 @@ public class Movegen implements IConst{
 	}
 
 
-	public void undo(MOVEDATA md){
-		
+	public void undo(int md_num){
+		MOVEDATA md = MOVEDATA.ALL[md_num];
+		initVariables(!wNext,aSlider^md.bOccupied,bOccupied^md.aMinor,aMinor^md.aMajor,aMajor^md.aSlider
+			,md instanceof ENPASSANT?((ENPASSANT)md).epsq:-1
+			,md instanceof MOVEDATAX?castling^=((MOVEDATAX) md).castling:castling);
 	}
 	
 	/**
@@ -462,7 +473,7 @@ public class Movegen implements IConst{
 
 	private void genKingMoves(int b, int e) {
 		for (int s=b;s<e;s+=6){
-			long bto = MOVEDATA.getBTo(s|mdoffset);
+			long bto = BTO[s|mdoffset];
 			if ((aOccupied & bto) == 0) {
 				if((bto&~eAttacked)!=0L)
 					add4(s);
@@ -524,7 +535,7 @@ public class Movegen implements IConst{
 			int b = slider[offset+j*2];
 			int e = slider[offset+1+j*2];
 			while (b < e) {
-				long bto = MOVEDATA.getBTo(b+5+mdoffset);
+				long bto = BTO[b+5+mdoffset];
 				if ((occupied & bto) != 0) {
 					if ((capture & bto & mask) != 0) {
 						int c = ctype(bto);
@@ -554,7 +565,7 @@ public class Movegen implements IConst{
 			int b=MOVEDATA.MD_N[sq*2]+mdoffset;
 			int e=MOVEDATA.MD_N[sq*2+1]+mdoffset;
 			for (int s=b;s<e;s+=6){
-				long bto = MOVEDATA.getBTo(s);
+				long bto = BTO[s];
 				if ((occupied & bto) == 0L) {
 					if((bto & mask)!=0L)
 						add4(s);
@@ -607,7 +618,7 @@ public class Movegen implements IConst{
 			int to=sq+step;
 			if (to == epsq) {
 				int md=(isLeft?MOVEDATA.MD_PEL:MOVEDATA.MD_PER)+sq%8;
-				if(isSafeMove(md))	// Check for safety since there may be a covered check wit en-passant
+				if(isSafeMove(md|mdoffset))	// Check for safety since there may be a covered check wit en-passant
 					add2(md);
 			} else {
 				long bto = 1L << to;
@@ -634,7 +645,7 @@ public class Movegen implements IConst{
 			int b = slider[offset+j*2];
 			int e = slider[offset+1+j*2];
 			while (b < e) {
-				long bto = MOVEDATA.getBTo(b + 5);
+				long bto = BTO[b + 5];
 				if((between&bto)!=0){
 					add4(b + 5);
 					b += 6;
@@ -663,9 +674,8 @@ public class Movegen implements IConst{
 		return FEN.board2string(aMinor, aMajor, aSlider, bOccupied) + "\n";
 	}
 
-	public boolean isSafeMove(int md) {
-		MOVEDATA m=MOVEDATA.ALL[md|mdoffset];
-		return isSafe(wNext,oKingpos,bOccupied^m.bOccupied, aMinor^m.aMinor, aMajor^m.aMajor, aSlider^m.aSlider);
+	final private boolean isSafeMove(int md) {
+		return isSafe(wNext,oKingpos,bOccupied^BOCCUPIED[md], aMinor^AMINOR[md], aMajor^AMAJOR[md], aSlider^ASLIDER[md]);
 	}
 
 	public final static boolean isSafe(boolean white,int king,long bb_black, long bb_bit1, long bb_bit2, long bb_bit3) {
@@ -755,16 +765,17 @@ public class Movegen implements IConst{
 			}
 		}
     	for (int i = lvl1; i < iAll; i++) {
-    		MOVEDATA md = MOVEDATA.ALL[moves[i]];
+    		int md = moves[i];
+			
     		// Hiders
-    		int from = BITS.getFrom(md.bitmap);
+    		int from = BITS.getFrom(BITMAP[md]);
     		long bfrom=1L<<from;
     		if((bfrom&hiders)!=0){
 				addChecker(i);
     			continue;
     		}
-    		int piece = BITS.getPiece(md.bitmap);
-    		long bto=md.bto;
+    		int piece = BITS.getPiece(BITMAP[md]);
+    		long bto=BTO[md];
     		if((piece&4)==4){
         		// Diag
         		if((piece&1)==1){  
@@ -810,10 +821,9 @@ public class Movegen implements IConst{
 		}
     }
 
-	public boolean isClear(MOVEDATA md) {
-		int to = BITS.getTo(md.bitmap);
-		long between = BitBoard.BETWEEN[to+64*eKingpos];
-		return Long.bitCount(between&aOccupied)==0;
+	public boolean isClear(int md) {
+		int to = BITS.getTo(BITMAP[md]);
+		return Long.bitCount(BitBoard.BETWEEN[to+64*eKingpos]&aOccupied)==0;
 	}
 
 	private void addChecker(int i) {

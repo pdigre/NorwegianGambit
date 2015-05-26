@@ -59,6 +59,7 @@ public class MOVEDATA {
 	public final static int ENP_END=2000;
 	public final static int BRK_END=3000;
 	public final static int BLACK_OFFSET=32*1024; 
+	public final static int SIZE=BLACK_OFFSET*2; 
 
 	final public long bitmap,bOccupied,aMinor,aMajor,aSlider;
 	final public long bto;
@@ -207,16 +208,9 @@ public class MOVEDATA {
 		return capture2(promo, victim,offset);
 	}
 
-	final public static MOVEDATA[] ALL;
-
-	static{
-		ALL = new MOVEDATA[BLACK_OFFSET*2];
-		init();
-	}
-
+	final public static MOVEDATA[] ALL= new MOVEDATA[BLACK_OFFSET*2];
 
 	public static int nrm_cnt = 0, brk_cnt = 0, color_offset=0;
-
 
 	final public static long getBTo(int md){
 		return ALL[md].bto;
@@ -246,7 +240,9 @@ public class MOVEDATA {
 	
 	public static long[] REV_WP,REV_BP;
 	
-	public static void init() {
+	public static void initialize(long[] bitmap2, long[] boccupied2,
+			long[] aminor2, long[] amajor2, long[] aslider2, long[] bto2,
+			int[] mescore2, long[] zobrist2, long[] pawnhash2) {
 		REV_WP=new long[64];
 		REV_BP=new long[64];
 
@@ -269,6 +265,21 @@ public class MOVEDATA {
 		MBR.init();
 		MBB.init();
 		MBN.init();
+
+		for (int i = 0; i < SIZE; i++) {
+			MOVEDATA md=ALL[i];
+			if(md!=null){
+				bitmap2[i]=md.bitmap;
+				boccupied2[i]=md.bOccupied;
+				aminor2[i]=md.aMinor;
+				amajor2[i]=md.aMajor;
+				aslider2[i]=md.aSlider;
+				bto2[i]=md.bto;
+				mescore2[i]=md.mescore;
+				zobrist2[i]=md.zobrist;
+				pawnhash2[i]=md.pawnhash;
+			}
+		}
 	}
 	
 
