@@ -25,7 +25,8 @@ import norwegiangambit.util.IConst;
  */
 public class Movegen implements IConst{
 	
-	final public static int MOVEDATASIZE=64*1024; 
+	final public static int MASK_32K=0x00007FFF;
+	final public static int MOVEDATASIZE=64*1024; // 64k
 	final public static long[] BITMAP=new long[MOVEDATASIZE];
 	final public static long[] BOCCUPIED=new long[MOVEDATASIZE];
 	final public static long[] AMINOR=new long[MOVEDATASIZE];
@@ -87,10 +88,10 @@ public class Movegen implements IConst{
 	}
 
 	public void make(boolean wNext,long aMinor, long aMajor, long aSlider, long bOccupied, long castling, int md_num) {
-		MOVEDATA md = MOVEDATA.ALL[md_num];
-		int epsq2 = md instanceof ENPASSANT?((ENPASSANT)md).epsq:-1;
-		long castling2 = md instanceof MOVEDATAX?castling^=((MOVEDATAX) md).castling:castling;
-		initVariables(wNext,bOccupied^BOCCUPIED[md_num],aMinor^AMINOR[md_num],aMajor^AMAJOR[md_num],aSlider^ASLIDER[md_num],epsq2,castling2);
+		long bitmap = BITMAP[md_num];
+		int epsq = (md_num & MASK_32K) < 8?(wNext?BITS.getTo(bitmap)+8:BITS.getTo(bitmap)-8):-1; 
+		long cstl = (bitmap& BITS.CASTLING_STATE)^BITS.CASTLING_STATE;
+		initVariables(wNext,bOccupied^BOCCUPIED[md_num],aMinor^AMINOR[md_num],aMajor^AMAJOR[md_num],aSlider^ASLIDER[md_num],epsq,castling^cstl);
 	}
 	public void set(boolean wNext, long bOccupied, long aMinor, long aMajor, long aSlider, long bitmap) {
 		initVariables(wNext,bOccupied,aMinor,aMajor,aSlider,BITS.getEnpassant(bitmap),~CASTLING_STATE | bitmap);

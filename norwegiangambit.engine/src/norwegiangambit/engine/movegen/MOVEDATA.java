@@ -61,11 +61,11 @@ public class MOVEDATA {
 	public final static int BLACK_OFFSET=32*1024; 
 	public final static int SIZE=BLACK_OFFSET*2; 
 
-	final public long bitmap,bOccupied,aMinor,aMajor,aSlider;
-	final public long bto;
-	final public int mescore;
-	final public long zobrist;
-	final public long pawnhash;
+	public long bitmap,bOccupied,aMinor,aMajor,aSlider;
+	public long bto;
+	public int mescore;
+	public long zobrist;
+	public long pawnhash;
 
 
 	
@@ -142,6 +142,9 @@ public class MOVEDATA {
 	    if(this instanceof MOVEDATAX){
 	    	long castling = (IConst.CASTLING_STATE&bitmap)^IConst.CASTLING_STATE;
 			zobrist^=MBase.keyCastling(castling);
+//	    	bitmap^=castling;
+	    } else {
+	    	bitmap|=IConst.CASTLING_STATE;
 	    }
 		this.aMinor=b_bit1;
 		this.aMajor=b_bit2;
