@@ -4,7 +4,7 @@ import static norwegiangambit.util.ShortIntPairs.*;
 import norwegiangambit.engine.Movegen;
 import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.engine.movegen.MOVEDATA;
-import norwegiangambit.engine.movegen.ENPASSANT;
+import norwegiangambit.engine.movegen.MOVEDATA2;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 
@@ -74,7 +74,7 @@ public class FastEval extends Movegen {
 		if(parent instanceof FastEval){
 			zobrist_fwd=((FastEval) parent).zobrist_fwd^md.zobrist;
 			zobrist=zobrist_fwd;
-			if(md instanceof ENPASSANT){
+			if(md instanceof MOVEDATA2){
 				final long ep=1L<<epsq;
 				final long epb = wNext
 						?((ep&IConst.MaskAToGFiles)>>7) | ((ep&IConst.MaskBToHFiles)>>9)
@@ -82,7 +82,7 @@ public class FastEval extends Movegen {
 				final long cmask = wNext ? ~bOccupied:bOccupied;
 				long enemy = cmask & aMinor&~aMajor&~aSlider;
 				if((epb & enemy) !=0L)
-					zobrist^=((ENPASSANT)md).zobrist_ep;
+					zobrist^=((MOVEDATA2)md).zobrist_ep;
 			}
 		}
 		fasteval();

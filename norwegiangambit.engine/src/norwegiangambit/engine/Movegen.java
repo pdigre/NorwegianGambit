@@ -2,7 +2,7 @@ package norwegiangambit.engine;
 
 import java.util.Arrays;
 
-import norwegiangambit.engine.movegen.ENPASSANT;
+import norwegiangambit.engine.movegen.MOVEDATA2;
 import norwegiangambit.engine.movegen.MOVEDATA;
 import norwegiangambit.engine.movegen.MOVEDATAX;
 import norwegiangambit.util.BITS;
@@ -42,16 +42,15 @@ public class Movegen implements IConst{
 	}
 
 	
-	/**
-	 * @param occupied bitmask
-	 * @param i =sq*4 (+2 for Bishop)
-	 * @return
-	 */
-	private native long magicAtks(long occupied, int i);
-
-	private native void init();
-	private native long enemyAttacks(boolean wNext, long aMinor, long aMajor, long aSlider, long bOccupied);
-	private native int tzcnt2(long b);
+//	/**
+//	 * @param occupied bitmask
+//	 * @param i =sq*4 (+2 for Bishop)
+//	 * @return
+//	 */
+//	private native long magicAtks(long occupied, int i);
+//	private native void init();
+//	private native long enemyAttacks(boolean wNext, long aMinor, long aMajor, long aSlider, long bOccupied);
+//	private native int tzcnt2(long b);
 	
 	// initialization variables
 	public boolean wNext;
@@ -89,7 +88,8 @@ public class Movegen implements IConst{
 
 	public void make(boolean wNext,long aMinor, long aMajor, long aSlider, long bOccupied, long castling, int md_num) {
 		long bitmap = BITMAP[md_num];
-		int epsq = (md_num & MASK_32K) < 8?(wNext?BITS.getTo(bitmap)+8:BITS.getTo(bitmap)-8):-1; 
+		int to = BITS.getTo(bitmap);
+		int epsq = (md_num & MASK_32K) < 8?(wNext?to+8:to-8):-1; 
 		long cstl = (bitmap& BITS.CASTLING_STATE)^BITS.CASTLING_STATE;
 		initVariables(wNext,bOccupied^BOCCUPIED[md_num],aMinor^AMINOR[md_num],aMajor^AMAJOR[md_num],aSlider^ASLIDER[md_num],epsq,castling^cstl);
 	}
@@ -144,10 +144,10 @@ public class Movegen implements IConst{
 
 
 	public void undo(int md_num){
-		MOVEDATA md = MOVEDATA.ALL[md_num];
-		initVariables(!wNext,aSlider^md.bOccupied,bOccupied^md.aMinor,aMinor^md.aMajor,aMajor^md.aSlider
-			,md instanceof ENPASSANT?((ENPASSANT)md).epsq:-1
-			,md instanceof MOVEDATAX?castling^=((MOVEDATAX) md).castling:castling);
+//		MOVEDATA md = MOVEDATA.ALL[md_num];
+//		initVariables(!wNext,aSlider^md.bOccupied,bOccupied^md.aMinor,aMinor^md.aMajor,aMajor^md.aSlider
+//			,md instanceof MOVEDATA2?((MOVEDATA2)md).epsq:-1
+//			,md instanceof MOVEDATAX?castling^=((MOVEDATAX) md).castling:castling);
 	}
 	
 	/**
@@ -292,10 +292,10 @@ public class Movegen implements IConst{
 		genBishop(free & aBishops, aOccupied,eOccupied,mask);  	// 1.050 of 18 secs   Bishop
 		genRook(free & aRooks, aOccupied,eOccupied,mask);		// 5.700 of 18 secs   Rook
 		genQueen(free & aQueens, aOccupied,eOccupied,mask);		// 0.960 of 18 secs   Queen
-		long t1=System.nanoTime();
+//		long t1=System.nanoTime();
 		genKing();												// 1.750 of 18 secs   King
-		tot1+=System.nanoTime()-t1;
-		long t2=System.nanoTime();
+//		tot1+=System.nanoTime()-t1;
+//		long t2=System.nanoTime();
 		long pfree = free & aPawns;
 		if (wNext) {											// 1.250 of 18 secs   Pawn
 			long open1 = pfree&~(aOccupied>>8);
@@ -323,7 +323,7 @@ public class Movegen implements IConst{
 				add4(ocq?MOVEDATA.MD_KCK:MOVEDATA.MD_KCK2);
 			}
 		}
-		tot2+=System.nanoTime()-t2;
+//		tot2+=System.nanoTime()-t2;
 	}
 
 	private void calculatePinnersAndCheckers() {
@@ -428,9 +428,9 @@ public class Movegen implements IConst{
 	}
 
 
-	private void calculateEnemyAttacks2() {
-		eAttacked=enemyAttacks(wNext,aMinor,aMajor,aSlider,bOccupied);
-	}
+//	private void calculateEnemyAttacks2() {
+//		eAttacked=enemyAttacks(wNext,aMinor,aMajor,aSlider,bOccupied);
+//	}
 
 	// Calculate unsafe positions, those attacked by enemy
 	private void calculateEnemyAttacks1() {
@@ -619,7 +619,7 @@ public class Movegen implements IConst{
 			int to=sq+step;
 			if (to == epsq) {
 				int md=(isLeft?MOVEDATA.MD_PEL:MOVEDATA.MD_PER)+sq%8;
-				if(isSafeMove(md|mdoffset))	// Check for safety since there may be a covered check wit en-passant
+				if(isSafeMove(md|mdoffset))	// Check for safety since there may be a covered check with enpassant
 					add2(md);
 			} else {
 				long bto = 1L << to;
@@ -627,7 +627,7 @@ public class Movegen implements IConst{
 				if((bto & MaskGoal)==0L){
 					capture((isLeft?MOVEDATA.MD_PCL:MOVEDATA.MD_PCR)+(sq*5)+ctype, 0, ctype, bto);
 				} else {
-					if(cc && sq+step==cs){
+					if(cc && to==cs){
 						add1_promo(pc);
 					} else {
 						int p = (isLeft?MOVEDATA.MD_PPL:MOVEDATA.MD_PPR)+(sq%8)*20;

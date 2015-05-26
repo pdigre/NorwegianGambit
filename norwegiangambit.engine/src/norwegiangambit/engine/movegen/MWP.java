@@ -57,7 +57,7 @@ public class MWP extends MPawn{
 	}
 
 	private void move2(int to,int enp) {
-		ENPASSANT.create(assemble(IConst.WP, from, to, CASTLING_STATE),enp);
+		MOVEDATA2.create(assemble(IConst.WP, from, to, CASTLING_STATE),enp);
 	}
 
 	private void enpassant(int to,int offset) {

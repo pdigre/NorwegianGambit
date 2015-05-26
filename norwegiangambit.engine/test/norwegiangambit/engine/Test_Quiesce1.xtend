@@ -6,12 +6,19 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Ignore
 import org.junit.Test
+import norwegiangambit.engine.movegen.MBase
+import norwegiangambit.util.PSQT_SEF
+import norwegiangambit.util.polyglot.ZobristPolyglot
 
 class Test_Quiesce1 extends AbstractTest {
 
+	static ZobristPolyglot z = new ZobristPolyglot();
+
 	@BeforeClass
 	def static void prepare() {
-		setTesting(new QuiesceTester(true,true));
+		MBase.psqt=new PSQT_SEF();
+		MBase.zobrist=z;
+		setTesting(new QuiesceTester(false,true));
 	}
 	
 	@Test

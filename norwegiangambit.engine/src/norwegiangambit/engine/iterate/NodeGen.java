@@ -24,7 +24,7 @@ public class NodeGen implements IConst {
 		Position[] list=new Position[moves.length];
 		for (int i = 0; i < moves.length; i++) {
 			list[i]=new Position(pos);
-			list[i].make(i,list[i].bitmap);
+			list[i].make(moves[i],list[i].bitmap);
 		}
 		return list;
 	}

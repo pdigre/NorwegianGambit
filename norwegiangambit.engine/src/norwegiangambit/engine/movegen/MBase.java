@@ -2,6 +2,7 @@ package norwegiangambit.engine.movegen;
 
 import java.util.ArrayList;
 
+import norwegiangambit.engine.Movegen;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.IConst;
 import norwegiangambit.util.PSQT;
@@ -17,6 +18,10 @@ public abstract class MBase implements IConst{
 	public static PSQT psqt; 
 	public static IZobristKey zobrist;
 
+	static {
+		assert new Movegen()!=null;
+	}
+	
 	public static int psqt(int sq, int piece) {
 		return psqt.psqt(sq, piece);
 	}

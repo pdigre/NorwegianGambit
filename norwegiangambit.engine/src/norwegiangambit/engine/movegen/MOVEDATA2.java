@@ -5,18 +5,16 @@ import norwegiangambit.util.polyglot.IZobristKey;
 /**
  * Extra movedata for when special zobrist enpassant file is required
  */
-public class ENPASSANT extends MOVEDATA {
+public class MOVEDATA2 extends MOVEDATA {
 
-	final public int epsq;
 	final public long zobrist_ep;
 	
-	protected ENPASSANT(long bits,int epsq) {
+	protected MOVEDATA2(long bits,int epsq) {
 		super(bits);
-		this.epsq=epsq;
 		this.zobrist_ep=MBase.getZobrist(IZobristKey.ZOBRIST_ENP+(epsq&7));
 	}
 
 	public static int create(long bitmap,int epsq){
-		return MOVEDATA.add2(new ENPASSANT(bitmap,epsq),epsq%8);
+		return MOVEDATA.add2(new MOVEDATA2(bitmap,epsq),epsq%8);
 	}
 }

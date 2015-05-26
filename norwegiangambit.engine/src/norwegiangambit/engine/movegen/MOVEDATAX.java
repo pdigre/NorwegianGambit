@@ -9,8 +9,6 @@ import norwegiangambit.util.IConst;
  */
 public class MOVEDATAX extends MOVEDATA implements IConst{
 
-	final public long castling;
-	
 	public static MOVEDATAX rookCapture(long bitmap){
 		long bm = bitmap | ((WR & 7) << _CAPTURE);
 		long cstl = findCastlingTo(bitmap);
@@ -19,7 +17,6 @@ public class MOVEDATAX extends MOVEDATA implements IConst{
 
 	MOVEDATAX(long bitmap,long cstl) {
 		super((bitmap | CASTLING_STATE) ^cstl);
-		this.castling=cstl;
 	}
 
 	public static int create(long bitmap,long cstl){
@@ -55,6 +52,6 @@ public class MOVEDATAX extends MOVEDATA implements IConst{
 	public String toString() {
 		String string = super.toString();
 		
-		return FEN.addHorizontal(string, FEN.board2string(castling));
+		return FEN.addHorizontal(string, FEN.board2string((bitmap&CASTLING_STATE)^CASTLING_STATE));
 	}
 }

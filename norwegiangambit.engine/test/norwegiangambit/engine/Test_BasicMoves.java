@@ -4,14 +4,26 @@ import static org.junit.Assert.assertEquals;
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.iterate.NodeGen;
 import norwegiangambit.engine.iterate.NodeUtil;
+import norwegiangambit.engine.movegen.MBase;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
+import norwegiangambit.util.PSQT_SEF;
 import norwegiangambit.util.PieceType;
+import norwegiangambit.util.polyglot.ZobristPolyglot;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 @SuppressWarnings("static-method")
 public class Test_BasicMoves {
+
+	static ZobristPolyglot z = new ZobristPolyglot();
+
+	@BeforeClass
+	public static void prepare() {
+		MBase.psqt=new PSQT_SEF();
+		MBase.zobrist=z;
+	}
 
     public static String getLegalMovesFromPos(String from_txt, StartGame start) {
         int from = FEN.text2pos(from_txt);
@@ -37,7 +49,7 @@ public class Test_BasicMoves {
     @Test
     public void moves_opening_0() {
         String fen = "rnbqkb1r/pppp1ppp/5n2/4p3/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 1 3";
-        assertEquals("Queen", "Q d2 d3 e2 f3 g4 h5", getLegalMovesFromPos("d1", new StartGame(fen)));
+        assertEquals("Queen", "Q e2 f3 g4 h5 d2 d3", getLegalMovesFromPos("d1", new StartGame(fen)));
     }
 
     @Test
@@ -58,7 +70,7 @@ public class Test_BasicMoves {
     @Test
     public void moves_enpassant_0() {
         String fen = "rnbqkbnr/ppp1pppp/8/8/1PpP4/8/P3PPPP/RNBQKBNR b KQkq b3 0 3";
-        assertEquals("Pawn", "p c3 b3", getLegalMovesFromPos("c4", new StartGame(fen)));
+        assertEquals("Pawn", "p b3 c3", getLegalMovesFromPos("c4", new StartGame(fen)));
     }
 
 

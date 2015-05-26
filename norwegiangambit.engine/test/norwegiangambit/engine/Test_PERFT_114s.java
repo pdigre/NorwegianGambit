@@ -23,7 +23,7 @@ public class Test_PERFT_114s extends PerftTest{
 
 	@BeforeClass
 	public static void prepare() {
-		setTesting(new FastPerft(false,true));
+		setTesting(new FastPerft(true,true));
 		setValidator(new EngineStockfish(EngineStockfish.DEFAULT_EXEPATH));
 	}
 
