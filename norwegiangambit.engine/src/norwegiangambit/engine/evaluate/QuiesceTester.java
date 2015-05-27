@@ -51,14 +51,14 @@ public class QuiesceTester extends AbstractTester{
 				}
 				generate();
 				if(iAll==0)
-					return checkers==0L?STALE:MATE;  // (STALE)MATE
+					return eCheckers==0L?STALE:MATE;  // (STALE)MATE
 				if(data!=0L){
 					sortHash(TranspositionTable.getMove(data));
 				}
 			} else {
 				generate();
 				if(iAll==0)
-					return checkers==0L?STALE:MATE;  // (STALE)MATE
+					return eCheckers==0L?STALE:MATE;  // (STALE)MATE
 			}
 			sortKillers();
 			int md0 = moves[0];
@@ -190,8 +190,8 @@ public class QuiesceTester extends AbstractTester{
 		public int search(int alpha, int beta) {
 			generate();
 			if(iAll==0)
-				return checkers==0L?STALE:MATE;  // (STALE)MATE
-			if(checkers!=0L){
+				return eCheckers==0L?STALE:MATE;  // (STALE)MATE
+			if(eCheckers!=0L){
 				for (int i = 0; i < iAll; i++) {
 					eval.quiesce++;
 					int md = moves[i];

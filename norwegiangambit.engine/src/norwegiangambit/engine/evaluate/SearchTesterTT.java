@@ -69,14 +69,14 @@ public class SearchTesterTT extends AbstractTester{
 				}
 				generate();
 				if(iAll==0)
-					return checkers==0L?STALE:MATE;  // (STALE)MATE
+					return eCheckers==0L?STALE:MATE;  // (STALE)MATE
 				if(data!=0L){
 					sortHash(TranspositionTable.getMove(data));
 				}
 			} else {
 				generate();
 				if(iAll==0)
-					return checkers==0L?STALE:MATE;  // (STALE)MATE
+					return eCheckers==0L?STALE:MATE;  // (STALE)MATE
 			}
 			sortKillers();
 			int md0 = moves[0];

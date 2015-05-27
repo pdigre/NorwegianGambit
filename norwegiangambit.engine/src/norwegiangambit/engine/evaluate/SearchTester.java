@@ -33,7 +33,7 @@ public class SearchTester extends AbstractTester{
 		public int search(int alpha, int beta) {
 			generate();
 			if(iAll==0)
-				return checkers==0L?STALE:MATE;  // (STALE)MATE
+				return eCheckers==0L?STALE:MATE;  // (STALE)MATE
 			for (int i = 0; i < iAll; i++) {
 				int md = moves[i];
 				make(md);
@@ -57,7 +57,7 @@ public class SearchTester extends AbstractTester{
 		public int search(int alpha, int beta) {
 			generate();
 			if(iAll==0)
-				return checkers==0L?STALE:MATE;  // (STALE)MATE
+				return eCheckers==0L?STALE:MATE;  // (STALE)MATE
 			for (int i = 0; i < iAll; i++) {
 				int md = moves[i];
 				make(md);
@@ -86,7 +86,7 @@ public class SearchTester extends AbstractTester{
 		public int search(int alfa,int beta) {
 			generate();
 			if(iAll==0)
-				return checkers==0L?STALE:MATE;  // (STALE)MATE
+				return eCheckers==0L?STALE:MATE;  // (STALE)MATE
 			sortKillers();
 			int md0 = moves[0];
 			make(md0);
