@@ -1,8 +1,8 @@
 package norwegiangambit.engine.fen;
 
-import norwegiangambit.engine.Movegen;
 import norwegiangambit.engine.iterate.NodeGen;
 import norwegiangambit.util.BITS;
+import norwegiangambit.util.BitBoard;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 
@@ -31,7 +31,7 @@ public class FEN_POS implements IConst {
 		}
 		boolean white = pos.whiteNext();
 		int king = white?pos.wking:pos.bking;
-		if(!Movegen.isSafe(white,king,pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3())){
+		if(!BitBoard.isSafe(white,king,pos.get64black(), pos.get64bit1(), pos.get64bit2(), pos.get64bit3())){
 	        suffix += "+";
 			if(NodeGen.getLegalMoves64(pos).length==0)
 		        suffix += "+";

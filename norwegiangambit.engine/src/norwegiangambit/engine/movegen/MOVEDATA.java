@@ -1,65 +1,14 @@
 package norwegiangambit.engine.movegen;
 
 import static norwegiangambit.util.ShortIntPairs.SS;
+import norwegiangambit.engine.IMovedata;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 import norwegiangambit.util.polyglot.IZobristKey;
 
-public class MOVEDATA {
+public class MOVEDATA implements IMovedata{
 
-	// Pawn moves
-	public final static int MD_P2=0; 		// 8 lanes Opening for enpassant
-	public final static int MD_PEL=8;   	// 8 lanes enpassant left
-	public final static int MD_PER=16;  	// 8 lanes enpassant right
-	public final static int MD_PP=24;   	// 32 - 8 lanes * 4 types
-	public final static int MD_PPL=56;  	// 160 - 8 lanes * 20 types - promotion left
-	public final static int MD_PPR=216;  	// 160- 8 lanes * 20 types - promotion right
-	public final static int MD_P1=376;  	// 64 move 1 step
-	public final static int MD_PCL=440;		// 320 - 64*5 types - left
-	public final static int MD_PCR=760;		// 320 - 64*5 types - right
-	public final static int MD_PQ=1080;		// 4 - promotion 4 types
-	public final static int MD_PK=1084; 	// 4 - promotion 4 types
-
-		// Castling
-	public final static int MD_KCQ=1088;
-	public final static int MD_KCK=1089;
-	public final static int MD_KCQ2=1090;
-	public final static int MD_KCK2=1091;
-	public final static int	MD_KX=1092;		// 32 King moves - could castle both sides
-	public final static int MD_KXQ=1122;	// 32 King moves - could castle queen sides
-	public final static int MD_KXK=1152;	// 32 King moves - could castle king sides
-	public final static int MD_RQ=1182;	// 86 - Rook move - could castle	
-	public final static int MD_RK=1268;	// 86 - Rook move - could castle	
-	
-
-	// Simple - King & kNight
-	// B->E (Q,K follows)
-	
-	// Sliders
-	// 4/8* (B->E) (Q,K follows)
-
-	public static int[] MD_K=new int[128];	// 64 - Simple set (B[64] E[64])
-	public static int[] MD_N=new int[128];	// 64 - Simple set (B[64] E[64])
-
-	public static int[] MD_Q=new int[1024];	// 64 - 8Slider set (B[64*8] E[64*8])
-	public static int[] MD_B=new int[512];	// 64 - 4Slider set (B[64*4] E[64*4])
-	public static int[] MD_R=new int[512];	// 64 - 4Slider set (B[64*4] E[64*4])
-
-	public static int[] MD_RQW=new int[8];  	// 1 - 4Slider set  (B[4] E[4])
-	public static int[] MD_RKW=new int[8];  	// 1 - 4Slider set  (B[4] E[4])
-	public static int[] MD_RQB=new int[8];  	// 1 - 4Slider set  (B[4] E[4])
-	public static int[] MD_RKB=new int[8];  	// 1 - 4Slider set  (B[4] E[4])
-	
-	//     1 0         NULL-MOVE
-	//     8 1-8       ENPASSANT
-	//   366 9-374     BREAKERS
-	// 22724 375-23099 NORMAL
-	
-	public final static int ENP_END=2000;
-	public final static int BRK_END=3000;
-	public final static int BLACK_OFFSET=32*1024; 
-	public final static int SIZE=BLACK_OFFSET*2; 
 
 	public long bitmap,bOccupied,aMinor,aMajor,aSlider;
 	public long bto;
@@ -142,7 +91,6 @@ public class MOVEDATA {
 	    if(this instanceof MOVEDATAX){
 	    	long castling = (IConst.CASTLING_STATE&bitmap)^IConst.CASTLING_STATE;
 			zobrist^=MBase.keyCastling(castling);
-//	    	bitmap^=castling;
 	    } else {
 	    	bitmap|=IConst.CASTLING_STATE;
 	    }
@@ -241,14 +189,13 @@ public class MOVEDATA {
 	}
 
 	
-	public static long[] REV_WP,REV_BP;
 	
-	public static void initialize(long[] bitmap2, long[] boccupied2,
-			long[] aminor2, long[] amajor2, long[] aslider2, long[] bto2,
-			int[] mescore2, long[] zobrist2, long[] pawnhash2) {
-		REV_WP=new long[64];
-		REV_BP=new long[64];
+	static boolean MD_INITIALIZED=false;
 
+	public static void initialize() {
+		if(MD_INITIALIZED)
+			return;
+		
 		color_offset=0;
 		brk_cnt=ENP_END;
 		nrm_cnt=BRK_END;
@@ -258,7 +205,7 @@ public class MOVEDATA {
 		MWR.init();
 		MWB.init();
 		MWN.init();
-
+		
 		color_offset=BLACK_OFFSET;
 		brk_cnt=ENP_END+BLACK_OFFSET;
 		nrm_cnt=BRK_END+BLACK_OFFSET;
@@ -268,22 +215,22 @@ public class MOVEDATA {
 		MBR.init();
 		MBB.init();
 		MBN.init();
-
+		
 		for (int i = 0; i < SIZE; i++) {
 			MOVEDATA md=ALL[i];
 			if(md!=null){
-				bitmap2[i]=md.bitmap;
-				boccupied2[i]=md.bOccupied;
-				aminor2[i]=md.aMinor;
-				amajor2[i]=md.aMajor;
-				aslider2[i]=md.aSlider;
-				bto2[i]=md.bto;
-				mescore2[i]=md.mescore;
-				zobrist2[i]=md.zobrist;
-				pawnhash2[i]=md.pawnhash;
+				BITMAP[i]=md.bitmap;
+				BOCCUPIED[i]=md.bOccupied;
+				AMINOR[i]=md.aMinor;
+				AMAJOR[i]=md.aMajor;
+				ASLIDER[i]=md.aSlider;
+				BTO[i]=md.bto;
+				MESCORE[i]=md.mescore;
+				ZOBRIST[i]=md.zobrist;
+				PAWNHASH[i]=md.pawnhash;
 			}
-		}
+		}	
+		MD_INITIALIZED=true;
 	}
-	
 
 }

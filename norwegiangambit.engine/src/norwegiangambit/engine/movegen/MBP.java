@@ -1,5 +1,6 @@
 package norwegiangambit.engine.movegen;
 
+import norwegiangambit.util.BitBoard;
 import norwegiangambit.util.IConst;
 
 public class MBP  extends MPawn implements IBlack{
@@ -24,7 +25,7 @@ public class MBP  extends MPawn implements IBlack{
 			// LEFT
 			if (x != 0){
 				int to=from - 9;
-				MOVEDATA.REV_BP[to] |= (1L << from);
+				BitBoard.BPMasks[to] |= (1L << from);
 				if(from<16){
 					cpromotes(to,MOVEDATA.MD_PPL+20*lane);
 					if(to==WR_QUEEN_STARTPOS)
@@ -38,7 +39,7 @@ public class MBP  extends MPawn implements IBlack{
 			// RIGHT
 			if (x != 7) {
 				int to = from - 7;
-				MOVEDATA.REV_BP[to] |= (1L << from);
+				BitBoard.BPMasks[to] |= (1L << from);
 				if(from<16){
 					cpromotes(to,MOVEDATA.MD_PPR+20*lane);
 					if(to==WR_KING_STARTPOS)

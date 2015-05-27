@@ -143,7 +143,9 @@ public class BitBoard implements IConst{
 			RMasks = new long[64],  
 			QMasks = new long[64],
 			KMasks = new long[64],
-			NMasks = new long[64];
+			NMasks = new long[64],
+			WPMasks = new long[64],
+			BPMasks = new long[64];
 
     static { 
 		for (int from = 0; from < 64; from++) {
@@ -354,4 +356,31 @@ public class BitBoard implements IConst{
 		int offset = offsets[i];
         return magics[offset+(int)(((occupied & magics[offset-1]) * magics[offset-2]) >>> offsets[i+1])];
 	}
+
+	public final static boolean isSafe(boolean white,int king,long bb_black, long bb_bit1, long bb_bit2, long bb_bit3) {
+		long bb_piece = bb_bit1 | bb_bit2 | bb_bit3;
+		long bb_knights = ~bb_bit1 & bb_bit2 & ~bb_bit3;
+		long bb_kings = bb_bit1 & bb_bit2 & ~bb_bit3;
+		long bb_pawns = bb_bit1 & ~bb_bit2 & ~bb_bit3;
+		long enemy=white?bb_black:(bb_bit1 | bb_bit2 | bb_bit3)^bb_black;
+		if(((enemy & bb_knights & NMasks[king]) != 0) || 
+				((enemy & bb_kings & KMasks[king]) != 0) || 
+				((enemy & bb_pawns & (white?BPMasks[king]:WPMasks[king])) != 0))
+			return false;
+		long slider=enemy & bb_bit3;
+		if((slider & QMasks[king]) !=0){
+			long diag = bb_bit1 & slider;
+			if ((diag & BMasks[king]) != 0) {
+				if((diag & bishopAttacks(king, bb_piece))!=0)
+					return false;
+			}
+			long line = bb_bit2 & slider;
+			if ((line & RMasks[king]) != 0) {
+				if((line & rookAttacks(king, bb_piece))!=0)
+					return false;
+			}
+		}
+		return true;
+	}
+
 }
