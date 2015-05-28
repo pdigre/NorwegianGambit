@@ -233,9 +233,8 @@ public class Movegen implements IConst, IMovedata{
 	
 	public void generate() {
 		clearMoves();
-		calculatePinnersAndCheckers();  // 1.000 of 19 secs 
-		
 		calculateEnemyAttacks();	// 1.200 of 19 secs  (double with JNI)
+		calculatePinnersAndCheckers();  // 1.000 of 19 secs 
 		if(checkers==0){
 			calculateNonEvasiveMoves();	// 10.0 of 16 secs
 		} else {
@@ -320,8 +319,8 @@ public class Movegen implements IConst, IMovedata{
 			long diagatks = eOccupied & aDiag & BitBoard.BMasks[oKingpos];
 			while(diagatks!=0){
 				int asq = Long.numberOfTrailingZeros(diagatks);
-				diagatks &= diagatks-1;
 				long attacker = 1L << asq;
+				diagatks ^= attacker;
 				long between = BitBoard.BETWEEN[asq+64*oKingpos];
 				long bpcs = between&aOccupied;
 				if(bpcs==0){
@@ -506,10 +505,10 @@ public class Movegen implements IConst, IMovedata{
 		int q = slider[offset+2*n-1];
 		int k = q+1;
 		for (int j = 0; j < n; j++) {
-			int b = slider[offset+j*2];
-			int e = slider[offset+1+j*2];
+			int b = slider[offset+j*2]|mdoffset;
+			int e = slider[offset+1+j*2]|mdoffset;
 			while (b < e) {
-				long bto = BTO[(b+5)|mdoffset];
+				long bto = BTO[(b+5)];
 				if ((aOccupied & bto) != 0) {
 					if ((eOccupied & bto & legal) != 0) {
 						int c = ctype(bto);
@@ -575,20 +574,20 @@ public class Movegen implements IConst, IMovedata{
 		long pleft = pieces & MaskBToHFiles;
 		long pright = pieces & MaskAToGFiles;
 		if(wNext){
-			pwnCaptures(pleft &(e>>7), true);
-			pwnCaptures(pright &(e>>9), false);
-		} else {
-			pwnCaptures(pleft &(e<<9), true);
-			pwnCaptures(pright &(e<<7), false);
-		}
-		if(epsq!=-1){
-			long ep=1L<<epsq;
-			if(wNext){
+			pwnCapturesLeft(pleft &(e>>7));
+			pwnCapturesRight(pright &(e>>9));
+			if(epsq!=-1){
+				long ep=1L<<epsq;
 				if((pleft &(ep>>7))!=0)
 					addEnpassant((MD_PEL+(epsq-((wNext?8:-8)-1))%8)|mdoffset);
 				if((pright &(ep>>9))!=0)
 					addEnpassant((MD_PER+(epsq-((wNext?8:-8)+1))%8)|mdoffset);
-			} else {
+			}
+		} else {
+			pwnCapturesLeft(pleft &(e<<9));
+			pwnCapturesRight(pright &(e<<7));
+			if(epsq!=-1){
+				long ep=1L<<epsq;
 				if((pleft &(ep<<9))!=0)
 					addEnpassant((MD_PEL+(epsq-((wNext?8:-8)-1))%8)|mdoffset);
 				if((pright &(ep<<7))!=0)
@@ -597,27 +596,37 @@ public class Movegen implements IConst, IMovedata{
 		}
 	}
 
-	private void pwnCaptures(long m, boolean isLeft) {
-		int step=(wNext?8:-8)+(isLeft?-1:1);
+	private void pwnCapturesRight(long m) {
+		int step=wNext?9:-7;
 		while(m!=0){
 			int sq = Long.numberOfTrailingZeros(m);
 			m &= m-1;
-			int to=sq+step;
-			long bto = 1L << to;
+			long bto = 1L << (sq+step);
 			int ctype=ctype(bto);
 			if((bto & MaskGoal)==0L){
-				capture((isLeft?MD_PCL:MD_PCR)+(sq*5)+ctype, 0, ctype, bto);
+				capture(MD_PCR+(sq*5)+ctype, 0, ctype, bto);
 			} else {
-				if((bto&er)!=0L){
-					add1_promo(isLeft?MD_PQ:MD_PK);
-				} else {
-					add1_promo((isLeft?MD_PPL:MD_PPR)+(sq%8)*20+ctype*4);
-				}
+				add1_promo(((bto&er)!=0L)?MD_PK:(MD_PPR+(sq%8)*20+ctype*4));
 			}
 		}
 	}
 	
-	public void addEnpassant(int md) {
+	private void pwnCapturesLeft(long m) {
+		int step=wNext?7:-9;
+		while(m!=0){
+			int sq = Long.numberOfTrailingZeros(m);
+			m &= m-1;
+			long bto = 1L << (sq+step);
+			int ctype=ctype(bto);
+			if((bto & MaskGoal)==0L){
+				capture(MD_PCL+(sq*5)+ctype, 0, ctype, bto);
+			} else {
+				add1_promo(((bto&er)!=0L)?MD_PQ:(MD_PPL+(sq%8)*20+ctype*4));
+			}
+		}
+	}
+	
+	private void addEnpassant(int md) {
 		// Check for safety since there may be a covered check with enpassant
 		if(BitBoard.isSafe(wNext,oKingpos,bOccupied^BOCCUPIED[md], aMinor^AMINOR[md], aMajor^AMAJOR[md], aSlider^ASLIDER[md]))	
 			add2(md);
