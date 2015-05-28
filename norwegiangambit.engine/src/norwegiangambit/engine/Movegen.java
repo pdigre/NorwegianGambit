@@ -26,17 +26,6 @@ public class Movegen implements IConst, IMovedata{
 	static{
 		MOVEDATA.initialize();
 	}
-
-	
-//	/**
-//	 * @param occupied bitmask
-//	 * @param i =sq*4 (+2 for Bishop)
-//	 * @return
-//	 */
-//	private native long magicAtks(long occupied, int i);
-//	private native void init();
-//	private native long enemyAttacks(boolean wNext, long aMinor, long aMajor, long aSlider, long bOccupied);
-//	private native int tzcnt2(long b);
 	
 	// initialization variables
 	public boolean wNext;
@@ -46,6 +35,7 @@ public class Movegen implements IConst, IMovedata{
 	// temp variables
 	public long aOccupied, wOccupied, oOccupied, eOccupied,aPawns,aKnights,aBishops,aRooks,aQueens,aKings;
 	public long checkers, pinners, oAttacked, eAttacked;
+	public long oFree;
 	public long wPawns,bPawns,wPawnAtks,bPawnAtks,wPawnAtkBy,bPawnAtkBy;
 	public long aLine,aDiag;
 	int oKingpos,eKingpos;
@@ -251,13 +241,12 @@ public class Movegen implements IConst, IMovedata{
 			int atk_sq = Long.numberOfTrailingZeros(checkers);
 			long between=BitBoard.BETWEEN[atk_sq*64+oKingpos];
 			long mask = between|checkers;
-			long free = oOccupied & ~pinners;
-			genKnight(free & aKnights,mask);
-			genBishop(free & aBishops, mask);
-			genRook(free & aRooks, mask);
-			genQueen(free & aQueens, mask);
+			genKnight(oFree & aKnights,mask);
+			genBishop(oFree & aBishops, mask);
+			genRook(oFree & aRooks, mask);
+			genQueen(oFree & aQueens, mask);
 			
-			long pfree = free & aPawns;
+			long pfree = oFree & aPawns;
 			if (wNext) {
 				long open1 = pfree&~(~between>>8);
 				long open2 = pfree & (between>>16)&~(aOccupied>>8)&MaskRow2&(~(aOccupied>>8)>>8);
@@ -273,16 +262,15 @@ public class Movegen implements IConst, IMovedata{
 
 	private void calculateNonEvasiveMoves() {
 		long mask = ~0L;
-		long free = oOccupied & ~pinners;
-		genKnight(free & aKnights,mask);  	// 1.495 of 18 secs   Knight
-		genBishop(free & aBishops, mask);  	// 1.050 of 18 secs   Bishop
-		genRook(free & aRooks, mask);		// 5.700 of 18 secs   Rook
-		genQueen(free & aQueens, mask);		// 0.960 of 18 secs   Queen
+		genKnight(oFree & aKnights,mask);  	// 1.495 of 18 secs   Knight
+		genBishop(oFree & aBishops, mask);  	// 1.050 of 18 secs   Bishop
+		genRook(oFree & aRooks, mask);		// 5.700 of 18 secs   Rook
+		genQueen(oFree & aQueens, mask);		// 0.960 of 18 secs   Queen
 //		long t1=System.nanoTime();
 		genKing();												// 1.750 of 18 secs   King
 //		tot1+=System.nanoTime()-t1;
 //		long t2=System.nanoTime();
-		long pfree = free & aPawns;
+		long pfree = oFree & aPawns;
 		if (wNext) {											// 1.250 of 18 secs   Pawn
 			long open1 = pfree&~(aOccupied>>8);
 			long open2 = open1&0xFF00L&(~(aOccupied>>8)>>8);
@@ -412,6 +400,7 @@ public class Movegen implements IConst, IMovedata{
 				}
 			}
 		}
+		oFree = oOccupied & ~pinners;
 	}
 
 
@@ -477,39 +466,39 @@ public class Movegen implements IConst, IMovedata{
 		}
 	}
 
-	private void genQueen(long pieces, long legalCaptures) {
+	private void genQueen(long pieces, long legal) {
 		while(pieces!=0){
 			int sq = Long.numberOfTrailingZeros(pieces);
 			pieces ^= 1L << sq;
-			genSlides(aOccupied, eOccupied, legalCaptures, 4,MD_Q,8,sq);
+			genSlides(aOccupied, eOccupied, legal, 4,MD_Q,8,sq);
 		}
 	}
 
-	private void genBishop(long pieces, long legalCaptures) {
+	private void genBishop(long pieces, long legal) {
 		while(pieces!=0){
 			int sq = Long.numberOfTrailingZeros(pieces);
 			pieces ^= 1L << sq;
-			genSlides(aOccupied, eOccupied, legalCaptures, 2,MD_B,4,sq);
+			genSlides(aOccupied, eOccupied, legal, 2,MD_B,4,sq);
 		}
 	}
 
-	private void genRook(long pieces, long legalCaptures) {
+	private void genRook(long pieces, long legal) {
 		while(pieces!=0){
 			int sq = Long.numberOfTrailingZeros(pieces);
 			pieces ^= 1L << sq;
 			// If castling opportunities will be broken then special Zobrist
 			if(sq==orq){
 				if(ocq ){
-					genSlides(aOccupied, eOccupied, legalCaptures, 3, wNext?MD_RQW:MD_RQB,4,0);
+					genSlides(aOccupied, eOccupied, legal, 3, wNext?MD_RQW:MD_RQB,4,0);
 					continue;
 				}
 			} else if(sq==ork){
 				if(ock ){
-					genSlides(aOccupied, eOccupied, legalCaptures, 3, wNext?MD_RKW:MD_RKB,4,0);
+					genSlides(aOccupied, eOccupied, legal, 3, wNext?MD_RKW:MD_RKB,4,0);
 					continue;
 				}
 			}
-			genSlides(aOccupied, eOccupied, legalCaptures, 3,MD_R,4,sq);
+			genSlides(aOccupied, eOccupied, legal, 3,MD_R,4,sq);
 		}
 	}
 
@@ -544,7 +533,7 @@ public class Movegen implements IConst, IMovedata{
 		}
 	}
 
-	private void genKnight(long pieces,long legalCaptures) {
+	private void genKnight(long pieces,long legal) {
 		while(pieces!=0){
 			int sq = Long.numberOfTrailingZeros(pieces);
 			pieces ^= 1L << sq;
@@ -553,10 +542,10 @@ public class Movegen implements IConst, IMovedata{
 			for (int s=b;s<e;s+=6){
 				long bto = BTO[s];
 				if ((aOccupied & bto) == 0L) {
-					if((bto & legalCaptures)!=0L)
+					if((bto & legal)!=0L)
 						add4(s);
 				} else {
-					if ((eOccupied & bto & legalCaptures) != 0) {
+					if ((eOccupied & bto & legal) != 0) {
 						int c = ctype(bto);
 						if(c==3 && bto==1L<<erk && eck) // Enemy Rook -> no castling king side
 							capture(e+1, 1, c, bto);
