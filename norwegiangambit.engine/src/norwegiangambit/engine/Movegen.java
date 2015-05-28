@@ -269,7 +269,7 @@ public class Movegen implements IConst, IMovedata{
 	}
 
 	private void calculateNonEvasiveMoves() {
-		long legal = ~0L;
+		long legal = ~oOccupied;
 		genKnight(oFree & aKnights,legal);  	// 1.495 of 18 secs   Knight
 		genBishop(oFree & aBishops, legal);  	// 1.050 of 18 secs   Bishop
 		genRook(oFree & aRooks, legal);		// 5.700 of 18 secs   Rook
@@ -415,7 +415,7 @@ public class Movegen implements IConst, IMovedata{
 	 * Calculate unsafe positions, those attacked by enemy
 	 */
 	private void calculateEnemyAttacks() {
-		long pcs=aOccupied&~(oOccupied &  aKings);
+		long pcs=aOccupied^(oOccupied &  aKings);
 		eAttacked=wNext?wPawnAtkBy:bPawnAtkBy;
 		long m;
 		m=eOccupied & aKnights;
@@ -513,17 +513,13 @@ public class Movegen implements IConst, IMovedata{
 				if ((aOccupied & bto) != 0) {
 					if ((eOccupied & bto & legal) != 0) {
 						int c = ctype(bto);
-						if(c==3 && (bto&er)!=0L){ // Enemy Rook -> no castling king side
-							capture((bto&eq)!=0L?q:k, val, c, bto);
-						}else{
-							capture(b + c, val, c, bto);
-						}
+						int md = (c==3 && (bto&er)!=0L)?((bto&eq)!=0L?q:k):(b + c);
+						capture(md, val, c, bto);
 					}
 					break;
 				} else {
-					if((bto&legal)!=0){
+					if((bto&legal)!=0)
 						add4(b+5);
-					}
 					b += 6;
 				}
 			}
@@ -531,7 +527,6 @@ public class Movegen implements IConst, IMovedata{
 	}
 
 	private void genKnight(long pieces,long legal) {
-		long legalCaptures = eOccupied & legal;
 		while(pieces!=0){
 			int sq = Long.numberOfTrailingZeros(pieces);
 			pieces ^= 1L << sq;
@@ -543,12 +538,10 @@ public class Movegen implements IConst, IMovedata{
 					if((bto & legal)!=0L)
 						add4(s);
 				} else {
-					if ((legalCaptures & bto ) != 0) {
+					if ((legal & bto & eOccupied) != 0) {
 						int c = ctype(bto);
-						if(c==3 && (bto&er)!=0L) // Enemy Rook -> no castling
-							capture((bto&eq)!=0L?e:(e+1), 1, c, bto);
-						else
-							capture(s+1+c, 1, c, bto);
+						int md = (c==3 && (bto&er)!=0L)?(bto&eq)!=0L?e:(e+1):s+1+c;
+						capture(md, 1, c, bto);
 					}
 				}
 			}
