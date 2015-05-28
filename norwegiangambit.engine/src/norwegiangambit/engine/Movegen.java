@@ -256,14 +256,13 @@ public class Movegen implements IConst, IMovedata{
 			genQueen(oFree & aQueens, legal);
 			
 			long pfree = oFree & aPawns;
+			pawnCaptures(pfree, checkers);
 			if (wNext) {
-				long open1 = pfree&~(~between>>8);
-				long open2 = pfree & (between>>16)&~(aOccupied>>8)&MaskRow2&(~(aOccupied>>8)>>8);
-				genPawn(pfree,open1,open2,checkers);
+				pawn1(pfree&~(~between>>8));
+				pawn2(pfree& (between>>16)&~(aOccupied>>8)&MaskRow2&~(aOccupied>>16));
 			} else {
-				long open1 = pfree&~(~between<<8);
-				long open2 = pfree&(between<<16)&~(aOccupied<<8)&MaskRow7&(~(aOccupied<<8)<<8);
-				genPawn(pfree,open1,open2,checkers);
+				pawn1(pfree&~(~between<<8));
+				pawn2(pfree& ( between<<16)&~(aOccupied<<8)&MaskRow7&~(aOccupied<<16));
 			}
 		}
 		genKing();
@@ -280,10 +279,10 @@ public class Movegen implements IConst, IMovedata{
 //		tot1+=System.nanoTime()-t1;
 //		long t2=System.nanoTime();
 		long pfree = oFree & aPawns;
+		pawnCaptures(pfree, eOccupied);
 		if (wNext) {											// 1.250 of 18 secs   Pawn
-			long move1 = pfree&~(aOccupied>>8);
-			long move2 = move1&0xFF00L&~(aOccupied>>16);
-			genPawn(pfree,move1,move2,eOccupied);
+			pawn1(pfree&~(aOccupied>>8));
+			pawn2(pfree&~(aOccupied>>8)&0xFF00L&~(aOccupied>>16));
 
 			// Castling
 			if (ocq && ((CWQ_FREE&aOccupied) | (CWQ_MASK&eAttacked))==0) {
@@ -294,9 +293,8 @@ public class Movegen implements IConst, IMovedata{
 			}
 
 		} else {
-			long move1 = pfree&~(aOccupied<<8);
-			long move2 = move1&0x00FF000000000000L&~(aOccupied<<16);
-			genPawn(pfree,move1,move2,eOccupied);
+			pawn1(pfree&~(aOccupied<<8));
+			pawn2(pfree&~(aOccupied<<8)&0x00FF000000000000L&~(aOccupied<<16));
 
 			// Castling
 			if (ocq && ((CBQ_FREE & aOccupied) | (CBQ_MASK&eAttacked))==0) {
@@ -557,7 +555,16 @@ public class Movegen implements IConst, IMovedata{
 		}
 	}
 
-	private void genPawn(long from, long open1, long open2, long captures) {
+	private long pawn2(long open2) {
+		while(open2!=0){
+			int sq = Long.numberOfTrailingZeros(open2);
+			open2 &= open2-1;
+			add4(MD_P2+sq%8);
+		}
+		return open2;
+	}
+
+	private long pawn1(long open1) {
 		while(open1!=0){
 			int sq = Long.numberOfTrailingZeros(open1);
 			open1 &= open1-1;
@@ -567,11 +574,10 @@ public class Movegen implements IConst, IMovedata{
 				add4(MD_P1+sq);
 			}
 		}
-		while(open2!=0){
-			int sq = Long.numberOfTrailingZeros(open2);
-			open2 &= open2-1;
-			add4(MD_P2+sq%8);
-		}
+		return open1;
+	}
+
+	private void pawnCaptures(long from, long captures) {
 		long e=captures|(1L<<epsq);
 		if(wNext){
 			pwnCaptures(MD_PQ, (from & MaskBToHFiles) &(e>>7), 7, ecq?erq:-1,true);
