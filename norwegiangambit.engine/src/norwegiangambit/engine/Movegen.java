@@ -570,14 +570,30 @@ public class Movegen implements IConst, IMovedata{
 		return open1;
 	}
 
-	private void pawnCaptures(long from, long captures) {
-		long e=captures|(1L<<epsq);
+	private void pawnCaptures(long pieces, long captures) {
+		long e=captures;
+		long pleft = pieces & MaskBToHFiles;
+		long pright = pieces & MaskAToGFiles;
 		if(wNext){
-			pwnCaptures((from & MaskBToHFiles) &(e>>7), true);
-			pwnCaptures((from & MaskAToGFiles) &(e>>9), false);
+			pwnCaptures(pleft &(e>>7), true);
+			pwnCaptures(pright &(e>>9), false);
 		} else {
-			pwnCaptures((from & MaskBToHFiles) &(e<<9), true);
-			pwnCaptures((from & MaskAToGFiles) &(e<<7), false);
+			pwnCaptures(pleft &(e<<9), true);
+			pwnCaptures(pright &(e<<7), false);
+		}
+		if(epsq!=-1){
+			long ep=1L<<epsq;
+			if(wNext){
+				if((pleft &(ep>>7))!=0)
+					addEnpassant((MD_PEL+(epsq-((wNext?8:-8)-1))%8)|mdoffset);
+				if((pright &(ep>>9))!=0)
+					addEnpassant((MD_PER+(epsq-((wNext?8:-8)+1))%8)|mdoffset);
+			} else {
+				if((pleft &(ep<<9))!=0)
+					addEnpassant((MD_PEL+(epsq-((wNext?8:-8)-1))%8)|mdoffset);
+				if((pright &(ep<<7))!=0)
+					addEnpassant((MD_PER+(epsq-((wNext?8:-8)+1))%8)|mdoffset);
+			}
 		}
 	}
 
@@ -587,25 +603,24 @@ public class Movegen implements IConst, IMovedata{
 			int sq = Long.numberOfTrailingZeros(m);
 			m &= m-1;
 			int to=sq+step;
-			if (to == epsq) {
-				int md = ((isLeft?MD_PEL:MD_PER)+sq%8)|mdoffset;
-				// Check for safety since there may be a covered check with enpassant
-				if(BitBoard.isSafe(wNext,oKingpos,bOccupied^BOCCUPIED[md], aMinor^AMINOR[md], aMajor^AMAJOR[md], aSlider^ASLIDER[md]))	
-					add2(md);
+			long bto = 1L << to;
+			int ctype=ctype(bto);
+			if((bto & MaskGoal)==0L){
+				capture((isLeft?MD_PCL:MD_PCR)+(sq*5)+ctype, 0, ctype, bto);
 			} else {
-				long bto = 1L << to;
-				int ctype=ctype(bto);
-				if((bto & MaskGoal)==0L){
-					capture((isLeft?MD_PCL:MD_PCR)+(sq*5)+ctype, 0, ctype, bto);
+				if((bto&er)!=0L){
+					add1_promo(isLeft?MD_PQ:MD_PK);
 				} else {
-					if((bto&er)!=0L){
-						add1_promo(isLeft?MD_PQ:MD_PK);
-					} else {
-						add1_promo((isLeft?MD_PPL:MD_PPR)+(sq%8)*20+ctype*4);
-					}
+					add1_promo((isLeft?MD_PPL:MD_PPR)+(sq%8)*20+ctype*4);
 				}
 			}
 		}
+	}
+	
+	public void addEnpassant(int md) {
+		// Check for safety since there may be a covered check with enpassant
+		if(BitBoard.isSafe(wNext,oKingpos,bOccupied^BOCCUPIED[md], aMinor^AMINOR[md], aMajor^AMAJOR[md], aSlider^ASLIDER[md]))	
+			add2(md);
 	}
 
 	private void slide(long attacker,long between, int type,int from,int to,int[] slider,int sq,int n) {
