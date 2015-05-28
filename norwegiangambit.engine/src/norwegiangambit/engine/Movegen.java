@@ -34,7 +34,7 @@ public class Movegen implements IConst, IMovedata{
 
 	// temp variables
 	public long aOccupied, wOccupied, oOccupied, eOccupied,aPawns,aKnights,aBishops,aRooks,aQueens,aKings;
-	public long checkers, pinners, oAttacked, eAttacked;
+	public long checkers, oAttacked, eAttacked;
 	public long oFree;
 	public long wPawns,bPawns,wPawnAtks,bPawnAtks,wPawnAtkBy,bPawnAtkBy;
 	public long aLine,aDiag;
@@ -42,8 +42,9 @@ public class Movegen implements IConst, IMovedata{
 	int mdoffset;
 	
 	// movegen shortcuts
-	public boolean ecq, eck, ocq, ock;
-	public int erq,erk,orq,ork; // Enemy and own Rook Queen side or King side
+	public boolean ecq, eck, ocq, ock; // Can castle enemy/owner queen/king side
+	public int erq,erk; // Rook position enemy, Queen side or King side
+	long ek,eq,er,oq,or; // Rook comparison bitmaps (king/queen/rooks)
 
 	// movegen state
 	public final int[] moves = new int[99];
@@ -111,10 +112,18 @@ public class Movegen implements IConst, IMovedata{
 		erq        	= wNext?BR_QUEEN_STARTPOS:WR_QUEEN_STARTPOS;
 		ecq			= (castling & (wNext?CANCASTLE_BLACKQUEEN:CANCASTLE_WHITEQUEEN)) != 0;
 		eck			= (castling & (wNext?CANCASTLE_BLACKKING:CANCASTLE_WHITEKING)) != 0;
-		ork 		= wNext?WR_KING_STARTPOS:BR_KING_STARTPOS;
-		orq 		= wNext?WR_QUEEN_STARTPOS:BR_QUEEN_STARTPOS;
 		ocq 		= (castling & (wNext?CANCASTLE_WHITEQUEEN:CANCASTLE_BLACKQUEEN)) != 0;
 		ock 		= (castling & (wNext?CANCASTLE_WHITEKING:CANCASTLE_BLACKKING)) != 0;
+
+		ek=eck?1L<<erk:0L;
+		eq=ecq?1L<<erq:0L;
+		er=ek|eq;
+
+		long ork 	= wNext?WR_KING_STARTPOS:BR_KING_STARTPOS;
+		long orq 	= wNext?WR_QUEEN_STARTPOS:BR_QUEEN_STARTPOS;
+		long ok		=ock?1L<<ork:0L;
+		oq			=ocq?1L<<orq:0L;
+		or			=ok|oq;
 
 	}
 
@@ -272,22 +281,22 @@ public class Movegen implements IConst, IMovedata{
 //		long t2=System.nanoTime();
 		long pfree = oFree & aPawns;
 		if (wNext) {											// 1.250 of 18 secs   Pawn
-			long open1 = pfree&~(aOccupied>>8);
-			long open2 = open1&0xFF00L&(~(aOccupied>>8)>>8);
-			genPawn(pfree,open1,open2,eOccupied);
+			long move1 = pfree&~(aOccupied>>8);
+			long move2 = move1&0xFF00L&~(aOccupied>>16);
+			genPawn(pfree,move1,move2,eOccupied);
 
 			// Castling
-			if (ocq && ((CWQ_FREE & aOccupied) | (CWQ_MASK&eAttacked))==0) {
+			if (ocq && ((CWQ_FREE&aOccupied) | (CWQ_MASK&eAttacked))==0) {
 				add4(ock?MD_KCQ:MD_KCQ2);
 			}
-			if (ock && ((CWK_FREE & aOccupied) | (CWK_MASK&eAttacked))==0) {
+			if (ock && ((CWK_FREE&aOccupied) | (CWK_MASK&eAttacked))==0) {
 				add4(ocq?MD_KCK:MD_KCK2);
 			}
 
 		} else {
-			long open1 = pfree&~(aOccupied<<8);
-			long open2 = open1&0x00FF000000000000L&(~(aOccupied<<8)<<8);
-			genPawn(pfree,open1,open2,eOccupied);
+			long move1 = pfree&~(aOccupied<<8);
+			long move2 = move1&0x00FF000000000000L&~(aOccupied<<16);
+			genPawn(pfree,move1,move2,eOccupied);
 
 			// Castling
 			if (ocq && ((CBQ_FREE & aOccupied) | (CBQ_MASK&eAttacked))==0) {
@@ -302,7 +311,7 @@ public class Movegen implements IConst, IMovedata{
 
 	private void calculatePinnersAndCheckers() {
 		// Calculate checkers and pinners
-		pinners=0L;
+		long pinners=0L;
 
 		// Regular checks
 		checkers=(eOccupied & aKnights & BitBoard.NMasks[oKingpos]) 									// Knights
@@ -438,11 +447,11 @@ public class Movegen implements IConst, IMovedata{
 	}
 
 	private void genKing() {
-		if(oKingpos!= (wNext?WK_STARTPOS:BK_STARTPOS) || !(ock || ocq)) {
-			genKingMoves(MD_K[oKingpos*2],MD_K[oKingpos*2+1]);
-		} else {
+		if(ock || ocq) {
 			int i=(ocq?(ock?MD_KX:MD_KXQ):(ock?MD_KXK:0));
 			genKingMoves(i,i+30);
+		} else {
+			genKingMoves(MD_K[oKingpos*2],MD_K[oKingpos*2+1]);
 		}
 	}
 
@@ -455,10 +464,8 @@ public class Movegen implements IConst, IMovedata{
 			} else {
 				if ((eOccupied & bto & ~eAttacked) != 0) {
 					int c = ctype(bto);
-					if(c==3 && bto==1L<<erk && eck)
-						add4(e+1); // Enemy Rook -> no castling king side
-					else if(c==3 && bto==1L<<erq && ecq)
-						add4(e); // Enemy Rook -> no castling queen side
+					if(c==3 && (bto&er)!=0L)
+						add4((bto&eq)!=0L?e:(e+1)); // Enemy Rook -> no castling
 					else
 						add4(s+1+c);
 				}
@@ -485,20 +492,14 @@ public class Movegen implements IConst, IMovedata{
 	private void genRook(long pieces, long legal) {
 		while(pieces!=0){
 			int sq = Long.numberOfTrailingZeros(pieces);
-			pieces ^= 1L << sq;
+			long bfrom=1L << sq;
+			pieces ^= bfrom;
 			// If castling opportunities will be broken then special Zobrist
-			if(sq==orq){
-				if(ocq ){
-					genSlides(legal, 3, wNext?MD_RQW:MD_RQB, 4, 0);
-					continue;
-				}
-			} else if(sq==ork){
-				if(ock ){
-					genSlides(legal, 3, wNext?MD_RKW:MD_RKB, 4, 0);
-					continue;
-				}
-			}
-			genSlides(legal, 3, MD_R, 4,sq);
+			if((bfrom&or)!=0L){
+				int[] md = (bfrom&oq)!=0L?(wNext?MD_RQW:MD_RQB):(wNext?MD_RKW:MD_RKB);
+				genSlides(legal, 3,md, 4, 0);
+			} else
+				genSlides(legal, 3, MD_R, 4,sq);
 		}
 	}
 
@@ -514,10 +515,8 @@ public class Movegen implements IConst, IMovedata{
 				if ((aOccupied & bto) != 0) {
 					if ((eOccupied & bto & legal) != 0) {
 						int c = ctype(bto);
-						if(c==3 && bto==1L<<erk  && eck){ // Enemy Rook -> no castling king side
-							capture(k, val, c, bto);
-						}else if(c==3 && bto==1L<<erq && ecq){ // Enemy Rook -> no castling queen side
-							capture(q, val, c, bto);
+						if(c==3 && (bto&er)!=0L){ // Enemy Rook -> no castling king side
+							capture((bto&eq)!=0L?q:k, val, c, bto);
 						}else{
 							capture(b + c, val, c, bto);
 						}
@@ -534,6 +533,7 @@ public class Movegen implements IConst, IMovedata{
 	}
 
 	private void genKnight(long pieces,long legal) {
+		long legalCaptures = eOccupied & legal;
 		while(pieces!=0){
 			int sq = Long.numberOfTrailingZeros(pieces);
 			pieces ^= 1L << sq;
@@ -545,16 +545,12 @@ public class Movegen implements IConst, IMovedata{
 					if((bto & legal)!=0L)
 						add4(s);
 				} else {
-					if ((eOccupied & bto & legal) != 0) {
+					if ((legalCaptures & bto ) != 0) {
 						int c = ctype(bto);
-						if(c==3 && bto==1L<<erk && eck) // Enemy Rook -> no castling king side
-							capture(e+1, 1, c, bto);
-						else {
-							if(c==3 && bto==1L<<erq && ecq) // Enemy Rook -> no castling queen side
-								capture(e, 1, c, bto);
-							else
-								capture(s+1+c, 1, c, bto);
-						}
+						if(c==3 && (bto&er)!=0L) // Enemy Rook -> no castling
+							capture((bto&eq)!=0L?e:(e+1), 1, c, bto);
+						else
+							capture(s+1+c, 1, c, bto);
 					}
 				}
 			}
@@ -578,15 +574,15 @@ public class Movegen implements IConst, IMovedata{
 		}
 		long e=captures|(1L<<epsq);
 		if(wNext){
-			pwnCaptures(MD_PQ, (from & MaskBToHFiles) &(e>>7), 7, erq, ecq,true);
-			pwnCaptures(MD_PK, (from & MaskAToGFiles) &(e>>9), 9, erk, eck,false);
+			pwnCaptures(MD_PQ, (from & MaskBToHFiles) &(e>>7), 7, ecq?erq:-1,true);
+			pwnCaptures(MD_PK, (from & MaskAToGFiles) &(e>>9), 9, eck?erk:-1,false);
 		} else {
-			pwnCaptures(MD_PQ, (from & MaskBToHFiles) &(e<<9), -9, erq, ecq,true);
-			pwnCaptures(MD_PK, (from & MaskAToGFiles) &(e<<7), -7, erk, eck,false);
+			pwnCaptures(MD_PQ, (from & MaskBToHFiles) &(e<<9), -9, ecq?erq:-1,true);
+			pwnCaptures(MD_PK, (from & MaskAToGFiles) &(e<<7), -7, eck?erk:-1,false);
 		}
 	}
 
-	private void pwnCaptures(int pc, long m, int step, int cs, boolean cc, boolean isLeft) {
+	private void pwnCaptures(int pc, long m, int step, int cs, boolean isLeft) {
 		while(m!=0){
 			int sq = Long.numberOfTrailingZeros(m);
 			m &= m-1;
@@ -602,7 +598,7 @@ public class Movegen implements IConst, IMovedata{
 				if((bto & MaskGoal)==0L){
 					capture((isLeft?MD_PCL:MD_PCR)+(sq*5)+ctype, 0, ctype, bto);
 				} else {
-					if(cc && to==cs){
+					if(to==cs){
 						add1_promo(pc);
 					} else {
 						int p = (isLeft?MD_PPL:MD_PPR)+(sq%8)*20;
@@ -629,16 +625,10 @@ public class Movegen implements IConst, IMovedata{
 				}
 				if ((attacker & bto) != 0){
 					int c = ctype(bto);
-					if(c==3){
-						if(bto==1L<<erk && eck)
-							capture(k, type, c, bto);
-						 else if(bto==1L<<erq && ecq)
-							capture(q, type, c, bto);
-						 else 
-							capture(b+c, type, c, bto);
-					} else {
-						capture(b + c, type, c, bto);
-					}
+					if(c==3 && (bto&er)!=0L)
+						capture((bto&eq)!=0L?q:k, type, c, bto);
+					 else 
+						capture(b+c, type, c, bto);
 				}
 				break;
 			}
