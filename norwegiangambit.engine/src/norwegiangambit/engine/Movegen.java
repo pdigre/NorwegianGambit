@@ -240,11 +240,11 @@ public class Movegen implements IConst, IMovedata{
 		if(num==1){
 			int atk_sq = Long.numberOfTrailingZeros(checkers);
 			long between=BitBoard.BETWEEN[atk_sq*64+oKingpos];
-			long mask = between|checkers;
-			genKnight(oFree & aKnights,mask);
-			genBishop(oFree & aBishops, mask);
-			genRook(oFree & aRooks, mask);
-			genQueen(oFree & aQueens, mask);
+			long legal = between|checkers;
+			genKnight(oFree & aKnights,legal);
+			genBishop(oFree & aBishops, legal);
+			genRook(oFree & aRooks, legal);
+			genQueen(oFree & aQueens, legal);
 			
 			long pfree = oFree & aPawns;
 			if (wNext) {
@@ -261,11 +261,11 @@ public class Movegen implements IConst, IMovedata{
 	}
 
 	private void calculateNonEvasiveMoves() {
-		long mask = ~0L;
-		genKnight(oFree & aKnights,mask);  	// 1.495 of 18 secs   Knight
-		genBishop(oFree & aBishops, mask);  	// 1.050 of 18 secs   Bishop
-		genRook(oFree & aRooks, mask);		// 5.700 of 18 secs   Rook
-		genQueen(oFree & aQueens, mask);		// 0.960 of 18 secs   Queen
+		long legal = ~0L;
+		genKnight(oFree & aKnights,legal);  	// 1.495 of 18 secs   Knight
+		genBishop(oFree & aBishops, legal);  	// 1.050 of 18 secs   Bishop
+		genRook(oFree & aRooks, legal);		// 5.700 of 18 secs   Rook
+		genQueen(oFree & aQueens, legal);		// 0.960 of 18 secs   Queen
 //		long t1=System.nanoTime();
 		genKing();												// 1.750 of 18 secs   King
 //		tot1+=System.nanoTime()-t1;
@@ -470,7 +470,7 @@ public class Movegen implements IConst, IMovedata{
 		while(pieces!=0){
 			int sq = Long.numberOfTrailingZeros(pieces);
 			pieces ^= 1L << sq;
-			genSlides(aOccupied, eOccupied, legal, 4,MD_Q,8,sq);
+			genSlides(legal, 4, MD_Q, 8,sq);
 		}
 	}
 
@@ -478,7 +478,7 @@ public class Movegen implements IConst, IMovedata{
 		while(pieces!=0){
 			int sq = Long.numberOfTrailingZeros(pieces);
 			pieces ^= 1L << sq;
-			genSlides(aOccupied, eOccupied, legal, 2,MD_B,4,sq);
+			genSlides(legal, 2, MD_B, 4,sq);
 		}
 	}
 
@@ -489,20 +489,20 @@ public class Movegen implements IConst, IMovedata{
 			// If castling opportunities will be broken then special Zobrist
 			if(sq==orq){
 				if(ocq ){
-					genSlides(aOccupied, eOccupied, legal, 3, wNext?MD_RQW:MD_RQB,4,0);
+					genSlides(legal, 3, wNext?MD_RQW:MD_RQB, 4, 0);
 					continue;
 				}
 			} else if(sq==ork){
 				if(ock ){
-					genSlides(aOccupied, eOccupied, legal, 3, wNext?MD_RKW:MD_RKB,4,0);
+					genSlides(legal, 3, wNext?MD_RKW:MD_RKB, 4, 0);
 					continue;
 				}
 			}
-			genSlides(aOccupied, eOccupied, legal, 3,MD_R,4,sq);
+			genSlides(legal, 3, MD_R, 4,sq);
 		}
 	}
 
-	private void genSlides(long occupied, long capture, long mask, int val, int[] slider, int n, int sq) {
+	private void genSlides(long legal, int val, int[] slider, int n, int sq) {
 		int offset = sq*n*2;
 		int q = slider[offset+2*n-1];
 		int k = q+1;
@@ -510,9 +510,9 @@ public class Movegen implements IConst, IMovedata{
 			int b = slider[offset+j*2];
 			int e = slider[offset+1+j*2];
 			while (b < e) {
-				long bto = BTO[b+5+mdoffset];
-				if ((occupied & bto) != 0) {
-					if ((capture & bto & mask) != 0) {
+				long bto = BTO[(b+5)|mdoffset];
+				if ((aOccupied & bto) != 0) {
+					if ((eOccupied & bto & legal) != 0) {
 						int c = ctype(bto);
 						if(c==3 && bto==1L<<erk  && eck){ // Enemy Rook -> no castling king side
 							capture(k, val, c, bto);
@@ -524,7 +524,7 @@ public class Movegen implements IConst, IMovedata{
 					}
 					break;
 				} else {
-					if((bto&mask)!=0){
+					if((bto&legal)!=0){
 						add4(b+5);
 					}
 					b += 6;
@@ -537,8 +537,8 @@ public class Movegen implements IConst, IMovedata{
 		while(pieces!=0){
 			int sq = Long.numberOfTrailingZeros(pieces);
 			pieces ^= 1L << sq;
-			int b=MD_N[sq*2]+mdoffset;
-			int e=MD_N[sq*2+1]+mdoffset;
+			int b=MD_N[sq*2]|mdoffset;
+			int e=MD_N[sq*2+1]|mdoffset;
 			for (int s=b;s<e;s+=6){
 				long bto = BTO[s];
 				if ((aOccupied & bto) == 0L) {
@@ -592,7 +592,7 @@ public class Movegen implements IConst, IMovedata{
 			m &= m-1;
 			int to=sq+step;
 			if (to == epsq) {
-				int md = (isLeft?MD_PEL:MD_PER)+sq%8|mdoffset;
+				int md = ((isLeft?MD_PEL:MD_PER)+sq%8)|mdoffset;
 				// Check for safety since there may be a covered check with enpassant
 				if(BitBoard.isSafe(wNext,oKingpos,bOccupied^BOCCUPIED[md], aMinor^AMINOR[md], aMajor^AMAJOR[md], aSlider^ASLIDER[md]))	
 					add2(md);
