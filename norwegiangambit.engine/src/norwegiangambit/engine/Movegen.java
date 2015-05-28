@@ -258,10 +258,10 @@ public class Movegen implements IConst, IMovedata{
 			long pfree = oFree & aPawns;
 			pawnCaptures(pfree, checkers);
 			if (wNext) {
-				pawn1(pfree&~(~between>>8));
-				pawn2(pfree& (between>>16)&~(aOccupied>>8)&MaskRow2&~(aOccupied>>16));
+				pawn1(pfree&~(~between>> 8));
+				pawn2(pfree& ( between>>16)&~(aOccupied>>8)&MaskRow2&~(aOccupied>>16));
 			} else {
-				pawn1(pfree&~(~between<<8));
+				pawn1(pfree&~(~between<< 8));
 				pawn2(pfree& ( between<<16)&~(aOccupied<<8)&MaskRow7&~(aOccupied<<16));
 			}
 		}
