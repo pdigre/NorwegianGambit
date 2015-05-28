@@ -83,7 +83,7 @@ public class Movegen implements IConst, IMovedata{
 		this.epsq 		= epsq;
 		this.castling 	= castling; 
 		
-		aOccupied 	= aMinor | aMajor | aSlider;
+		aOccupied 	= aMinor  |  aMajor |  aSlider;
 		wOccupied 	= aOccupied ^ bOccupied;
 		aPawns 		=  aMinor & ~aMajor & ~aSlider;
 		aKnights 	= ~aMinor &  aMajor & ~aSlider;
@@ -573,15 +573,16 @@ public class Movegen implements IConst, IMovedata{
 	private void pawnCaptures(long from, long captures) {
 		long e=captures|(1L<<epsq);
 		if(wNext){
-			pwnCaptures(MD_PQ, (from & MaskBToHFiles) &(e>>7), 7, ecq?erq:-1,true);
-			pwnCaptures(MD_PK, (from & MaskAToGFiles) &(e>>9), 9, eck?erk:-1,false);
+			pwnCaptures((from & MaskBToHFiles) &(e>>7), true);
+			pwnCaptures((from & MaskAToGFiles) &(e>>9), false);
 		} else {
-			pwnCaptures(MD_PQ, (from & MaskBToHFiles) &(e<<9), -9, ecq?erq:-1,true);
-			pwnCaptures(MD_PK, (from & MaskAToGFiles) &(e<<7), -7, eck?erk:-1,false);
+			pwnCaptures((from & MaskBToHFiles) &(e<<9), true);
+			pwnCaptures((from & MaskAToGFiles) &(e<<7), false);
 		}
 	}
 
-	private void pwnCaptures(int pc, long m, int step, int cs, boolean isLeft) {
+	private void pwnCaptures(long m, boolean isLeft) {
+		int step=(wNext?8:-8)+(isLeft?-1:1);
 		while(m!=0){
 			int sq = Long.numberOfTrailingZeros(m);
 			m &= m-1;
@@ -597,11 +598,10 @@ public class Movegen implements IConst, IMovedata{
 				if((bto & MaskGoal)==0L){
 					capture((isLeft?MD_PCL:MD_PCR)+(sq*5)+ctype, 0, ctype, bto);
 				} else {
-					if(to==cs){
-						add1_promo(pc);
+					if((bto&er)!=0L){
+						add1_promo(isLeft?MD_PQ:MD_PK);
 					} else {
-						int p = (isLeft?MD_PPL:MD_PPR)+(sq%8)*20;
-						add1_promo(p+ctype*4);
+						add1_promo((isLeft?MD_PPL:MD_PPR)+(sq%8)*20+ctype*4);
 					}
 				}
 			}
