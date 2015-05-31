@@ -102,12 +102,20 @@ public class FastEval extends Movegen {
 	
 	public static int getScore(int[] brd) {
 		int score=0;
+		int tot1=0;
+		int tot2=0;
 		for (int sq = 0; sq < 64; sq++) {
 			int piece = brd[sq];
-			if(piece!=0)
-				score+=SS(MBase.psqt(sq, piece));
+			if(piece!=0) {
+				int psqt = MBase.psqt(sq, piece);
+				int i1=M(psqt);
+				int i2=E(psqt);
+				tot1+=i1;
+				tot2+=i2;
+				score+=psqt;
+			}
 		}
-		return score;
+		return S(tot1,tot2);
 	}
 
 	public void setPath(int[] mm) {

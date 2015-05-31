@@ -15,10 +15,11 @@ public class LongEval extends FastEval {
     static final int rV = M(MBase.psqt.pVal(WR));
     static final int qV = M(MBase.psqt.pVal(WQ));
     static final int kV = M(MBase.psqt.pVal(WK)); // Used by SEE algorithm, but not included in board material sums
-    static final int mgBalance = 15581;
-    static final int egBalance = 3998;
-    public static final int WM=0,BM=8;	// Used for Mobility bonus
-    public static final int WX=4,BX=12;	// Used for Threat bonus
+	static final int just=E(MBase.psqt.pVal(WP));
+    static final int mgBalance = 15581;		// Midgame threshold
+    static final int egBalance = 3998;		// Endgame threshold
+    public static final int WM=0,BM=8;		// Used for Mobility bonus
+    public static final int WX=4,BX=12;		// Used for Threat bonus
     public static final int WS=16,BS=17;	// Used for Space bonus
 
     final static int[] KnightMobScore = {S(-65,-50), S(-42,-30), S(-9,-10), S( 3,  0), S(15, 10), S(27, 20), // Knight
@@ -94,7 +95,7 @@ public class LongEval extends FastEval {
 	}
 
 	public final static String dpair(int pair) {
-		return d(M(pair)*10000/M(pV))+d(E(pair)*10000/E(pV));
+		return d(M(pair)*100/just)+d(E(pair)*100/just);
 	}
 
 	/**
@@ -104,14 +105,14 @@ public class LongEval extends FastEval {
 	 * @return
 	 */
 	public String printEval() {
-		int materialBonus=ZERO,imbalanceBonus=ZERO, pawnBonus=ZERO;
+		int pawnBonus=ZERO;
 		sb=new StringBuilder();
 		sb.append("           Eval term |    White    |    Black    |    Total    \n");
 		sb.append("                     |   MG    EG  |   MG    EG  |   MG    EG  \n");
 		sb.append("---------------------+-------------+-------------+-------------\n");
 		int tot = longEval();
-		sb.append(line1("Material, PST, Tempo",materialBonus));
-		sb.append(line1("Material imbalance",imbalanceBonus));
+		sb.append(line1("Material, PST, Tempo",mescore));
+		sb.append(line1("Material imbalance",calculateMaterialImbalance()));
 		sb.append(line1("Pawns",pawnBonus));
 		sb.append(line2("Knights",bonus[WN], bonus[BN]));
 		sb.append(line2("Bishops",bonus[WN], bonus[BN]));
@@ -126,6 +127,12 @@ public class LongEval extends FastEval {
 		sb.append(line1("Total",tot));
 		sb.append("\nTotal Evaluation: "+d(score)+" (white side)\n");
 		return sb.toString();
+	}
+
+	private int calculateMaterialImbalance() {
+		int bonus = wMtrl-bMtrl;
+		int i = wNext?bonus:-bonus;
+		return SS(i,i);
 	}
 
 	public int longEval() {
