@@ -3,7 +3,7 @@ package norwegiangambit.engine.movedata;
 import norwegiangambit.util.BitBoard;
 import norwegiangambit.util.IConst;
 
-public class MWP extends MPawn{
+public class MWP extends MBase{
 
 	public static void init(){
 		for (int from = 0; from < 64; from++)

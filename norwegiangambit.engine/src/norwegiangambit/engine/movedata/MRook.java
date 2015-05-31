@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import norwegiangambit.util.IConst;
 
-public abstract class MRook extends MSlider {
+public class MRook extends MSlider {
 
 	public MRook(int from) {
 		super(from);
@@ -63,6 +63,4 @@ public abstract class MRook extends MSlider {
 		MOVEDATA.ALL[n] = q;
 		MOVEDATA.ALL[n+1] = k;
 	}
-
-
 }
