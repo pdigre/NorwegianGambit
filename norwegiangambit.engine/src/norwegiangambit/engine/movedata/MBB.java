@@ -1,9 +1,9 @@
-package norwegiangambit.engine.movegen;
+package norwegiangambit.engine.movedata;
 
 import norwegiangambit.util.IConst;
 
 
-public class MBB extends MSlider implements IBlack{
+public class MBB extends MSlider{
 
 	public static void init() {
 		for (int from = 0; from < 64; from++)

@@ -1,5 +1,9 @@
 package norwegiangambit.util;
 
+import static norwegiangambit.util.ShortIntPairs.E;
+import static norwegiangambit.util.ShortIntPairs.M;
+import static norwegiangambit.util.ShortIntPairs.S;
+
 public class ShortIntPairs implements IConst {
 
 	final static public int I2MSK = 0xFFFF;
@@ -32,6 +36,18 @@ public class ShortIntPairs implements IConst {
 		return b-I2OFF;
 	}
 
+	final static public int addSS(int a,int b){
+		return S(M(a)+M(b),E(a)+E(b));
+	}
+	
+	final static public int minusSS(int a,int b){
+		return S(M(a)-M(b),E(a)-E(b));
+	}
+	
+	final static public int addSS(int a,int b,int c){
+		return S(M(a)+M(b)+M(c),E(a)+E(b)+E(c));
+	}
+	
 	/**
 	 * Short for SS(S(mid,end))
 	 * @param mid

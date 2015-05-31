@@ -1,4 +1,4 @@
-package norwegiangambit.engine.movegen;
+package norwegiangambit.engine.movedata;
 
 public class MSliderSpecial extends MRook {
 

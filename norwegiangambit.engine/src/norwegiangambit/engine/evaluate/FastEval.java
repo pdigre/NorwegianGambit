@@ -2,9 +2,9 @@ package norwegiangambit.engine.evaluate;
 
 import static norwegiangambit.util.ShortIntPairs.*;
 import norwegiangambit.engine.Movegen;
-import norwegiangambit.engine.movegen.MBase;
-import norwegiangambit.engine.movegen.MOVEDATA;
-import norwegiangambit.engine.movegen.MOVEDATA2;
+import norwegiangambit.engine.movedata.MBase;
+import norwegiangambit.engine.movedata.MOVEDATA;
+import norwegiangambit.engine.movedata.MOVEDATA2;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;
 
@@ -70,7 +70,7 @@ public class FastEval extends Movegen {
 	public void evaluate(int i) {
 		curr_move=i;
 		MOVEDATA md = MOVEDATA.ALL[i];
-		mescore=parent.mescore+SS(md.mescore);
+		mescore=addSS(mescore,parent.mescore,md.mescore);
 		if(parent instanceof FastEval){
 			zobrist_fwd=((FastEval) parent).zobrist_fwd^md.zobrist;
 			zobrist=zobrist_fwd;

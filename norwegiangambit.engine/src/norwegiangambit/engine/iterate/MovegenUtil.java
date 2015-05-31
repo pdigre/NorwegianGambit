@@ -2,7 +2,7 @@ package norwegiangambit.engine.iterate;
 
 import norwegiangambit.engine.Movegen;
 import norwegiangambit.engine.fen.StartGame;
-import norwegiangambit.engine.movegen.MOVEDATA;
+import norwegiangambit.engine.movedata.MOVEDATA;
 
 public class MovegenUtil {
 

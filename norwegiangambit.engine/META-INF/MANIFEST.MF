@@ -16,6 +16,6 @@ Export-Package: norwegiangambit.engine,
  norwegiangambit.engine.evaluate,
  norwegiangambit.engine.fen,
  norwegiangambit.engine.iterate,
- norwegiangambit.engine.movegen,
+ norwegiangambit.engine.movedata,
  norwegiangambit.engine.util
 

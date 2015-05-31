@@ -2,7 +2,7 @@ package norwegiangambit.engine.iterate;
 
 import static norwegiangambit.util.ShortIntPairs.*;
 import norwegiangambit.engine.fen.Position;
-import norwegiangambit.engine.movegen.MBase;
+import norwegiangambit.engine.movedata.MBase;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.IConst;
 

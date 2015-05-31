@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import norwegiangambit.engine.fen.StartGame;
 import norwegiangambit.engine.iterate.NodeGen;
 import norwegiangambit.engine.iterate.NodeUtil;
-import norwegiangambit.engine.movegen.MBase;
+import norwegiangambit.engine.movedata.MBase;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.PSQT_SEF;

@@ -1,4 +1,4 @@
-package norwegiangambit.engine.movegen;
+package norwegiangambit.engine.movedata;
 
 public abstract class MSimple extends MBase {
 

@@ -1,9 +1,9 @@
-package norwegiangambit.engine.movegen;
+package norwegiangambit.engine.movedata;
 
 import norwegiangambit.util.IConst;
 
 
-public class MBR extends MRook implements IBlack{
+public class MBR extends MRook{
 
 	public int[][] SLIDES;
 

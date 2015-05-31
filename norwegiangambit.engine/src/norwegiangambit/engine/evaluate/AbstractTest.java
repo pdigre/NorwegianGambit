@@ -10,7 +10,7 @@ import java.util.TimerTask;
 import java.util.TreeSet;
 
 import norwegiangambit.engine.fen.StartGame;
-import norwegiangambit.engine.movegen.MOVEDATA;
+import norwegiangambit.engine.movedata.MOVEDATA;
 import norwegiangambit.util.IDivide;
 import norwegiangambit.util.IDivide.Eval;
 

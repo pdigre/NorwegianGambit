@@ -1,7 +1,7 @@
 package norwegiangambit.engine;
 
 import norwegiangambit.engine.evaluate.FastPerft;
-import norwegiangambit.engine.movegen.MOVEDATA;
+import norwegiangambit.engine.movedata.MOVEDATA;
 import norwegiangambit.util.EngineStockfish;
 import norwegiangambit.util.PerftTest;
 

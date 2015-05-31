@@ -2,7 +2,7 @@ package norwegiangambit.engine;
 
 import java.util.Arrays;
 
-import norwegiangambit.engine.movegen.MOVEDATA;
+import norwegiangambit.engine.movedata.MOVEDATA;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.BitBoard;
 import norwegiangambit.util.FEN;

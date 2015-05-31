@@ -1,9 +1,9 @@
-package norwegiangambit.engine.movegen;
+package norwegiangambit.engine.movedata;
 
 import norwegiangambit.util.BitBoard;
 import norwegiangambit.util.IConst;
 
-public class MBP  extends MPawn implements IBlack{
+public class MBP  extends MPawn{
 
 	public static void init() {
 		for (int from = 0; from < 64; from++)

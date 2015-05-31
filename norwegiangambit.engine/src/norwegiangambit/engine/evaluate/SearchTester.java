@@ -1,6 +1,6 @@
 package norwegiangambit.engine.evaluate;
 
-import norwegiangambit.engine.movegen.MBase;
+import norwegiangambit.engine.movedata.MBase;
 import norwegiangambit.util.polyglot.ZobristPolyglot;
 
 

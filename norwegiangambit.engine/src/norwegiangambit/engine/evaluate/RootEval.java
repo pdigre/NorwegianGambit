@@ -1,6 +1,6 @@
 package norwegiangambit.engine.evaluate;
 
-import norwegiangambit.engine.movegen.MOVEDATA;
+import norwegiangambit.engine.movedata.MOVEDATA;
 import norwegiangambit.util.IDivide.Eval;
 
 public class RootEval extends Eval {

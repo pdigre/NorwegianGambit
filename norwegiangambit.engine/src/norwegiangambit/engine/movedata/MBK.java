@@ -1,8 +1,8 @@
-package norwegiangambit.engine.movegen;
+package norwegiangambit.engine.movedata;
 
 import norwegiangambit.util.IConst;
 
-public class MBK extends MSimple implements IBlack {
+public class MBK extends MSimple{
 
 	public static void init() {
 		for (int from = 0; from < 64; from++)

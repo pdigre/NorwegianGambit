@@ -7,8 +7,8 @@ import java.util.concurrent.RecursiveTask;
 
 import norwegiangambit.engine.evaluate.EloTester.RootGen;
 import norwegiangambit.engine.fen.StartGame;
-import norwegiangambit.engine.movegen.MBase;
-import norwegiangambit.engine.movegen.MOVEDATA;
+import norwegiangambit.engine.movedata.MBase;
+import norwegiangambit.engine.movedata.MOVEDATA;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IDivide;
 import norwegiangambit.util.PSQT;

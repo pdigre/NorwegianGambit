@@ -1,7 +1,7 @@
 package norwegiangambit.engine.fen;
 
-import norwegiangambit.engine.movegen.MBase;
-import norwegiangambit.engine.movegen.MOVEDATA;
+import norwegiangambit.engine.movedata.MBase;
+import norwegiangambit.engine.movedata.MOVEDATA;
 import norwegiangambit.util.BITS;
 import norwegiangambit.util.FEN;
 import norwegiangambit.util.IConst;

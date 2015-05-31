@@ -39,14 +39,20 @@ class Test_Eval2 extends AbstractTest {
 	}
 
 	@Test
-	def void eval_start2() {
+	def void eval_start_xpawn() {
 		val fen = "rnbqkbnr/p1pppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 		testEval(new LongEval(),fen,validator.eval(fen))
 	}
 
 	@Test
-	def void eval_start3() {
-		val fen = "rnbqkbn1/ppp1pppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQq - 0 1";
+	def void eval_start_xrook() {
+		val fen = "rnbqkbn1/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQq - 0 1";
+		testEval(new LongEval(),fen,validator.eval(fen))
+	}
+
+	@Test
+	def void eval_start_xbn() {
+		val fen = "rnbqkb1r/pppppppp/8/8/8/8/PPPPPPPP/RNBQK1NR w KQqk- 0 1";
 		testEval(new LongEval(),fen,validator.eval(fen))
 	}
 
