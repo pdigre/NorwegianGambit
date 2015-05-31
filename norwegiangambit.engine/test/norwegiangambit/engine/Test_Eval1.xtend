@@ -2,14 +2,14 @@ package norwegiangambit.engine
 
 import norwegiangambit.engine.evaluate.AbstractTest
 import norwegiangambit.engine.evaluate.LongEval
-import norwegiangambit.engine.movegen.MBase
+import norwegiangambit.engine.movedata.MBase
 import norwegiangambit.util.PSQT_Cuckoo
 import norwegiangambit.util.polyglot.ZobristPolyglot
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
-import static norwegiangambit.engine.movegen.MBase.*
+import static norwegiangambit.engine.movedata.MBase.*
 import norwegiangambit.util.EngineStockfish
 import norwegiangambit.util.IEvalStat
 

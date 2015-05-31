@@ -10,6 +10,6 @@ Require-Bundle: org.eclipse.ui,
  org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: norwegiangambit.util,
- norwegiangambit.util.polyglot
+Export-Package: norwegiangambit.util;uses:="org.osgi.framework,org.eclipse.jface.resource,org.eclipse.ui.plugin",
+ norwegiangambit.util.polyglot;uses:="norwegiangambit.util"
 Bundle-Vendor: Norwegian Gambit

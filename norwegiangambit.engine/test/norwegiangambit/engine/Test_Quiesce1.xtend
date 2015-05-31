@@ -6,7 +6,7 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Ignore
 import org.junit.Test
-import norwegiangambit.engine.movegen.MBase
+import norwegiangambit.engine.movedata.MBase
 import norwegiangambit.util.PSQT_SEF
 import norwegiangambit.util.polyglot.ZobristPolyglot
 
