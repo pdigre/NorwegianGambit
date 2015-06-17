@@ -16,10 +16,10 @@ function createBoard(){
 		}
 		txt+=rh+'</tr>';
 	}
-	return '<table id="brd" class="brd">'+ch+txt+ch+'</table>';
+	return '<table id="brd">'+ch+txt+ch+'</table>';
 }
 
 function setFEN(FEN){
 	var sq=document.getElementById("sq1");
-	sq.className=sq.className+" K";
+	sq.innerHTML='<img src="img/'+"wk"+'.gif"/>';
 }

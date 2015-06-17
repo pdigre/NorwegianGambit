@@ -3,8 +3,8 @@ Chess UI
 
 ***********/
 
-.brd{border-color: gray;border-style: solid;}
+#brd{border-color: gray;border-style: solid;}
 .hdr{text-align: center;vertical-align: center;}
-.wht{background-color: yellow;width: 40px; height: 40px;}
-.blk{background-color: olive;width: 40px; height: 40px;}
-.K{background-image: url("img/wk.gif");background-repeat: no-repeat;background-position: center;}
+.wht, .blk{width: 40px; height: 40px;text-align: center;vertical-align: center;}
+.wht{background-color: yellow;}
+.blk{background-color: olive;}
