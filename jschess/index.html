@@ -1,12 +1,23 @@
 <html>
 <head>
-<title>Chess UI</title>
+<title>FEN builder</title>
 <link rel="stylesheet" href="ui.css">
 <script type="text/javascript" src="ui.js"></script>
 </head>
 <body>
 <h1>Chess UI</h1>
+<table>
+<tr><td>
 <script>document.write(createBoard())</script>
-<script>setFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")</script>
+</td><td><table>
+<tr><td>FEN:</td><td id="FEN">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1</td></tr>
+<tr><td>Castling:</td><td id="CSTL"></td></tr>
+<tr><td>EnPassant:</td><td id="ENP"></td></tr>
+<tr><td>Moves:</td><td><input id="MOVES" type="text" value="" size="2"></td></tr>
+<tr><td>Half:</td><td><input id="HALF" type="text" value="" size="2"></td></tr>
+<tr><td>Turn:</td><td id="TURN">White<input type="radio" name="TURN" value="w" onclick="getFEN()">Black<input type="radio" name="TURN" value="b" onclick="getFEN()"></td></tr>
+</table></td></tr>
+</table>
+<script>initBoard()</script>
 </body>
 </html>
