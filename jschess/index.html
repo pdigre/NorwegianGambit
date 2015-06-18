@@ -5,23 +5,23 @@
 <script type="text/javascript" src="ui.js"></script>
 </head>
 <body>
-<h3>FEN builder</h3>
+<h3><button id="Mode" onclick="switchMode()">Edit mode</button> FEN builder</h3>
 <table>
 <tr><td>
 <script>document.write(createBoard())</script>
-</td><td><table>
+</td><td id="Edit"><table>
 <tr><td>FEN:</td><td id="FEN">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1</td></tr>
 <tr><td>Turn:</td><td id="TURN">
-White<input type="radio" name="TURN" value="w" onclick="getFEN()">
-Black<input type="radio" name="TURN" value="b" onclick="getFEN()">
+White<input type="radio" name="TURN" value="w" onclick="update()">
+Black<input type="radio" name="TURN" value="b" onclick="update()">
 </td></tr>
 <tr><td>Can castle:</td><td id="CSTL">
-White: King<input type="checkbox" id="CWK" name="CWK" value="K" onclick="getFEN()">
-Queen<input type="checkbox" id="CWQ" name="CWQ" value="Q" onclick="getFEN()">
-, Black: King<input type="checkbox" id="CBK" name="CBK" value="k" onclick="getFEN()">
-Queen<input type="checkbox" id="CBQ" name="CBQ" value="q" onclick="getFEN()">
+White: King<input type="checkbox" id="CWK" name="CWK" value="K" onclick="update()">
+Queen<input type="checkbox" id="CWQ" name="CWQ" value="Q" onclick="update()">
+, Black: King<input type="checkbox" id="CBK" name="CBK" value="k" onclick="update()">
+Queen<input type="checkbox" id="CBQ" name="CBQ" value="q" onclick="update()">
 </td></tr>
-<tr><td>EnPassant:</td><td><select id="ENP"><option value="-">-</option><option value="C">C-lane</option></select></td></tr>
+<tr><td>EnPassant:</td><td><select id="ENP" onchange="update()"><option value="-">-</option><option value="C">C-lane</option></select></td></tr>
 <tr><td>Total moves:</td><td><input id="MOVES" type="text" value="" size="2"></td></tr>
 <tr><td>Half moves:</td><td><input id="HALF" type="text" value="" size="2"></td></tr>
 <tr><td colspan="2" ondrop="drop(event)" ondragover="allowDrop(event)">
@@ -36,8 +36,11 @@ Queen<input type="checkbox" id="CBQ" name="CBQ" value="q" onclick="getFEN()">
 <img src="img/bn.gif" id="n" draggable="true" ondragstart="drag(event)"/>
 <img src="img/bp.gif" id="p" draggable="true" ondragstart="drag(event)"/>
 </td></tr>
-</table></td></tr>
 </table>
-<script>initBoard()</script>
+</td><td id="Play"><table>
+<tr><td>PLAY</td></tr>
+</table>
+</td></tr></table>
+<script>initBoard();switchMode();</script>
 </body>
 </html>

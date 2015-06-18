@@ -1,10 +1,33 @@
-/**
- * 
+/*
+ * Global variables
  */
 
-var brd="................................................................".split("")
+var brd="................................................................".split("");
 var dragobj="";
+var mode="Play";
 
+
+/*
+ * Mode
+ */
+
+function switchMode(){
+	var isEdit=mode!="Edit";
+	mode=isEdit?"Edit":"Play";
+	document.getElementById('Play').style.display=!isEdit?'Block':'None';
+	document.getElementById('Edit').style.display=isEdit?'Block':'None';
+	document.getElementById('Mode').innerHTML=mode+' mode';	
+}
+
+
+/*
+ * Drag and drop
+ */
+
+/**
+ * 
+ * @param ev
+ */
 function allowDrop(ev) {
     var to=getSq(getTgt(ev.target));
     if(brd[to].toUpperCase()=="K")
@@ -40,8 +63,7 @@ function drop(ev) {
     	fenDel(from);
     if(to!=-1)
     	fenAdd(to,piece);
-    updateBoard();
-    getFEN()
+    update()
 }
 
 /* **********************************************************
@@ -102,22 +124,36 @@ function fenDel(sq){
 }
 
 function getFEN(){
-	document.getElementById('FEN').innerHTML= brd2fen(brd)
+	var fen= brd2fen(brd)
 	  +" "+getTurn()
 	  +" "+getCastling()
 	  +" "+getEnpassant()
 	  +" "+document.getElementById('HALF').value
-	  +" "+document.getElementById('MOVES').value
+	  +" "+document.getElementById('MOVES').value;
+	document.getElementById('FEN').innerHTML=fen;	  
+	return fen; 
 }
 
 function getEnpassant(){
-	return '-';
+	var enp=document.getElementById('ENP');
+	return enp.options[enp.selectedIndex].value;
 }
 
-function setEnpassant(FEN){
+function setEnpassant(enp){
 	var white=getTurn()=="w"
-		
-	return
+	var row=white?6:3;
+	var options='<option value="-"'+(enp=='-'?' selected':'')+'>-</option>';
+	for(var col=0;col<8;col++){
+		var lane="ABCDEFGH".charAt(col);
+		if(white){
+			if(brd[col+32]=='p' && ((col!=0 && brd[col+31]=='P')|| (col!=7 && brd[col+33]=='P') ))
+				options+='<option value="'+lane+'6" '+(enp==lane+'6'?' selected':'')+'>'+lane+'-lane</option>';
+		} else {
+			if(brd[col+24]=='P' && ((col!=0 && brd[col+23]=='p')|| (col!=7 && brd[col+25]=='p') ))
+				options+='<option value="'+lane+'3" '+(enp==lane+'3'?' selected':'')+'>'+lane+'-lane</option>';
+		}
+	}
+	document.getElementById('ENP').innerHTML=options;
 }
 
 function setFEN(FEN){
@@ -129,6 +165,10 @@ function setFEN(FEN){
 	setEnpassant(fen[3])
 	document.getElementById('HALF').value=fen[4]
 	document.getElementById('MOVES').value=fen[5]
+}
+
+function update(){
+	setFEN(getFEN());
 }
 
 function getTurn(){

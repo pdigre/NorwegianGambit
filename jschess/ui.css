@@ -5,6 +5,8 @@ Chess UI
 
 #brd{border-color: gray;border-style: solid;}
 .hdr{text-align: center;vertical-align: center;}
-.wht, .blk{width: 40px; height: 40px;text-align: center;vertical-align: center;}
+.wht, .blk, .enp, .ok {width: 30px; height: 30px;text-align: center;vertical-align: center;}
 .wht{background-color: yellow;}
 .blk{background-color: olive;}
+.enp{background-color: blue;}
+.ok{background-color: green;}
