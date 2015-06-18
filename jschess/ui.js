@@ -2,21 +2,44 @@
  * 
  */
 
+var brd="................................................................".split("")
+var dragobj="";
+
 function allowDrop(ev) {
+    var to=getSq(getTgt(ev.target));
+    if(brd[to].toUpperCase()=="K")
+    	return;	// Cannot remove King
+    var from=getSq(dragobj);
+    var piece=from==-1?dragobj:brd[from];
+    if(piece.toUpperCase()=="P" && to!=-1 && (to<8 || to>55))
+    	return;	// Cannot place pawn on home areas
     ev.preventDefault();
 }
 
 function drag(ev) {
 	var tgt=ev.target
-	var td=tgt.parentNode
-    ev.dataTransfer.setData("text", td.id.substring(2));
+	var id=tgt.id?tgt.id:tgt.parentNode.id
+    ev.dataTransfer.setData("text", id);
+	dragobj=id;
+}
+
+function getSq(id){
+    return id.startsWith('sq')?id.substring(2)*1:-1;
+}
+
+function getTgt(tgt){
+	return tgt.id?tgt.id:tgt.parentNode.id;
 }
 
 function drop(ev) {
     ev.preventDefault();
-    var data = ev.dataTransfer.getData("text")*1;
-    var piece=fenDel(data);
-    fenAdd(ev.target.id.substring(2)*1,piece);
+    var to=getSq(getTgt(ev.target));
+    var from=getSq(dragobj);
+    var piece=from==-1?dragobj:brd[from];
+    if(from!=-1)
+    	fenDel(from);
+    if(to!=-1)
+    	fenAdd(to,piece);
     updateBoard();
     getFEN()
 }
@@ -79,38 +102,73 @@ function fenDel(sq){
 }
 
 function getFEN(){
-	var els=document.getElementsByName("TURN");
-	var turn="?";
-	for(var i=0;i<els.length;i++){
-		var e=els[i];
-		if(e.checked)
-			turn=e.value
-	}
 	document.getElementById('FEN').innerHTML= brd2fen(brd)
-	  +" "+turn
-	  +" "+document.getElementById('CSTL').innerHTML
-	  +" "+document.getElementById('ENP').innerHTML
+	  +" "+getTurn()
+	  +" "+getCastling()
+	  +" "+getEnpassant()
 	  +" "+document.getElementById('HALF').value
 	  +" "+document.getElementById('MOVES').value
+}
+
+function getEnpassant(){
+	return '-';
+}
+
+function setEnpassant(FEN){
+	var white=getTurn()=="w"
+		
+	return
 }
 
 function setFEN(FEN){
 	var fen=FEN.split(' ');
 	fen2brd(fen[0])
 	updateBoard()
-	var els=document.getElementsByName("TURN");
-	for(var i=0;i<els.length;i++){
-		var e=els[i];
-		if(e.value==fen[1])
-			e.checked=true
-	}
-	document.getElementById('CSTL').innerHTML=fen[2]
-	document.getElementById('ENP').innerHTML=fen[3]
+	setTurn(fen[1])
+	setCastling(fen[2])
+	setEnpassant(fen[3])
 	document.getElementById('HALF').value=fen[4]
 	document.getElementById('MOVES').value=fen[5]
 }
 
-var brd="................................................................".split("")
+function getTurn(){
+	var els=document.getElementsByName("TURN");
+	for(var i=0;i<els.length;i++){
+		var e=els[i];
+		if(e.checked)
+			return e.value
+	}
+	return "?";
+}
+
+function setTurn(turn){
+	var els=document.getElementsByName("TURN");
+	for(var i=0;i<els.length;i++){
+		var e=els[i];
+		if(e.value==turn)
+			e.checked=true
+	}
+}
+
+function setCastling(cstl){
+	document.getElementById('CWK').checked=cstl.indexOf("K")+1
+	document.getElementById('CWQ').checked=cstl.indexOf("Q")+1
+	document.getElementById('CBK').checked=cstl.indexOf("k")+1
+	document.getElementById('CBQ').checked=cstl.indexOf("q")+1
+}
+
+function getCastling(){
+	var txt="";
+	if(document.getElementById('CWK').checked)
+		txt+="K";
+	if(document.getElementById('CWQ').checked)
+		txt+="Q";
+	if(document.getElementById('CBK').checked)
+		txt+="k";
+	if(document.getElementById('CBQ').checked)
+		txt+="q";
+	return txt?txt:"-";
+}
 
 function fen2brd(fen){
 	var n=fen.length
