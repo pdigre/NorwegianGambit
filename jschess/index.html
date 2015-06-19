@@ -10,7 +10,13 @@
 <tr><td>
 <script>document.write(createBoard())</script>
 </td><td id="Edit"><table>
-<tr><td>FEN:</td><td id="FEN">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1</td></tr>
+<tr><td><td colspan="2"></td>
+<a href="#" onclick="init('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')">Start</a>,
+<a href="#" onclick="init('r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1')">Kiwipete</a>,
+<a href="#" onclick="init('4k3/8/8/8/8/8/8/4K3 w - - 0 1')">End</a>
+</tr>
+<tr><td>FEN:</td><td><input id="FEN" type="text" value="" size="60" onchange="init()"></td></tr>
+<tr><td>Status:</td><td id="Status"></td></tr>
 <tr><td>Turn:</td><td id="TURN">
 White<input type="radio" name="TURN" value="w" onclick="update()">
 Black<input type="radio" name="TURN" value="b" onclick="update()">
@@ -22,8 +28,8 @@ Queen<input type="checkbox" id="CWQ" name="CWQ" value="Q" onclick="update()">
 Queen<input type="checkbox" id="CBQ" name="CBQ" value="q" onclick="update()">
 </td></tr>
 <tr><td>EnPassant:</td><td><select id="ENP" onchange="update()"><option value="-">-</option><option value="C">C-lane</option></select></td></tr>
-<tr><td>Total moves:</td><td><input id="MOVES" type="text" value="" size="2"></td></tr>
-<tr><td>Half moves:</td><td><input id="HALF" type="text" value="" size="2"></td></tr>
+<tr><td>Total moves:</td><td><input id="MOVES" type="text" value="" size="2" onchange="update()"></td></tr>
+<tr><td>Half moves:</td><td><input id="HALF" type="text" value="" size="2" onchange="update()"></td></tr>
 <tr><td colspan="2" ondrop="drop(event)" ondragover="allowDrop(event)">
 <img src="img/wq.gif" id="Q" draggable="true" ondragstart="drag(event)"/>
 <img src="img/wr.gif" id="R" draggable="true" ondragstart="drag(event)"/>
@@ -41,6 +47,6 @@ Queen<input type="checkbox" id="CBQ" name="CBQ" value="q" onclick="update()">
 <tr><td>PLAY</td></tr>
 </table>
 </td></tr></table>
-<script>initBoard();switchMode();</script>
+<script>init('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');switchMode();</script>
 </body>
 </html>

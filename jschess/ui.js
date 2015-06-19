@@ -2,7 +2,7 @@
  * Global variables
  */
 
-var brd="................................................................".split("");
+var brd="";
 var dragobj="";
 var mode="Play";
 
@@ -95,32 +95,35 @@ function createBoard(){
  * Drawing the pieces
  ********************************************************** */
 
-function initBoard(){
-	var fen=document.getElementById('FEN').innerHTML;
-	setFEN(fen);
-}
-
-
 var IMG_PCS={'K':'wk','k':'bk','Q':'wq','q':'bq','R':'wr','r':'br','N':'wn','n':'bn','B':'wb','b':'bb','P':'wp','p':'bp'};
 
-/**
- * Adds piece to square
- * @param sq
- * @param piece
- */
 function fenAdd(sq, piece){
 	brd[sq]=piece;
 }
 
-/**
- * Removes piece from square
- * @param sq
- * @returns {String}
- */
 function fenDel(sq){
 	var c=brd[sq];
 	brd[sq]=".";
 	return c;
+}
+
+function init(FEN){
+	document.getElementById('FEN').value=FEN;
+	setFEN(FEN);
+}
+
+function setFEN(FEN){
+	var fen=FEN.split(' ');
+	var val=fen2brd(fen[0])
+	if(val==""){
+		updateBoard()
+		setTurn(fen[1])
+		setCastling(fen[2])
+		setEnpassant(fen[3])
+		document.getElementById('HALF').value=fen[4]
+		document.getElementById('MOVES').value=fen[5]
+	}
+	document.getElementById('Status').innerHTML=val;
 }
 
 function getFEN(){
@@ -130,7 +133,7 @@ function getFEN(){
 	  +" "+getEnpassant()
 	  +" "+document.getElementById('HALF').value
 	  +" "+document.getElementById('MOVES').value;
-	document.getElementById('FEN').innerHTML=fen;	  
+	document.getElementById('FEN').value=fen;	  
 	return fen; 
 }
 
@@ -154,17 +157,6 @@ function setEnpassant(enp){
 		}
 	}
 	document.getElementById('ENP').innerHTML=options;
-}
-
-function setFEN(FEN){
-	var fen=FEN.split(' ');
-	fen2brd(fen[0])
-	updateBoard()
-	setTurn(fen[1])
-	setCastling(fen[2])
-	setEnpassant(fen[3])
-	document.getElementById('HALF').value=fen[4]
-	document.getElementById('MOVES').value=fen[5]
 }
 
 function update(){
@@ -211,6 +203,7 @@ function getCastling(){
 }
 
 function fen2brd(fen){
+	brd="................................................................".split("");
 	var n=fen.length
 	var row=7;
 	var col=0;
@@ -219,13 +212,26 @@ function fen2brd(fen){
 		if(c>'0' && c<='9'){
 			col+=(c*1);
 		} else if(c=='/'){
+			if(col<8)
+				return "FEN Row "+(row+1)+" too few columns ="+col;
 			row--;
 			col=0;
 		} else {
+			if("KQRBNPkqrbnp".indexOf(c)==-1)
+				return "FEN invalid type '"+c+"'";
 			brd[row*8+col]=c;
 			col++;
 		}
+		if(col>8)
+			return "FEN Row "+(row+1)+" too many columns ="+col;
 	}
+	if(row>0)
+		return "FEN Too few rows";
+	if(row<0)
+		return "FEN Too many rows";
+	if(col<8)
+		return "FEN Row "+(row+1)+" too few columns ="+col;
+	return "";
 }
 
 function brd2fen(brd){
