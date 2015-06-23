@@ -10,7 +10,7 @@
 <booleanAttribute key="net.sourceforge.eclipsejetty.launcher.console.enabled" value="true"/>
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.context" value="/jschess"/>
 <booleanAttribute key="net.sourceforge.eclipsejetty.launcher.customWebDefaults.enabled" value="false"/>
-<stringAttribute key="net.sourceforge.eclipsejetty.launcher.customWebDefaults.resource" value=""/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.customWebDefaults.resource" value="/jschess/src/main/webapp/WEB-INF/web.xml"/>
 <booleanAttribute key="net.sourceforge.eclipsejetty.launcher.gracefulShutdown.override.enabled" value="false"/>
 <intAttribute key="net.sourceforge.eclipsejetty.launcher.gracefulShutdown.override.timeout" value="1000"/>
 <booleanAttribute key="net.sourceforge.eclipsejetty.launcher.httpsEnabled" value="false"/>
@@ -24,7 +24,7 @@
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.path" value=""/>
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.version" value="JETTY_EMBEDDED"/>
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.jmx.enabled" value="false"/>
-<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jndi.enabled" value="false"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jndi.enabled" value="true"/>
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.jsp.enabled" value="true"/>
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.launcher.excludeGenericIds" value=""/>
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.launcher.excludeLibs" value=""/>
@@ -43,7 +43,7 @@
 <booleanAttribute key="net.sourceforge.eclipsejetty.launcher.scope.test.exclude" value="true"/>
 <intAttribute key="net.sourceforge.eclipsejetty.launcher.threadPool.limit.count" value="16"/>
 <booleanAttribute key="net.sourceforge.eclipsejetty.launcher.threadPool.limit.enabled" value="false"/>
-<stringAttribute key="net.sourceforge.eclipsejetty.launcher.webappdir" value="src/main/webapp"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.webappdir" value="/jschess/src/main/webapp"/>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="net.sourceforge.eclipsejetty.launcher.JettyLaunchClassPathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="net.sourceforge.eclipsejetty.starter.embedded.JettyEmbeddedLauncherMain"/>

@@ -272,3 +272,18 @@ function updateBoard(){
 		sq.innerHTML=c=='.'?'':'<img src="img/'+IMG_PCS[c]+'.gif" draggable="true" ondragstart="drag(event)"/>';
 	}
 }
+
+// JSON
+
+function jsonCall(){
+	var url = "myTutorials.txt";
+	xmlhttp.onreadystatechange = function() {
+	    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+	        var myArr = JSON.parse(xmlhttp.responseText);
+	        alert(myArr);
+	    }
+	}
+	xmlhttp.open("GET", url, true);
+	xmlhttp.send();	
+}
+

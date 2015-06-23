@@ -15,7 +15,7 @@ public class JacksonExample1 {
 	try {
  
 		// convert user object to json string, and save to a file
-		mapper.writeValue(new File("c:\\user.json"), user);
+		mapper.writeValue(new File("c:\\Temp\\user.json"), user);
  
 		// display to console
 		System.out.println(mapper.writeValueAsString(user));
